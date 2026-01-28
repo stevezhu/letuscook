@@ -1,0 +1,6 @@
+{
+  "extends": "@stzhu/tsconfig/tsconfig.react.json",
+  "include": ["src/**/*", ".storybook/**/*", "*.config.ts", "*.d.ts"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": { "rootDir": "." }
+}

@@ -1,0 +1,47 @@
+diff --git a/dist/main.d.ts b/dist/main.d.ts
+index 7b9d5e9ba911f2cf8b40a74c168ce08e46aa3ad2..a49723362ca53cde7ab273f5a3e70279ac66c106 100644
+--- a/dist/main.d.ts
++++ b/dist/main.d.ts
+@@ -4,9 +4,16 @@ type IpcListenEventMap = {
+ type IpcHandleEventMap = {
+     [key: string]: (...args: any[]) => any;
+ };
+-type IpcEventMap = IpcListenEventMap | IpcHandleEventMap;
+-type ExtractArgs<T> = T extends IpcListenEventMap ? T : never;
+-type ExtractHandler<T> = T extends IpcHandleEventMap ? T : never;
++type IpcEventMap = {
++    [key: string]: [...args: any[]] | ((...args: any[]) => any);
++};
++type ExtractArgs<T> = {
++    [key in keyof T]: T[key] extends [...args: any[]] ? T[key] : never;
++}
++type ExtractHandler<T> = {
++    [key in keyof T]: T[key] extends (...args: any[]) => any ? T[key] : never;
++}
++
+ 
+ /**
+  * Typed listener for Electron `ipcMain`.
+diff --git a/dist/renderer.d.ts b/dist/renderer.d.ts
+index eed7e5d39f981501a9985c2e12e6a6e4b0a172b0..29b3adc5e7ebcb968dde82183e0914bad063d324 100644
+--- a/dist/renderer.d.ts
++++ b/dist/renderer.d.ts
+@@ -4,9 +4,15 @@ type IpcListenEventMap = {
+ type IpcHandleEventMap = {
+     [key: string]: (...args: any[]) => any;
+ };
+-type IpcEventMap = IpcListenEventMap | IpcHandleEventMap;
+-type ExtractArgs<T> = T extends IpcListenEventMap ? T : never;
+-type ExtractHandler<T> = T extends IpcHandleEventMap ? T : never;
++type IpcEventMap = {
++    [key: string]: [...args: any[]] | ((...args: any[]) => any);
++};
++type ExtractArgs<T> = {
++    [key in keyof T]: T[key] extends [...args: any[]] ? T[key] : never;
++}
++type ExtractHandler<T> = {
++    [key in keyof T]: T[key] extends (...args: any[]) => any ? T[key] : never;
++}
+ 
+ /**
+  * Typed emitter for Electron `ipcRenderer`.

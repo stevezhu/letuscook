@@ -1,0 +1,63 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  '@chromatic-com/storybook': ^5.0.0
+  '@storybook/addon-a11y': ^10.2.1
+  '@storybook/addon-docs': ^10.2.1
+  '@storybook/addon-onboarding': ^10.2.1
+  '@storybook/react-vite': ^10.2.1
+  '@stzhu/eslint-config': ^0.9.1
+  '@stzhu/prettier-plugin-tsconfig': ^0.7.1
+  '@stzhu/tsconfig': ^0.1.1
+  '@types/node': ^25.0.10
+  '@types/react': ^19.2.10
+  '@types/react-dom': ^19.2.3
+  electron: ^40.0.0
+  eslint: ^9.39.2
+  hono: ^4.11.7
+  react: ^19.2.4
+  react-dom: ^19.2.4
+  storybook: ^10.2.1
+  tailwindcss: ^4.1.18
+  typescript: ^5.9.3
+  vite: ^7.3.1
+
+catalogs:
+  expo:
+    '@types/react': ~19.2.10
+    '@types/react-dom': ~19.2.0
+    expo: 55.0.0-preview.7
+    react: 19.2.0
+    react-dom: 19.2.0
+    react-native: 0.83.1
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - electron
+  - electron-winstaller
+  - esbuild
+  - msw
+  - sharp
+  - unrs-resolver
+  - workerd
+
+overrides:
+  lightningcss: 1.30.1
+
+packageExtensions:
+  lucide-react:
+    peerDependencies:
+      '@types/react': ^19
+  react-day-picker:
+    peerDependencies:
+      '@types/react': ^19
+
+patchedDependencies:
+  '@electron-toolkit/typed-ipc': patches/@electron-toolkit__typed-ipc.patch
+  electron-vite: patches/electron-vite.patch
+
+saveWorkspaceProtocol: rolling
+
+strictDepBuilds: true

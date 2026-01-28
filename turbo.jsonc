@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["pnpm-workspace.yaml"],
+  "tasks": {
+    "//#format": {},
+    "build": {
+      "dependsOn": ["^build", "codegen"]
+    },
+    "ci:prepare": {
+      "dependsOn": ["^ci:prepare"]
+    },
+    "codegen": {
+      "dependsOn": ["^codegen"]
+    },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["codegen"],
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["codegen"]
+    },
+    "lint:fix": {
+      "dependsOn": ["codegen"]
+    },
+    "test": {
+      "dependsOn": ["codegen"]
+    },
+    "test:watch": {
+      "cache": false,
+      "dependsOn": ["codegen"],
+      "persistent": true
+    }
+  },
+  "ui": "tui"
+}

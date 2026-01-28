@@ -1,0 +1,4 @@
+{
+  "extends": "@stzhu/tsconfig/tsconfig.base.json",
+  "compilerOptions": { "moduleResolution": "bundler", "rootDir": "." }
+}
