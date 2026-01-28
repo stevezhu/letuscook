@@ -1,0 +1,11 @@
+plugins:
+  - prettier-plugin-packagejson
+  - '@stzhu/prettier-plugin-tsconfig'
+singleQuote: true
+trailingComma: all
+# XXX: do not use trailing commas for jsonc files
+# Reference: https://github.com/prettier/prettier/issues/15956#issuecomment-3000347490
+overrides:
+  - files: '*.jsonc'
+    options:
+      trailingComma: none

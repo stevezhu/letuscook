@@ -1,0 +1,5 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "include": ["src/renderer/src/**/*", "src/preload/*.d.ts"],
+  "compilerOptions": { "rootDir": ".", "composite": true }
+}

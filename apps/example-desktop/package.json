@@ -1,0 +1,63 @@
+{
+  "name": "example-desktop",
+  "version": "0.1.0",
+  "description": "An Electron application with React and TypeScript",
+  "homepage": "https://example.com",
+  "author": "Example <example@example.com>",
+  "type": "module",
+  "imports": {
+    "#renderer/*": "./src/renderer/src/*",
+    "#*": "./src/*"
+  },
+  "main": "./out/main/index.js",
+  "scripts": {
+    "build": "electron-vite build",
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:unpack": "pnpm run build && electron-builder --dir",
+    "build:win": "pnpm run build && electron-builder --win",
+    "dev": "electron-vite dev",
+    "postinstall": "electron-builder install-app-deps",
+    "lint": "eslint .",
+    "start": "electron-vite preview",
+    "test": "pnpm run typecheck",
+    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/utils": "^4.0.0",
+    "electron-updater": "^6.7.3",
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config-prettier": "^3.0.0",
+    "@electron-toolkit/eslint-config-ts": "^3.1.0",
+    "@electron-toolkit/tsconfig": "^2.0.0",
+    "@electron-toolkit/typed-ipc": "^1.0.2",
+    "@example/app": "workspace:*",
+    "@stzhu/eslint-config": "catalog:",
+    "@stzhu/tsconfig": "catalog:",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-router": "^1.157.16",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "^5.1.2",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "electron": "catalog:",
+    "electron-builder": "^26.4.0",
+    "electron-devtools-installer": "^4.0.0",
+    "electron-vite": "^5.0.0",
+    "eslint": "catalog:",
+    "example-server": "workspace:*",
+    "prettier": "^3.8.1",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

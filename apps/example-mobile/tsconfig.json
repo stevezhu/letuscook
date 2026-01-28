@@ -1,0 +1,16 @@
+{
+  "extends": "expo/tsconfig.base.json",
+  "include": [
+    "*.config.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "uniwind-types.d.ts"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "moduleResolution": "bundler",
+    "paths": { "#*": ["./src/*"] }
+  }
+}

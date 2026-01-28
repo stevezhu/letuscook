@@ -1,0 +1,4 @@
+{
+  "extends": "@stzhu/tsconfig/tsconfig.react.json",
+  "compilerOptions": { "rootDir": "." }
+}
