@@ -4,6 +4,7 @@
     "*.config.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "*.gen.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "uniwind-types.d.ts"

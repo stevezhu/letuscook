@@ -1,6 +1,6 @@
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import * as Device from 'expo-device';
+import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUniwind } from 'uniwind';
 
 import { AnimatedIcon } from '#components/animated-icon.js';
 import { HintRow } from '#components/hint-row.js';
@@ -9,8 +9,26 @@ import { ThemedView } from '#components/themed-view.js';
 import { WebBadge } from '#components/web-badge.js';
 import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme.js';
 
+function getDevMenuHint() {
+  if (Platform.OS === 'web') {
+    return <ThemedText type="small">use browser devtools</ThemedText>;
+  }
+  if (Device.isDevice) {
+    return (
+      <ThemedText type="small">
+        shake device or press <ThemedText type="code">m</ThemedText> in terminal
+      </ThemedText>
+    );
+  }
+  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  return (
+    <ThemedText type="small">
+      press <ThemedText type="code">{shortcut}</ThemedText>
+    </ThemedText>
+  );
+}
+
 export default function HomeScreen() {
-  const { theme, hasAdaptiveThemes } = useUniwind();
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -26,23 +44,16 @@ export default function HomeScreen() {
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow title="Try editing" hint="src/app/index.tsx" />
-          <HintRow title="Dev tools" hint="cmd+d" />
-          <HintRow title="Fresh start" hint="npm reset project" />
+          <HintRow
+            title="Try editing"
+            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+          />
+          <HintRow title="Dev tools" hint={getDevMenuHint()} />
+          <HintRow
+            title="Fresh start"
+            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
+          />
         </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          uniwind test
-        </ThemedText>
-
-        <View className="bg-gray-100 dark:bg-gray-800 p-2 rounded-xl self-stretch ">
-          <Text className="text-sm text-gray-600 dark:text-gray-300">
-            Active theme: {theme}
-          </Text>
-          <Text className="text-xs text-gray-800 dark:text-gray-400 mt-1">
-            {hasAdaptiveThemes ? 'Following system theme' : 'Fixed theme'}
-          </Text>
-        </View>
 
         {Platform.OS === 'web' && <WebBadge />}
       </SafeAreaView>

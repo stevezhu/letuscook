@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index b673fb9eb409f3546aea360e55e65d90f4dca30a..33ea6ee1cd082261a9356284e2ef5cead5fa0bf4 100644
+--- a/package.json
++++ b/package.json
+@@ -56,6 +56,7 @@
+         },
+         "./metro": {
+             "types": "./dist/metro/index.d.ts",
++            "node": "./dist/metro/index.cjs",
+             "import": "./dist/metro/index.mjs",
+             "default": "./dist/metro/index.cjs"
+         },

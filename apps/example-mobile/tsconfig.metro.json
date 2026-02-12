@@ -1,0 +1,11 @@
+{
+  "include": ["metro.config.ts", "jest.config.ts"],
+  "compilerOptions": {
+    "strict": false,
+    "module": "node16",
+    "moduleResolution": "node16",
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 1,
+    "composite": true
+  }
+}

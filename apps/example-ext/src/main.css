@@ -1,0 +1,6 @@
+@import '@workspace/shadcn/main.css';
+
+#root {
+  background-color: white;
+  min-height: 100vh;
+}

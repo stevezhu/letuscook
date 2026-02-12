@@ -22,7 +22,7 @@ Extract non-component exports to organized directories:
 Run the linter to find all React Fast Refresh warnings:
 
 ```bash
-pnpm -w run lint --filter @workspace/shadcn
+pnpm --filter @workspace/shadcn run lint
 ```
 
 Look for warnings like:

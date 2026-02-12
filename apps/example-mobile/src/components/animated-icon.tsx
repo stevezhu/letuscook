@@ -1,54 +1,79 @@
 import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
-import classes from './animated-icon.module.css';
+const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
+const DURATION = 600;
 
-const DURATION = 300;
+const splashKeyframe = new Keyframe({
+  0: {
+    transform: [{ scale: INITIAL_SCALE_FACTOR }],
+    opacity: 1,
+  },
+  20: {
+    opacity: 1,
+  },
+  70: {
+    opacity: 0,
+    easing: Easing.elastic(0.7),
+  },
+  100: {
+    opacity: 0,
+    transform: [{ scale: 1 }],
+    easing: Easing.elastic(0.7),
+  },
+});
 
 export function AnimatedSplashOverlay() {
-  return null;
+  const [visible, setVisible] = useState(true);
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View
+      entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
+        'worklet';
+        if (finished) {
+          scheduleOnRN(setVisible, false);
+        }
+      })}
+      style={styles.backgroundSolidColor}
+    />
+  );
 }
 
 const keyframe = new Keyframe({
   0: {
-    transform: [{ scale: 0 }],
-  },
-  60: {
-    transform: [{ scale: 1.2 }],
-    easing: Easing.elastic(1.2),
+    transform: [{ scale: INITIAL_SCALE_FACTOR }],
   },
   100: {
     transform: [{ scale: 1 }],
-    easing: Easing.elastic(1.2),
+    easing: Easing.elastic(0.7),
   },
 });
 
 const logoKeyframe = new Keyframe({
   0: {
+    transform: [{ scale: 1.3 }],
     opacity: 0,
   },
-  60: {
-    transform: [{ scale: 1.2 }],
+  40: {
+    transform: [{ scale: 1.3 }],
     opacity: 0,
-    easing: Easing.elastic(1.2),
+    easing: Easing.elastic(0.7),
   },
   100: {
-    transform: [{ scale: 1 }],
     opacity: 1,
-    easing: Easing.elastic(1.2),
+    transform: [{ scale: 1 }],
+    easing: Easing.elastic(0.7),
   },
 });
 
 const glowKeyframe = new Keyframe({
   0: {
-    transform: [{ rotateZ: '-180deg' }, { scale: 0.8 }],
-    opacity: 0,
-  },
-  [DURATION / 1000]: {
-    transform: [{ rotateZ: '0deg' }, { scale: 1 }],
-    opacity: 1,
-    easing: Easing.elastic(0.7),
+    transform: [{ rotateZ: '0deg' }],
   },
   100: {
     transform: [{ rotateZ: '7200deg' }],
@@ -69,12 +94,9 @@ export function AnimatedIcon() {
       </Animated.View>
 
       <Animated.View
-        style={styles.background}
         entering={keyframe.duration(DURATION)}
-      >
-        <div className={classes.expoLogoBackground} />
-      </Animated.View>
-
+        style={styles.background}
+      />
       <Animated.View
         style={styles.imageContainer}
         entering={logoKeyframe.duration(DURATION)}
@@ -89,13 +111,6 @@ export function AnimatedIcon() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    width: '100%',
-    zIndex: 1000,
-    position: 'absolute',
-    top: 128 / 2 + 138,
-  },
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -110,6 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 128,
     height: 128,
+    zIndex: 100,
   },
   image: {
     position: 'absolute',
@@ -117,8 +133,15 @@ const styles = StyleSheet.create({
     height: 71,
   },
   background: {
+    borderRadius: 40,
+    experimental_backgroundImage: `linear-gradient(180deg, #3C9FFE, #0274DF)`,
     width: 128,
     height: 128,
     position: 'absolute',
+  },
+  backgroundSolidColor: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#208AEF',
+    zIndex: 1000,
   },
 });

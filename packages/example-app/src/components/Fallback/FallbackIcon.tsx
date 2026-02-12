@@ -21,7 +21,7 @@ export function FallbackIcon({
   return (
     <div
       className={cn(
-        'mx-auto flex h-12 w-12 items-center justify-center rounded-full',
+        'mx-auto flex size-12 items-center justify-center rounded-full',
         VARIANT_CLASSES[variant],
         className,
       )}

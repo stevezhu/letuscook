@@ -1,14 +1,43 @@
 import { Button } from '@workspace/shadcn/components/button';
-import {
-  CarouselApi,
-  CarouselContext,
-  type CarouselProps,
-  useCarousel,
-} from '@workspace/shadcn/hooks/use-carousel';
 import { cn } from '@workspace/shadcn/lib/utils';
-import useEmblaCarousel from 'embla-carousel-react';
+import useEmblaCarousel, {
+  type UseEmblaCarouselType,
+} from 'embla-carousel-react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
+
+type CarouselApi = UseEmblaCarouselType[1];
+type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
+type CarouselOptions = UseCarouselParameters[0];
+type CarouselPlugin = UseCarouselParameters[1];
+
+type CarouselProps = {
+  opts?: CarouselOptions;
+  plugins?: CarouselPlugin;
+  orientation?: 'horizontal' | 'vertical';
+  setApi?: (api: CarouselApi) => void;
+};
+
+type CarouselContextProps = {
+  carouselRef: ReturnType<typeof useEmblaCarousel>[0];
+  api: ReturnType<typeof useEmblaCarousel>[1];
+  scrollPrev: () => void;
+  scrollNext: () => void;
+  canScrollPrev: boolean;
+  canScrollNext: boolean;
+} & CarouselProps;
+
+const CarouselContext = React.createContext<CarouselContextProps | null>(null);
+
+function useCarousel() {
+  const context = React.useContext(CarouselContext);
+
+  if (!context) {
+    throw new Error('useCarousel must be used within a <Carousel />');
+  }
+
+  return context;
+}
 
 function Carousel({
   orientation = 'horizontal',
@@ -68,7 +97,7 @@ function Carousel({
     api.on('select', onSelect);
 
     return () => {
-      api.off('select', onSelect);
+      api?.off('select', onSelect);
     };
   }, [api, onSelect]);
 
@@ -78,11 +107,8 @@ function Carousel({
         carouselRef,
         api: api,
         opts,
-        // XXX: this was the default but orientation is always defined. So comment out to fix the
-        // lint error
-        // orientation:
-        //   orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
-        orientation,
+        orientation:
+          orientation || (opts?.axis === 'y' ? 'vertical' : 'horizontal'),
         scrollPrev,
         scrollNext,
         canScrollPrev,
@@ -156,7 +182,7 @@ function CarouselPrevious({
       variant={variant}
       size={size}
       className={cn(
-        'absolute touch-manipulation rounded-full',
+        'rounded-full absolute touch-manipulation',
         orientation === 'horizontal'
           ? 'top-1/2 -left-12 -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -186,7 +212,7 @@ function CarouselNext({
       variant={variant}
       size={size}
       className={cn(
-        'absolute touch-manipulation rounded-full',
+        'rounded-full absolute touch-manipulation',
         orientation === 'horizontal'
           ? 'top-1/2 -right-12 -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
@@ -203,10 +229,11 @@ function CarouselNext({
 }
 
 export {
-  Carousel,
   type CarouselApi,
+  Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
   CarouselPrevious,
+  CarouselNext,
+  useCarousel,
 };

@@ -2,7 +2,6 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["pnpm-workspace.yaml"],
   "tasks": {
-    "//#format": {},
     "build": {
       "dependsOn": ["^build", "codegen"]
     },

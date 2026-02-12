@@ -4,6 +4,7 @@ import storybook from '@stzhu/eslint-config/storybook';
 import tailwind from '@stzhu/eslint-config/tailwind';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import pluginRouter from '@tanstack/eslint-plugin-router';
+import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig(
@@ -25,4 +26,11 @@ export default defineConfig(
   storybook.configs.recommended,
   pluginRouter.configs['flat/recommended'],
   pluginQuery.configs['flat/recommended'],
+  {
+    rules: {
+      'simple-import-sort/imports': 'off',
+      'simple-import-sort/exports': 'off',
+    },
+  },
+  oxlint.configs['flat/recommended'],
 );

@@ -64,6 +64,7 @@ function DropdownMenuSubTrigger({
           }),
           open && 'bg-accent',
           inset && 'pl-8',
+          className,
         )}
         {...props}
       >

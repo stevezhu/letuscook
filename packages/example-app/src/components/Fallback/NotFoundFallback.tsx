@@ -44,7 +44,7 @@ export function NotFoundFallback({
       icon={
         <FallbackIcon
           variant="default"
-          icon={<FileX className="h-6 w-6 text-muted-foreground" />}
+          icon={<FileX className="size-6 text-muted-foreground" />}
         />
       }
     >

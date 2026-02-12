@@ -58,6 +58,7 @@ function ContextMenuSubTrigger({
           }),
           open && cn('bg-accent', Platform.select({ native: 'mb-1' })),
           inset && 'pl-8',
+          className,
         )}
         {...props}
       >

@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "perf": "error"
+  },
+  "plugins": [
+    //- general
+    "eslint",
+    "typescript",
+    "unicorn",
+    "oxc",
+    "import",
+    "jsdoc",
+    "promise",
+
+    //- react
+    "react",
+
+    //- test
+    "vitest"
+  ],
+  "rules": {
+    "import/namespace": "off"
+  },
+  "settings": {
+    "jsdoc": {
+      "tagNamePreference": {
+        "platform": "platform"
+      }
+    }
+  }
+}
