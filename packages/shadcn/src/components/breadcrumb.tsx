@@ -20,11 +20,7 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        `
-          flex flex-wrap items-center gap-1.5 text-sm break-words
-          text-muted-foreground
-          sm:gap-2.5
-        `,
+        'text-muted-foreground gap-1.5 text-sm sm:gap-2.5 flex flex-wrap items-center wrap-break-word',
         className,
       )}
       {...props}
@@ -36,7 +32,7 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn('inline-flex items-center gap-1.5', className)}
+      className={cn('gap-1.5 inline-flex items-center', className)}
       {...props}
     />
   );
@@ -51,13 +47,7 @@ function BreadcrumbLink({
     defaultTagName: 'a',
     props: mergeProps<'a'>(
       {
-        className: cn(
-          `
-            transition-colors
-            hover:text-foreground
-          `,
-          className,
-        ),
+        className: cn('hover:text-foreground transition-colors', className),
       },
       props,
     ),
@@ -75,7 +65,7 @@ function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
       role="link"
       aria-disabled="true"
       aria-current="page"
-      className={cn('font-normal text-foreground', className)}
+      className={cn('text-foreground font-normal', className)}
       {...props}
     />
   );
@@ -109,10 +99,7 @@ function BreadcrumbEllipsis({
       role="presentation"
       aria-hidden="true"
       className={cn(
-        `
-          flex size-5 items-center justify-center
-          [&>svg]:size-4
-        `,
+        'size-5 [&>svg]:size-4 flex items-center justify-center',
         className,
       )}
       {...props}
@@ -125,10 +112,10 @@ function BreadcrumbEllipsis({
 
 export {
   Breadcrumb,
-  BreadcrumbEllipsis,
+  BreadcrumbList,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  BreadcrumbEllipsis,
 };

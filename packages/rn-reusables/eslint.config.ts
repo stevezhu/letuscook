@@ -1,6 +1,7 @@
 // https://docs.expo.dev/guides/using-eslint/
 import expo from '@stzhu/eslint-config/expo';
 import importConfig from '@stzhu/eslint-config/import';
+import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
@@ -11,4 +12,11 @@ export default defineConfig([
   },
   expo.configs.recommended,
   importConfig.configs['file-extension-in-import'],
+  {
+    rules: {
+      'simple-import-sort/imports': 'off',
+      'simple-import-sort/exports': 'off',
+    },
+  },
+  oxlint.configs['flat/recommended'],
 ]);

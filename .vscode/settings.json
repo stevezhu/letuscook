@@ -1,30 +1,16 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.oxc": "explicit"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "eslint.useFlatConfig": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "html",
-    "vue",
-    "markdown"
-  ],
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
   "files.associations": {
     ".dev.vars": "properties"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
+  "json.schemaDownload.enable": true,
   "tailwindCSS.classAttributes": [
     "class",
     "className",

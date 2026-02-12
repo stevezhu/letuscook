@@ -33,42 +33,42 @@ const meta = preview.meta({
 export const Default = meta.story({
   args: {
     variant: 'default',
-    icon: <Info className="h-6 w-6 text-muted-foreground" />,
+    icon: <Info className="size-6 text-muted-foreground" />,
   },
 });
 
 export const Destructive = meta.story({
   args: {
     variant: 'destructive',
-    icon: <AlertTriangle className="h-6 w-6 text-destructive" />,
+    icon: <AlertTriangle className="size-6 text-destructive" />,
   },
 });
 
 export const Primary = meta.story({
   args: {
     variant: 'primary',
-    icon: <CheckCircle className="h-6 w-6 text-primary" />,
+    icon: <CheckCircle className="size-6 text-primary" />,
   },
 });
 
 export const Loading = meta.story({
   args: {
     variant: 'primary',
-    icon: <Loader2 className="h-6 w-6 animate-spin text-primary" />,
+    icon: <Loader2 className="size-6 animate-spin text-primary" />,
   },
 });
 
 export const Error = meta.story({
   args: {
     variant: 'destructive',
-    icon: <XCircle className="h-6 w-6 text-destructive" />,
+    icon: <XCircle className="size-6 text-destructive" />,
   },
 });
 
 export const CustomStyling = meta.story({
   args: {
     variant: 'default',
-    icon: <Info className="h-8 w-8 text-blue-500" />,
+    icon: <Info className="size-8 text-blue-500" />,
     className: 'h-16 w-16 border-2 border-blue-200',
   },
 });
@@ -79,21 +79,21 @@ export const AllVariants = meta.story({
       <div className="space-y-2 text-center">
         <FallbackIcon
           variant="default"
-          icon={<Info className="h-6 w-6 text-muted-foreground" />}
+          icon={<Info className="size-6 text-muted-foreground" />}
         />
         <p className="text-xs text-muted-foreground">Default</p>
       </div>
       <div className="space-y-2 text-center">
         <FallbackIcon
           variant="destructive"
-          icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+          icon={<AlertTriangle className="size-6 text-destructive" />}
         />
         <p className="text-xs text-muted-foreground">Destructive</p>
       </div>
       <div className="space-y-2 text-center">
         <FallbackIcon
           variant="primary"
-          icon={<CheckCircle className="h-6 w-6 text-primary" />}
+          icon={<CheckCircle className="size-6 text-primary" />}
         />
         <p className="text-xs text-muted-foreground">Primary</p>
       </div>

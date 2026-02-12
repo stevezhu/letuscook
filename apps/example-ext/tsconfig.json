@@ -1,0 +1,5 @@
+{
+  "extends": ["@stzhu/tsconfig/tsconfig.react.json", "./.wxt/tsconfig.json"],
+  "include": ["**/*", ".wxt/**/*"],
+  "compilerOptions": { "rootDir": "." }
+}

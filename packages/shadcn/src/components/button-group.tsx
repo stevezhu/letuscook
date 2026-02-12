@@ -2,8 +2,24 @@ import { mergeProps } from '@base-ui/react/merge-props';
 import { useRender } from '@base-ui/react/use-render';
 import { Separator } from '@workspace/shadcn/components/separator';
 import { cn } from '@workspace/shadcn/lib/utils';
-import { buttonGroupVariants } from '@workspace/shadcn/variants/button-group';
-import { type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const buttonGroupVariants = cva(
+  "has-[>[data-slot=button-group]]:gap-2 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md flex w-fit items-stretch *:focus-visible:z-10 *:focus-visible:relative [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1",
+  {
+    variants: {
+      orientation: {
+        horizontal:
+          '[&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 *:data-slot:rounded-r-none',
+        vertical:
+          '[&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! flex-col [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 *:data-slot:rounded-b-none',
+      },
+    },
+    defaultVariants: {
+      orientation: 'horizontal',
+    },
+  },
+);
 
 function ButtonGroup({
   className,
@@ -31,12 +47,7 @@ function ButtonGroupText({
     props: mergeProps<'div'>(
       {
         className: cn(
-          `
-            flex items-center gap-2 rounded-md border bg-muted px-2.5 text-sm
-            font-medium shadow-xs
-            [&_svg]:pointer-events-none
-            [&_svg:not([class*='size-'])]:size-4
-          `,
+          "bg-muted gap-2 rounded-md border px-2.5 text-sm font-medium shadow-xs [&_svg:not([class*='size-'])]:size-4 flex items-center [&_svg]:pointer-events-none",
           className,
         ),
       },
@@ -59,12 +70,7 @@ function ButtonGroupSeparator({
       data-slot="button-group-separator"
       orientation={orientation}
       className={cn(
-        `
-          relative self-stretch bg-input
-          data-[orientation=horizontal]:mx-px
-          data-[orientation=horizontal]:w-auto
-          data-[orientation=vertical]:my-px data-[orientation=vertical]:h-auto
-        `,
+        'bg-input relative self-stretch data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto',
         className,
       )}
       {...props}
@@ -72,4 +78,9 @@ function ButtonGroupSeparator({
   );
 }
 
-export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText };
+export {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+  buttonGroupVariants,
+};

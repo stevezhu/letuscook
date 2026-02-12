@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Spacing } from '#constants/theme.js';
@@ -8,7 +8,7 @@ import { ThemedView } from './themed-view.js';
 
 type HintRowProps = {
   title?: string;
-  hint?: string;
+  hint?: ReactNode;
 };
 
 export function HintRow({
@@ -19,9 +19,7 @@ export function HintRow({
     <View style={styles.stepRow}>
       <ThemedText type="small">{title}</ThemedText>
       <ThemedView type="backgroundSelected" style={styles.codeSnippet}>
-        <ThemedText themeColor="textSecondary" type="code">
-          {hint}
-        </ThemedText>
+        <ThemedText themeColor="textSecondary">{hint}</ThemedText>
       </ThemedView>
     </View>
   );

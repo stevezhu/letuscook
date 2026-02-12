@@ -15,7 +15,7 @@
     }
   },
   "scripts": {
-    "ci:prepare": "cp .dev.vars.example .dev.vars",
+    "ci:prepare": "cp -n .dev.vars.example .dev.vars",
     "codegen": "wrangler types worker-configuration.gen.d.ts",
     "dev": "wrangler dev --ip 0.0.0.0 --port 8787",
     "lint": "eslint .",
@@ -26,13 +26,14 @@
     "hono": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.22.0",
+    "@cloudflare/vite-plugin": "^1.25.0",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/tsconfig": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "eslint-plugin-oxlint": "^1.46.0",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "wrangler": "^4.61.0"
+    "wrangler": "^4.65.0"
   }
 }

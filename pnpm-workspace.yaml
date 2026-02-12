@@ -3,35 +3,58 @@ packages:
   - packages/*
 
 catalog:
-  '@chromatic-com/storybook': ^5.0.0
-  '@storybook/addon-a11y': ^10.2.1
-  '@storybook/addon-docs': ^10.2.1
-  '@storybook/addon-onboarding': ^10.2.1
-  '@storybook/react-vite': ^10.2.1
-  '@stzhu/eslint-config': ^0.9.1
+  '@chromatic-com/storybook': ^5.0.1
+  '@storybook/addon-a11y': ^10.2.8
+  '@storybook/addon-docs': ^10.2.8
+  '@storybook/addon-onboarding': ^10.2.8
+  '@storybook/react-vite': ^10.2.8
+  '@stzhu/eslint-config': ^0.10.0
   '@stzhu/prettier-plugin-tsconfig': ^0.7.1
   '@stzhu/tsconfig': ^0.1.1
-  '@types/node': ^25.0.10
-  '@types/react': ^19.2.10
+  '@types/node': ^25.2.3
+  '@types/react': ^19.2.14
   '@types/react-dom': ^19.2.3
-  electron: ^40.0.0
+  electron: ^40.4.0
   eslint: ^9.39.2
-  hono: ^4.11.7
+  hono: ^4.11.9
   react: ^19.2.4
   react-dom: ^19.2.4
-  storybook: ^10.2.1
+  storybook: ^10.2.8
   tailwindcss: ^4.1.18
   typescript: ^5.9.3
   vite: ^7.3.1
+  vitest: ^4.0.18
 
 catalogs:
-  expo:
-    '@types/react': ~19.2.10
-    '@types/react-dom': ~19.2.0
-    expo: 55.0.0-preview.7
+  mobile:
+    '@expo/metro-runtime': ~55.0.5
+    '@react-navigation/native': ^7.1.28
+    '@types/react': ~19.2.14
+    expo: 55.0.0-preview.10
+    expo-constants: ~55.0.4
+    expo-device: ~55.0.6
+    expo-font: ~55.0.3
+    expo-glass-effect: ~55.0.5
+    expo-haptics: ~55.0.5
+    expo-image: ~55.0.3
+    expo-linking: ~55.0.4
+    expo-router: 55.0.0-preview.7
+    expo-splash-screen: ~55.0.5
+    expo-status-bar: ~55.0.2
+    expo-symbols: ~55.0.3
+    expo-system-ui: ~55.0.5
+    expo-updates: ~55.0.7
+    expo-web-browser: ~55.0.5
     react: 19.2.0
     react-dom: 19.2.0
     react-native: 0.83.1
+    react-native-gesture-handler: ~2.30.0
+    react-native-reanimated: ~4.2.1
+    react-native-safe-area-context: ~5.6.2
+    react-native-screens: ~4.22.0
+    react-native-web: ~0.21.2
+    react-native-worklets: ~0.7.3
+    uniwind: ^1.3.0
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
@@ -40,11 +63,13 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - sharp
+  - spawn-sync
+  - tldjs
   - unrs-resolver
   - workerd
 
 overrides:
-  lightningcss: 1.30.1
+  react-refresh: ^0.18.0
 
 packageExtensions:
   lucide-react:
@@ -57,6 +82,7 @@ packageExtensions:
 patchedDependencies:
   '@electron-toolkit/typed-ipc': patches/@electron-toolkit__typed-ipc.patch
   electron-vite: patches/electron-vite.patch
+  uniwind: patches/uniwind.patch
 
 saveWorkspaceProtocol: rolling
 

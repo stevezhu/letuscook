@@ -27,7 +27,6 @@ const StyledIcon = withUniwind(IconImpl, {
  * This component allows you to render any Lucide icon while applying utility classes
  * using `uniwind`. It avoids the need to wrap or configure each icon individually.
  *
- * @component
  * @example
  * ```tsx
  * import { ArrowRight } from 'lucide-react-native';

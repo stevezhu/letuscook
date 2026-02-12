@@ -33,7 +33,7 @@ export function ErrorFallback({
       icon={
         <FallbackIcon
           variant="destructive"
-          icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+          icon={<AlertTriangle className="size-6 text-destructive" />}
         />
       }
     >
@@ -80,7 +80,7 @@ export function ErrorFallback({
               <div className="rounded-sm bg-muted p-3">
                 <pre
                   className={`
-                    text-xs break-words whitespace-pre-wrap text-foreground
+                    text-xs wrap-break-word whitespace-pre-wrap text-foreground
                   `}
                 >
                   {error instanceof Error ? error.message : String(error)}

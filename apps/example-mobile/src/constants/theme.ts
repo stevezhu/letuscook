@@ -24,6 +24,7 @@ export const Colors = {
   },
 } as const;
 
+// oxlint-disable-next-line typescript-eslint/no-duplicate-type-constituents
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({

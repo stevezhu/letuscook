@@ -30,7 +30,7 @@ export const Default = meta.story({
     icon: (
       <FallbackIcon
         variant="default"
-        icon={<Info className="h-6 w-6 text-muted-foreground" />}
+        icon={<Info className="size-6 text-muted-foreground" />}
       />
     ),
   },
@@ -43,7 +43,7 @@ export const WithActions = meta.story({
     icon: (
       <FallbackIcon
         variant="destructive"
-        icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+        icon={<AlertTriangle className="size-6 text-destructive" />}
       />
     ),
     children: (
@@ -62,7 +62,7 @@ export const Success = meta.story({
     icon: (
       <FallbackIcon
         variant="primary"
-        icon={<CheckCircle className="h-6 w-6 text-primary" />}
+        icon={<CheckCircle className="size-6 text-primary" />}
       />
     ),
     children: <Button variant="outline">Continue</Button>,
@@ -78,7 +78,7 @@ export const LongContent = meta.story({
     icon: (
       <FallbackIcon
         variant="default"
-        icon={<Info className="h-6 w-6 text-muted-foreground" />}
+        icon={<Info className="size-6 text-muted-foreground" />}
       />
     ),
     children: (

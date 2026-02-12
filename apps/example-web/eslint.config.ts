@@ -1,5 +1,6 @@
 import react from '@stzhu/eslint-config/react';
 import tailwind from '@stzhu/eslint-config/tailwind';
+import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig(
@@ -18,4 +19,11 @@ export default defineConfig(
       },
     },
   },
+  {
+    rules: {
+      'simple-import-sort/imports': 'off',
+      'simple-import-sort/exports': 'off',
+    },
+  },
+  oxlint.configs['flat/recommended'],
 );

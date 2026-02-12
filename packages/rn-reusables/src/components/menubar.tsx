@@ -14,12 +14,10 @@ import * as React from 'react';
 import {
   Platform,
   Pressable,
-  type StyleProp,
   StyleSheet,
   Text,
   type TextProps,
   View,
-  type ViewStyle,
 } from 'react-native';
 import { FadeIn } from 'react-native-reanimated';
 import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
@@ -134,6 +132,7 @@ function MenubarSubTrigger({
           }),
           open && 'bg-accent',
           inset && 'pl-8',
+          className,
         )}
         {...props}
       >
@@ -170,8 +169,6 @@ function MenubarSubContent({
 
 function MenubarContent({
   className,
-  overlayClassName,
-  overlayStyle,
   portalHost,
   align = 'start',
   alignOffset = -4,
@@ -179,8 +176,6 @@ function MenubarContent({
   ...props
 }: MenubarPrimitive.ContentProps &
   React.RefAttributes<MenubarPrimitive.ContentRef> & {
-    overlayStyle?: StyleProp<ViewStyle>;
-    overlayClassName?: string;
     portalHost?: string;
   }) {
   return (

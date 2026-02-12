@@ -19,7 +19,7 @@ export function PendingFallback({
       icon={
         <FallbackIcon
           variant="primary"
-          icon={<Loader2 className="h-6 w-6 animate-spin text-primary" />}
+          icon={<Loader2 className="size-6 animate-spin text-primary" />}
         />
       }
     />

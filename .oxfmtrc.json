@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "experimentalSortImports": {
+    "groups": [
+      ["side-effect"],
+      ["builtin"],
+      ["external", "type-external"],
+      ["subpath", "internal", "type-internal"],
+      ["parent", "type-parent"],
+      ["sibling", "type-sibling"],
+      ["index", "type-index"]
+    ]
+  },
+  "experimentalSortPackageJson": {
+    "sortScripts": true
+  },
+  "ignorePatterns": [
+    ".vite/",
+    "migrations/",
+    "_generated/",
+    "*.gen.ts",
+    "*.gen.d.ts",
+    "uniwind-types.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["*.jsonc"],
+      "options": {
+        // XXX: do not use trailing commas for jsonc files
+        // Reference: https://github.com/prettier/prettier/issues/15956#issuecomment-3000347490
+        "trailingComma": "none"
+      }
+    }
+  ],
+  "printWidth": 80,
+  "singleQuote": true
+}

@@ -1,0 +1,90 @@
+[1;33mdiff --git a/packages/shadcn/src/components/calendar.tsx b/packages/shadcn/src/components/calendar.tsx[m
+[1;33mindex b9560fa..13a15af 100644[m
+[1;33m--- a/packages/shadcn/src/components/calendar.tsx[m
+[1;33m+++ b/packages/shadcn/src/components/calendar.tsx[m
+[1;35m@@ -197,8 +197,9 @@[m [mfunction CalendarDayButton({[m
+ [m
+   const ref = React.useRef<HTMLButtonElement>(null);[m
+   React.useEffect(() => {[m
+[1;31m-    if (modifiers.focused) ref.current?.focus();[m
+[1;31m-  }, [modifiers.focused]);[m
+[1;32m+[m[1;32m    if (modifiers['focused']) ref.current?.focus();[m
+[1;32m+[m[1;32m    // oxlint-disable-next-line react-hooks/exhaustive-deps[m
+[1;32m+[m[1;32m  }, [modifiers['focused']]);[m
+ [m
+   return ([m
+     <Button[m
+[1;35m@@ -206,14 +207,14 @@[m [mfunction CalendarDayButton({[m
+       size="icon"[m
+       data-day={day.date.toLocaleDateString(locale?.code)}[m
+       data-selected-single={[m
+[1;31m-        modifiers.selected &&[m
+[1;31m-        !modifiers.range_start &&[m
+[1;31m-        !modifiers.range_end &&[m
+[1;31m-        !modifiers.range_middle[m
+[1;32m+[m[1;32m        modifiers['selected'] &&[m
+[1;32m+[m[1;32m        !modifiers['range_start'] &&[m
+[1;32m+[m[1;32m        !modifiers['range_end'] &&[m
+[1;32m+[m[1;32m        !modifiers['range_middle'][m
+       }[m
+[1;31m-      data-range-start={modifiers.range_start}[m
+[1;31m-      data-range-end={modifiers.range_end}[m
+[1;31m-      data-range-middle={modifiers.range_middle}[m
+[1;32m+[m[1;32m      data-range-start={modifiers['range_start']}[m
+[1;32m+[m[1;32m      data-range-end={modifiers['range_end']}[m
+[1;32m+[m[1;32m      data-range-middle={modifiers['range_middle']}[m
+       className={cn([m
+         'data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 dark:hover:text-foreground relative isolate z-10 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-(--cell-radius) data-[range-end=true]:rounded-r-(--cell-radius) data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-(--cell-radius) data-[range-start=true]:rounded-l-(--cell-radius) [&>span]:text-xs [&>span]:opacity-70',[m
+         defaultClassNames.day,[m
+[1;33mdiff --git a/packages/shadcn/src/components/chart.tsx b/packages/shadcn/src/components/chart.tsx[m
+[1;33mindex 9cf5f1a..5f89fb0 100644[m
+[1;33m--- a/packages/shadcn/src/components/chart.tsx[m
+[1;33m+++ b/packages/shadcn/src/components/chart.tsx[m
+[1;35m@@ -279,7 +279,7 @@[m [mfunction ChartLegendContent({[m
+       {payload[m
+         .filter((item) => item.type !== 'none')[m
+         .map((item) => {[m
+[1;31m-          const key = `${nameKey || item.dataKey || 'value'}`;[m
+[1;32m+[m[1;32m          const key = `${nameKey || item.dataKey?.toString() || 'value'}`;[m
+           const itemConfig = getPayloadConfigFromPayload(config, item, key);[m
+ [m
+           return ([m
+[1;33mdiff --git a/packages/shadcn/src/components/field.tsx b/packages/shadcn/src/components/field.tsx[m
+[1;33mindex 3c06e17..8b7ab27 100644[m
+[1;33m--- a/packages/shadcn/src/components/field.tsx[m
+[1;33m+++ b/packages/shadcn/src/components/field.tsx[m
+[1;35m@@ -200,8 +200,8 @@[m [mfunction FieldError({[m
+     return ([m
+       <ul className="ml-4 flex list-disc flex-col gap-1">[m
+         {uniqueErrors.map([m
+[1;31m-          (error, index) =>[m
+[1;31m-            error?.message && <li key={index}>{error.message}</li>,[m
+[1;32m+[m[1;32m          (error) =>[m
+[1;32m+[m[1;32m            error?.message && <li key={error.message}>{error.message}</li>,[m
+         )}[m
+       </ul>[m
+     );[m
+[1;33mdiff --git a/packages/shadcn/src/components/input-otp.tsx b/packages/shadcn/src/components/input-otp.tsx[m
+[1;33mindex 2e0a703..02efbab 100644[m
+[1;33m--- a/packages/shadcn/src/components/input-otp.tsx[m
+[1;33m+++ b/packages/shadcn/src/components/input-otp.tsx[m
+[1;35m@@ -14,7 +14,7 @@[m [mfunction InputOTP({[m
+     <OTPInput[m
+       data-slot="input-otp"[m
+       containerClassName={cn([m
+[1;31m-        'cn-input-otp flex items-center has-disabled:opacity-50',[m
+[1;32m+[m[1;32m        'gap-2 flex items-center has-disabled:opacity-50',[m
+         containerClassName,[m
+       )}[m
+       spellCheck={false}[m
+[1;33mdiff --git a/packages/shadcn/src/components/scroll-area.tsx b/packages/shadcn/src/components/scroll-area.tsx[m
+[1;33mindex fb0e41c..4fcd944 100644[m
+[1;33m--- a/packages/shadcn/src/components/scroll-area.tsx[m
+[1;33m+++ b/packages/shadcn/src/components/scroll-area.tsx[m
+[1;35m@@ -1,6 +1,5 @@[m
+ import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area';[m
+ import { cn } from '@workspace/shadcn/lib/utils';[m
+[1;31m-import * as React from 'react';[m
+ [m
+ function ScrollArea({[m
+   className,[m

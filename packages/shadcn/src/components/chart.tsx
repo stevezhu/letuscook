@@ -54,21 +54,7 @@ function ChartContainer({
         data-slot="chart"
         data-chart={chartId}
         className={cn(
-          `
-            flex aspect-video justify-center text-xs
-            [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground
-            [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50
-            [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border
-            [&_.recharts-dot[stroke='#fff']]:stroke-transparent
-            [&_.recharts-layer]:outline-hidden
-            [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border
-            [&_.recharts-radial-bar-background-sector]:fill-muted
-            [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted
-            [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border
-            [&_.recharts-sector]:outline-hidden
-            [&_.recharts-sector[stroke='#fff']]:stroke-transparent
-            [&_.recharts-surface]:outline-hidden
-          `,
+          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
           className,
         )}
         {...props}
@@ -82,7 +68,7 @@ function ChartContainer({
   );
 }
 
-function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
+const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color,
   );
@@ -113,7 +99,7 @@ ${colorConfig
       }}
     />
   );
-}
+};
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
@@ -151,7 +137,7 @@ function ChartTooltipContent({
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === 'string'
-        ? config[label]?.label || label
+        ? config[label as keyof typeof config]?.label || label
         : itemConfig?.label;
 
     if (labelFormatter) {
@@ -186,10 +172,7 @@ function ChartTooltipContent({
   return (
     <div
       className={cn(
-        `
-          grid min-w-[8rem] items-start gap-1.5 rounded-lg border
-          border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl
-        `,
+        'border-border/50 bg-background gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl grid min-w-32 items-start',
         className,
       )}
     >
@@ -200,22 +183,17 @@ function ChartTooltipContent({
           .map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || 'value'}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
-            const indicatorColor =
-              color || getFillFromPayload(item.payload) || item.color;
+            const indicatorColor = color || item.payload.fill || item.color;
 
             return (
               <div
                 key={item.dataKey}
                 className={cn(
-                  `
-                    flex w-full flex-wrap items-stretch gap-2
-                    [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground
-                  `,
+                  '[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5',
                   indicator === 'dot' && 'items-center',
                 )}
               >
-                {formatter && item.value !== undefined && item.name ? (
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                {formatter && item?.value !== undefined && item.name ? (
                   formatter(item.value, item.name, item, index, item.payload)
                 ) : (
                   <>
@@ -225,10 +203,7 @@ function ChartTooltipContent({
                       !hideIndicator && (
                         <div
                           className={cn(
-                            `
-                              shrink-0 rounded-[2px] border-(--color-border)
-                              bg-(--color-bg)
-                            `,
+                            'shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)',
                             {
                               'h-2.5 w-2.5': indicator === 'dot',
                               'w-1': indicator === 'line',
@@ -259,11 +234,7 @@ function ChartTooltipContent({
                         </span>
                       </div>
                       {item.value && (
-                        <span
-                          className={`
-                            font-mono font-medium text-foreground tabular-nums
-                          `}
-                        >
+                        <span className="text-foreground font-mono font-medium tabular-nums">
                           {item.value.toLocaleString()}
                         </span>
                       )}
@@ -308,18 +279,14 @@ function ChartLegendContent({
       {payload
         .filter((item) => item.type !== 'none')
         .map((item) => {
-          const key = nameKey || item.dataKey?.toString() || 'value';
+          const key = `${nameKey || item.dataKey?.toString() || 'value'}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
           return (
             <div
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               key={item.value}
               className={cn(
-                `
-                  flex items-center gap-1.5
-                  [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground
-                `,
+                '[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3',
               )}
             >
               {itemConfig?.icon && !hideIcon ? (
@@ -373,26 +340,16 @@ function getPayloadConfigFromPayload(
     ] as string;
   }
 
-  return configLabelKey in config ? config[configLabelKey] : config[key];
-}
-
-function getFillFromPayload(payload: unknown) {
-  if (
-    typeof payload !== 'object' ||
-    payload === null ||
-    !('fill' in payload) ||
-    typeof payload.fill !== 'string'
-  ) {
-    return undefined;
-  }
-  return payload.fill;
+  return configLabelKey in config
+    ? config[configLabelKey]
+    : config[key as keyof typeof config];
 }
 
 export {
   ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
-  ChartTooltip,
-  ChartTooltipContent,
 };
