@@ -16,7 +16,7 @@
   },
   "scripts": {
     "ci:prepare": "cp -n .dev.vars.example .dev.vars",
-    "codegen": "wrangler types worker-configuration.gen.d.ts",
+    "codegen": "wrangler types worker-configuration.gen.d.ts --env-file .dev.vars",
     "dev": "wrangler dev --ip 0.0.0.0 --port 8787",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
