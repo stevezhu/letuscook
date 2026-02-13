@@ -1,13 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/dyoshikawa/rulesync/refs/heads/main/config-schema.json",
-  "targets": ["cursor", "claudecode", "geminicli"],
-  "features": ["rules", "ignore", "mcp", "commands", "subagents", "skills"],
+  "targets": ["cursor", "geminicli"],
+  "features": [
+    "rules"
+    // "ignore",
+    // "mcp",
+    // "commands",
+    // "subagents",
+    // "skills",
+    // "workflows",
+  ],
   "baseDirs": ["."],
   "delete": true,
   "verbose": false,
   "global": false,
   "simulateCommands": false,
   "simulateSubagents": false,
-  "simulateSkills": false,
-  "modularMcp": false
+  "simulateSkills": false
 }
