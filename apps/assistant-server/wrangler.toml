@@ -1,0 +1,12 @@
+name = "assistant-server"
+main = "src/index.ts"
+compatibility_date = "2025-10-27"
+
+# https://developers.cloudflare.com/workers/wrangler/environments/
+vars = { ENVIRONMENT = "dev" }
+
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+[env.production]
+vars = { ENVIRONMENT = "production" }

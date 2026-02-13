@@ -74,7 +74,7 @@ TanStack Router provides route-level error and pending boundaries. Rely on these
 - **`defaultErrorComponent`** — Shown automatically when a route throws an error. Uses `ErrorFallback`.
 - **`defaultNotFoundComponent`** — Shown for unmatched routes. Uses `NotFoundFallback`.
 
-These are configured globally in the router (see `packages/example-app/src/router.tsx`).
+These are configured globally in the router.
 
 ### Per-Route Overrides
 

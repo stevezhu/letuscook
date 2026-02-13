@@ -1,0 +1,7 @@
+{
+  "name": "@workspace/constants",
+  "private": true,
+  "exports": {
+    ".": "./constants.json"
+  }
+}

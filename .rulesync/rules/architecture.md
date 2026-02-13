@@ -17,11 +17,11 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
 
 ### **Applications (`apps/`)**
 
-- **`example-web`**: The main web application (see **Web Architecture** section below).
-- **`example-mobile`**: The mobile application (see **Mobile Architecture** section below).
-- **`example-server`**: The backend server (see **Backend Architecture** section below).
-- **`example-desktop`**: The desktop application (see **Desktop Architecture** section below).
-- **`example-ext`**: The browser extension (see **Extension Architecture** section below).
+- **`assistant-web`**: The main web application (see **Web Architecture** section below).
+- **`assistant-mobile`**: The mobile application (see **Mobile Architecture** section below).
+- **`assistant-server`**: The backend server (see **Backend Architecture** section below).
+- **`assistant-desktop`**: The desktop application (see **Desktop Architecture** section below).
+- **`assistant-ext`**: The browser extension (see **Extension Architecture** section below).
 
 ### **Packages (`packages/`)**
 
@@ -29,7 +29,7 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
   - **Stack**: Base UI, Tailwind CSS v4, Lucide React.
 - **`@workspace/rn-reusables`**: Shared UI component library for mobile.
   - **Stack**: React Native Primitives, UniWind, Lucide React Native.
-- **`@example/app`**: Shared web application logic and feature components.
+- **`@workspace/assistant-app`**: Shared web application logic and feature components.
   - **Stack**: React, TanStack Router, Storybook.
 
 ## **Core Technologies**
