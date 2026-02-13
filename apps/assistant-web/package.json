@@ -13,7 +13,7 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
-    "@example/app": "workspace:*",
+    "@assistant/app": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-router": "^1.159.5",
     "@workspace/shadcn": "workspace:*",

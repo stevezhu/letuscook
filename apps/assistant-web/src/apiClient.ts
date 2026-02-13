@@ -1,4 +1,4 @@
-import { ApiClient } from '@example/app';
+import { ApiClient } from '@assistant/app';
 import type { AppType } from 'assistant-server/types';
 import { hc } from 'hono/client';
 

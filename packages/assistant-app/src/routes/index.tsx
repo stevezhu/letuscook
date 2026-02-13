@@ -22,7 +22,7 @@ function RouteComponent() {
       <p className="text-muted-foreground">
         Edit{' '}
         <code className="rounded-sm bg-muted px-2 py-1 text-sm">
-          packages/example-app/src/routes/index.tsx
+          packages/assistant-app/src/routes/index.tsx
         </code>{' '}
         and save to test HMR
       </p>

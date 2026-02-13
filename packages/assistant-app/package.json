@@ -1,5 +1,5 @@
 {
-  "name": "@example/app",
+  "name": "@assistant/app",
   "private": true,
   "type": "module",
   "imports": {
