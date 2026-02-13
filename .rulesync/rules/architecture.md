@@ -17,9 +17,11 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
 
 ### **Applications (`apps/`)**
 
-- **`crm-web`**: The main web application (see **Web Architecture** section below).
-- **`crm-mobile`**: The mobile application (see **Mobile Architecture** section below).
-- **`crm-server`**: The backend server (see **Backend Architecture** section below).
+- **`example-web`**: The main web application (see **Web Architecture** section below).
+- **`example-mobile`**: The mobile application (see **Mobile Architecture** section below).
+- **`example-server`**: The backend server (see **Backend Architecture** section below).
+- **`example-desktop`**: The desktop application (see **Desktop Architecture** section below).
+- **`example-ext`**: The browser extension (see **Extension Architecture** section below).
 
 ### **Packages (`packages/`)**
 
@@ -27,7 +29,7 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
   - **Stack**: Base UI, Tailwind CSS v4, Lucide React.
 - **`@workspace/rn-reusables`**: Shared UI component library for mobile.
   - **Stack**: React Native Primitives, UniWind, Lucide React Native.
-- **`@crm/app`**: Shared web application logic and feature components.
+- **`@example/app`**: Shared web application logic and feature components.
   - **Stack**: React, TanStack Router, Storybook.
 
 ## **Core Technologies**
@@ -68,6 +70,16 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
 
 **UI Components**: Use `@workspace/rn-reusables` for all mobile UI components. Import from `@workspace/rn-reusables/src/components/*`.
 
+## **Extension Architecture**
+
+- **WXT** - Browser extension framework.
+- **React** - UI library for extension pages and popups.
+- **Vite** - Build tool (via WXT).
+- **Tailwind CSS v4** - Utility-first CSS framework.
+- **Lucide React** - Icon library.
+
+**UI Components**: Use `@workspace/shadcn` for all extension UI components. Import from `@workspace/shadcn/src/components/*`.
+
 ## **Backend Architecture**
 
 - **Hono** - Web framework for the Edges.
@@ -76,7 +88,13 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
 
 ## **Quality & Tooling**
 
+- **TypeScript** - Static type checking.
+- **oxlint** - Fast linter for correctness, performance, React, and Vitest rules.
+- **oxfmt** - Fast formatter (import ordering, print width 80).
 - **ESLint** - Linting (`@stzhu/eslint-config`).
 - **Prettier** - Formatting.
+- **Vitest** - Unit testing framework.
+- **Jest + jest-expo** - Mobile testing framework.
 - **Storybook** - UI component development and documentation.
-- **TypeScript** - Static type checking (`tsc --noEmit`).
+- **Rulesync** - AI agent rule synchronization across tool targets.
+- **GitHub Actions** - CI (build, lint, test) and PR title linting.
