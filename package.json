@@ -4,7 +4,8 @@
   "scripts": {
     "build": "turbo run build --color",
     "ci:prepare": "turbo run ci:prepare",
-    "clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "deps:clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "deps:reset": "rm pnpm-lock.yaml && pnpm -w run deps:clean && pnpm install",
     "dev": "turbo run dev --color",
     "format": "oxfmt && prettier -w '**/{ts,js}config{,.?*}.json'",
     "format:check": "oxfmt --check && prettier -c '**/{ts,js}config{,.?*}.json'",
@@ -12,7 +13,6 @@
     "lint:fast": "oxlint --type-aware",
     "lint:fast:fix": "oxlint --type-aware --fix",
     "lint:fix": "pnpm run format && pnpm run lint:fast:fix && turbo run lint:fix",
-    "reset-node-modules": "rm -f pnpm-lock.yaml && pnpm -w run clean && pnpm install",
     "test": "turbo run test"
   },
   "devDependencies": {

@@ -5,27 +5,14 @@ description: 'Project overview and general development guidelines'
 globs: ['**/*']
 ---
 
-# Project Overview
+## Task Completion
 
-## General Guidelines
+After finishing each coding task, run the following from the project root and fix any issues before considering the task complete. Skip this for non-coding tasks such as editing documentation, rules, or configuration files.
 
-- Use TypeScript for all new code
-- Follow consistent naming conventions
-- Write self-documenting code with clear variable and function names
-- Prefer composition over inheritance
-- Use meaningful comments for complex business logic
+1. **Auto-fix:** `pnpm run lint:fix` — automatically fixes formatting and lint issues.
+2. **Verify:** `pnpm -w run lint` — check for remaining issues and fix them manually.
+3. **Test:** `pnpm -w run test` — run tests and fix any failures.
 
-## Code Style
+## Document Editing
 
-- Use 2 spaces for indentation
-- Use semicolons
-- Use double quotes for strings
-- Use trailing commas in multi-line objects and arrays
-
-## Architecture Principles
-
-- Organize code by feature, not by file type
-- Keep related files close together
-- Use dependency injection for better testability
-- Implement proper error handling
-- Follow single responsibility principle
+After editing any file in the `.rulesync/` directory, run `pnpm -w exec rulesync generate` to sync changes to all target rule files.

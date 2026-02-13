@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/dyoshikawa/rulesync/refs/heads/main/config-schema.json",
-  "targets": ["cursor", "claudecode", "geminicli"],
+  "targets": ["agentsmd", "cursor", "geminicli"],
   "features": ["rules", "ignore", "mcp", "commands", "subagents", "skills"],
   "baseDirs": ["."],
   "delete": true,
@@ -8,6 +8,5 @@
   "global": false,
   "simulateCommands": false,
   "simulateSubagents": false,
-  "simulateSkills": false,
-  "modularMcp": false
+  "simulateSkills": true
 }
