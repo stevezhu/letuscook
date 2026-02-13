@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: assistant-desktop
+productName: Letuscook
 directories:
   buildResources: build
 files:

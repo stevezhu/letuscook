@@ -18,7 +18,7 @@ function RouteComponent() {
   const [count, setCount] = useState(0);
   return (
     <div className={`flex h-full flex-col items-center justify-center gap-6`}>
-      <h1 className="text-5xl font-bold">Monorepo Template</h1>
+      <h1 className="text-5xl font-bold">Letuscook</h1>
       <p className="text-muted-foreground">
         Edit{' '}
         <code className="rounded-sm bg-muted px-2 py-1 text-sm">
