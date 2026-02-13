@@ -29,7 +29,7 @@ The project is a **Turborepo** monorepo using **PNPM Workspaces**.
   - **Stack**: Base UI, Tailwind CSS v4, Lucide React.
 - **`@workspace/rn-reusables`**: Shared UI component library for mobile.
   - **Stack**: React Native Primitives, UniWind, Lucide React Native.
-- **`@assistant/app`**: Shared web application logic and feature components.
+- **`@workspace/assistant-app`**: Shared web application logic and feature components.
   - **Stack**: React, TanStack Router, Storybook.
 
 ## **Core Technologies**

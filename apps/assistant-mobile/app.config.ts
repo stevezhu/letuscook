@@ -1,8 +1,9 @@
+import { productName } from '@workspace/constants';
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'Letuscook',
+  name: productName,
   slug: 'assistant-mobile',
   version: '1.0.0',
   orientation: 'portrait',

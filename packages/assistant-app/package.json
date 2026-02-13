@@ -1,5 +1,5 @@
 {
-  "name": "@assistant/app",
+  "name": "@workspace/assistant-app",
   "private": true,
   "type": "module",
   "imports": {
@@ -19,6 +19,7 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "lucide-react": "^0.563.0"
   },

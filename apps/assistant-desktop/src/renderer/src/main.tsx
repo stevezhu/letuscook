@@ -1,8 +1,12 @@
 import './main.css';
 
-import { ApiClientProvider, queryClient, router } from '@assistant/app';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
+import {
+  ApiClientProvider,
+  queryClient,
+  router,
+} from '@workspace/assistant-app';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 

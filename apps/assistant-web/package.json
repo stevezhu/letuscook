@@ -13,9 +13,10 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
-    "@assistant/app": "workspace:*",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-router": "^1.159.5",
+    "@workspace/assistant-app": "workspace:*",
+    "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
     "hono": "catalog:",
     "react": "catalog:",
@@ -29,10 +30,10 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^5.1.4",
+    "assistant-server": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.46.0",
-    "assistant-server": "workspace:*",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"

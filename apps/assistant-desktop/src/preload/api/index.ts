@@ -1,5 +1,5 @@
 import { IpcEmitter } from '@electron-toolkit/typed-ipc/renderer';
-import type { ApiClient } from '@assistant/app';
+import type { ApiClient } from '@workspace/assistant-app';
 
 import { IpcEvents } from '#preload/IpcEvents.js';
 

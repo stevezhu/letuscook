@@ -1,6 +1,7 @@
 /// <reference types="@wxt-dev/module-react" />
 /// <reference types="wxt-turbo" />
 
+import { productName } from '@workspace/constants';
 import { defineConfig } from 'wxt';
 
 import { name as packageName } from './package.json';
@@ -8,7 +9,7 @@ import { name as packageName } from './package.json';
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   manifest: ({ mode }) => ({
-    name: mode === 'development' ? 'Letuscook (Dev)' : 'Letuscook',
+    name: mode === 'development' ? `${productName} (Dev)` : productName,
     description: 'Boilerplate for a WXT-based browser extension',
     permissions: ['storage', 'tabs'],
   }),

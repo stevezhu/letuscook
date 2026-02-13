@@ -27,6 +27,7 @@
     "@react-navigation/bottom-tabs": "^7.13.0",
     "@react-navigation/elements": "^2.9.5",
     "@react-navigation/native": "catalog:mobile",
+    "@workspace/constants": "workspace:*",
     "@workspace/rn-reusables": "workspace:*",
     "expo": "catalog:mobile",
     "expo-constants": "catalog:mobile",

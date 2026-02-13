@@ -1,4 +1,4 @@
-import type { ApiClient } from '@assistant/app';
+import type { ApiClient } from '@workspace/assistant-app';
 
 import type { Api } from '#preload/api/index.js';
 
