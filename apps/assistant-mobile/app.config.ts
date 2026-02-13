@@ -2,12 +2,12 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'example-mobile',
-  slug: 'example-mobile',
+  name: 'assistant-mobile',
+  slug: 'assistant-mobile',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: 'examplemobile',
+  scheme: 'assistantmobile',
   userInterfaceStyle: 'automatic',
   ios: {
     icon: './assets/expo.icon',

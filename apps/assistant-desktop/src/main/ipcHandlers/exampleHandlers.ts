@@ -1,5 +1,5 @@
 import { IpcListener } from '@electron-toolkit/typed-ipc';
-import type { AppType } from 'example-server/types';
+import type { AppType } from 'assistant-server/types';
 import { hc } from 'hono/client';
 
 import { IpcEvents } from '#preload/IpcEvents.js';

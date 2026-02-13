@@ -1,4 +1,4 @@
-# example-ext
+# assistant-ext
 
 Boilerplate for a WXT-based browser extension.
 

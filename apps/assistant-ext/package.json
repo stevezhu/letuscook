@@ -1,5 +1,5 @@
 {
-  "name": "example-ext",
+  "name": "assistant-ext",
   "version": "0.1.0",
   "private": true,
   "description": "Boilerplate for a WXT-based browser extension",

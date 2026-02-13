@@ -1,5 +1,5 @@
 import { ApiClient } from '@example/app';
-import type { AppType } from 'example-server/types';
+import type { AppType } from 'assistant-server/types';
 import { hc } from 'hono/client';
 
 export function createHonoClient({

@@ -1,4 +1,4 @@
-name = "example-server"
+name = "assistant-server"
 main = "src/index.ts"
 compatibility_date = "2025-10-27"
 
