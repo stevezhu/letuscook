@@ -7,12 +7,12 @@ globs: ['**/*']
 
 ## Task Completion
 
-After finishing each coding task, run the following from the project root and fix any issues before considering the task complete:
+After finishing each coding task, run the following from the project root and fix any issues before considering the task complete. Skip this for non-coding tasks such as editing documentation, rules, or configuration files.
 
 1. **Auto-fix:** `pnpm run lint:fix` — automatically fixes formatting and lint issues.
 2. **Verify:** `pnpm -w run lint` — check for remaining issues and fix them manually.
 3. **Test:** `pnpm -w run test` — run tests and fix any failures.
 
-## Rulesync
+## Document Editing
 
-After editing any file in the `.rulesync/` directory, run `pnpm exec rulesync generate` to sync changes to all target rule files.
+After editing any file in the `.rulesync/` directory, run `pnpm -w exec rulesync generate` to sync changes to all target rule files.
