@@ -52,7 +52,7 @@
     "react-native-reanimated": "catalog:mobile",
     "react-native-safe-area-context": "catalog:mobile",
     "react-native-screens": "catalog:mobile",
-    "react-native-svg": "15.15.1",
+    "react-native-svg": "15.15.3",
     "react-native-web": "catalog:mobile",
     "react-native-worklets": "catalog:mobile",
     "uniwind": "catalog:mobile"
