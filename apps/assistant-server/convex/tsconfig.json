@@ -1,0 +1,13 @@
+{
+  "include": ["./**/*"],
+  "exclude": ["./_generated"],
+  "compilerOptions": {
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": { "convex/_generated/*": ["./_generated/*"] },
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "target": "ESNext"
+  }
+}
