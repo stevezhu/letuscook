@@ -22,7 +22,7 @@
 3. Build for Firefox:
 
    ```bash
-   pnpm run --filter=nulltab-ext build:firefox
+   pnpm run --filter=assistant-ext build:firefox
    ```
 
-4. The built extension will be in `apps/nulltab-ext/.output/`
+4. The built extension will be in `apps/assistant-ext/.output/`

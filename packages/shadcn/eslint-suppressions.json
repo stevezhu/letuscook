@@ -31,6 +31,12 @@
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
     },
+    "@typescript-eslint/no-unnecessary-template-expression": {
+      "count": 1
+    },
+    "@typescript-eslint/no-unnecessary-type-assertion": {
+      "count": 2
+    },
     "@typescript-eslint/no-unsafe-argument": {
       "count": 1
     },
@@ -38,6 +44,9 @@
       "count": 4
     },
     "@typescript-eslint/no-unsafe-member-access": {
+      "count": 1
+    },
+    "react/function-component-definition": {
       "count": 1
     }
   },
@@ -70,6 +79,9 @@
     }
   },
   "src/components/sidebar.tsx": {
+    "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    },
     "react-refresh/only-export-components": {
       "count": 1
     }
@@ -82,6 +94,9 @@
   "src/components/sonner.tsx": {
     "better-tailwindcss/no-unknown-classes": {
       "count": 1
+    },
+    "react/function-component-definition": {
+      "count": 1
     }
   },
   "src/components/tabs.tsx": {
@@ -91,6 +106,11 @@
   },
   "src/components/toggle.tsx": {
     "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "src/hooks/use-mobile.ts": {
+    "@typescript-eslint/no-confusing-void-expression": {
       "count": 1
     }
   }

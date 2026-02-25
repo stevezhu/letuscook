@@ -10,7 +10,7 @@ import {
   InputGroupAddon,
 } from '@workspace/shadcn/components/input-group';
 import { cn } from '@workspace/shadcn/lib/utils';
-import { Command as CommandPrimitive } from 'cmdk';
+import { Command as CommandPrimitive } from 'cmdk-base';
 import { SearchIcon, CheckIcon } from 'lucide-react';
 import * as React from 'react';
 

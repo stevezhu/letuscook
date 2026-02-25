@@ -21,7 +21,8 @@
     "vitest"
   ],
   "rules": {
-    "import/namespace": "off"
+    "import/namespace": "off",
+    "react/jsx-no-constructed-context-values": "off"
   },
   "settings": {
     "jsdoc": {
