@@ -2,7 +2,7 @@
 
 import { cn } from '@workspace/shadcn/lib/utils';
 import * as React from 'react';
-import { Drawer as DrawerPrimitive } from 'vaul';
+import { Drawer as DrawerPrimitive } from 'vaul-base';
 
 function Drawer({
   ...props

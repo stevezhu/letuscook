@@ -1,14 +1,16 @@
-import { productName } from '@workspace/constants';
+import constants from '@workspace/constants' with { type: 'json' };
 import { ExpoConfig, ConfigContext } from 'expo/config';
+
+import packageJson from './package.json' with { type: 'json' };
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: productName,
-  slug: 'assistant-mobile',
-  version: '1.0.0',
+  name: constants.productName,
+  slug: 'letuscook',
+  version: packageJson.version,
   orientation: 'portrait',
   icon: './assets/images/icon.png',
-  scheme: 'assistantmobile',
+  scheme: 'letuscook',
   userInterfaceStyle: 'automatic',
   ios: {
     icon: './assets/expo.icon',

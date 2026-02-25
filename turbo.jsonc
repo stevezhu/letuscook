@@ -5,8 +5,8 @@
     "build": {
       "dependsOn": ["^build", "codegen"]
     },
-    "ci:prepare": {
-      "dependsOn": ["^ci:prepare"]
+    "init": {
+      "dependsOn": ["^init"]
     },
     "codegen": {
       "dependsOn": ["^codegen"]

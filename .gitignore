@@ -20,7 +20,7 @@ out
 *.log
 
 # local env files
-*.local
+.env*
 !.env*.example
 
 # turbo

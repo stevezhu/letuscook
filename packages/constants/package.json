@@ -1,7 +1,9 @@
 {
   "name": "@workspace/constants",
   "private": true,
+  "type": "module",
   "exports": {
-    ".": "./constants.json"
+    ".": "./constants.json",
+    "./vite": "./src/vitePlugin.ts"
   }
 }

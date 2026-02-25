@@ -3,12 +3,13 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build --color",
-    "ci:prepare": "turbo run ci:prepare",
+    "codegen": "turbo run codegen",
     "deps:clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "deps:reset": "rm pnpm-lock.yaml && pnpm -w run deps:clean && pnpm install",
     "dev": "turbo run dev --color",
     "format": "oxfmt && prettier -w '**/{ts,js}config{,.?*}.json'",
     "format:check": "oxfmt --check && prettier -c '**/{ts,js}config{,.?*}.json'",
+    "init": "turbo run init",
     "lint": "pnpm run format:check && concurrently 'pnpm run lint:fast' 'turbo run lint'",
     "lint:fast": "oxlint --type-aware",
     "lint:fast:fix": "oxlint --type-aware --fix",
@@ -18,16 +19,16 @@
   "devDependencies": {
     "@stzhu/prettier-plugin-tsconfig": "catalog:",
     "concurrently": "^9.2.1",
-    "oxfmt": "^0.32.0",
-    "oxlint": "^1.47.0",
-    "oxlint-tsgolint": "^0.12.1",
+    "oxfmt": "^0.35.0",
+    "oxlint": "^1.50.0",
+    "oxlint-tsgolint": "^0.14.2",
     "prettier": "^3.8.1",
-    "rulesync": "^7.0.0",
-    "turbo": "^2.8.7"
+    "rulesync": "^7.6.3",
+    "turbo": "^2.8.10"
   },
   "engines": {
-    "node": ">=22",
+    "node": ">=25",
     "pnpm": "^10.0.0"
   },
-  "packageManager": "pnpm@10.29.2"
+  "packageManager": "pnpm@10.30.2"
 }
