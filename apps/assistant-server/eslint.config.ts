@@ -4,7 +4,7 @@ import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig(
-  globalIgnores(['.wrangler/', '*.gen.d.ts']),
+  globalIgnores(['.wrangler/', '*.gen.d.ts', 'convex/_generated/']),
   {
     languageOptions: {
       parserOptions: { tsconfigRootDir: import.meta.dirname },

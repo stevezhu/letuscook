@@ -12,10 +12,14 @@
     },
     "./worker-configuration": {
       "types": "./worker-configuration.gen.d.ts"
+    },
+    "./convex/_generated/*": {
+      "types": "./convex/_generated/*.d.ts"
     }
   },
   "scripts": {
     "codegen": "wrangler types worker-configuration.gen.d.ts --env-file .dev.vars",
+    "convex:dev": "convex dev",
     "dev": "wrangler dev --ip 0.0.0.0 --port 8787",
     "init": "cp -n .dev.vars.example .dev.vars",
     "lint": "eslint .",
@@ -23,6 +27,11 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "catalog:",
+    "@ai-sdk/google": "catalog:",
+    "@ai-sdk/openai": "catalog:",
+    "ai": "catalog:",
+    "convex": "catalog:",
     "hono": "catalog:"
   },
   "devDependencies": {
