@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import UiTestScreen from '../uiTest.js';
+import UiTestScreen from '../capture.js';
 
 describe('UiTestScreen', () => {
   test('renders correctly', async () => {
