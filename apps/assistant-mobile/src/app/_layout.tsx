@@ -9,6 +9,11 @@ import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import React from 'react';
 import { useColorScheme } from 'react-native';
+import {
+  SafeAreaListener,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
+import { Uniwind } from 'uniwind';
 
 import { AnimatedSplashOverlay } from '#components/animated-icon.js';
 
@@ -36,8 +41,16 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
-          <AnimatedSplashOverlay />
-          <AppTabs />
+          <SafeAreaProvider>
+            <SafeAreaListener
+              onChange={({ insets }) => {
+                Uniwind.updateInsets(insets);
+              }}
+            >
+              <AnimatedSplashOverlay />
+              <AppTabs />
+            </SafeAreaListener>
+          </SafeAreaProvider>
         </ThemeProvider>
       </ConvexProvider>
     </QueryClientProvider>
@@ -51,14 +64,13 @@ function AppTabs() {
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
       </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="uiTest">
-        <NativeTabs.Trigger.Label>UI Test</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf="testtube.2" md="experiment" />
+      <NativeTabs.Trigger name="capture">
+        <NativeTabs.Trigger.Label>Capture</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="square.and.pencil" md="edit_square" />
       </NativeTabs.Trigger>
-
       <NativeTabs.Trigger name="search" role="search">
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

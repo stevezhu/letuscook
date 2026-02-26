@@ -68,7 +68,7 @@ function ChartContainer({
   );
 }
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+function ChartStyle({ id, config }: { id: string; config: ChartConfig }) {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color,
   );
@@ -99,7 +99,7 @@ ${colorConfig
       }}
     />
   );
-};
+}
 
 const ChartTooltip = RechartsPrimitive.Tooltip;
 
@@ -137,7 +137,7 @@ function ChartTooltipContent({
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value =
       !labelKey && typeof label === 'string'
-        ? config[label as keyof typeof config]?.label || label
+        ? config[label]?.label || label
         : itemConfig?.label;
 
     if (labelFormatter) {
@@ -279,7 +279,7 @@ function ChartLegendContent({
       {payload
         .filter((item) => item.type !== 'none')
         .map((item) => {
-          const key = `${nameKey || item.dataKey?.toString() || 'value'}`;
+          const key = nameKey || item.dataKey?.toString() || 'value';
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
           return (
@@ -342,7 +342,7 @@ function getPayloadConfigFromPayload(
 
   return configLabelKey in config
     ? config[configLabelKey]
-    : config[key as keyof typeof config];
+    : config[key];
 }
 
 export {

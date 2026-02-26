@@ -35,7 +35,7 @@ catalog:
 catalogs:
   mobile:
     '@expo/metro-runtime': ~55.0.6
-    '@react-navigation/native': ^7.1.28
+    '@react-navigation/native': ^7.1.30
     '@types/react': ~19.2.14
     expo: 55.0.0-preview.12
     expo-constants: ~55.0.6

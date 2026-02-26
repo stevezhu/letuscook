@@ -23,6 +23,7 @@
     "@expo/metro-runtime": "catalog:mobile",
     "@expo/vector-icons": "^15.1.1",
     "@react-navigation/bottom-tabs": "^7.14.0",
+    "@react-navigation/drawer": "^7.9.1",
     "@react-navigation/elements": "^2.9.5",
     "@react-navigation/native": "catalog:mobile",
     "@tanstack/react-query": "catalog:",
