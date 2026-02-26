@@ -8,11 +8,11 @@ const config = getDefaultConfig(import.meta.dirname);
 const metroConfig: ReturnType<typeof withUniwindConfig> = withUniwindConfig(
   rnxMetroConfig.makeMetroConfig(
     mergeConfig(config as unknown as MetroConfig, {
-      resolver: {
-        resolveRequest: createTsResolveRequest({
-          projectDir: import.meta.dirname,
-        }),
-      },
+      // resolver: {
+      //   resolveRequest: createTsResolveRequest({
+      //     projectDir: import.meta.dirname,
+      //   }),
+      // },
     }),
   ),
   {
