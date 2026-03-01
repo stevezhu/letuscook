@@ -55,7 +55,7 @@
     "uniwind": "catalog:mobile"
   },
   "devDependencies": {
-    "@react-native/metro-config": "~0.83.2",
+    "@react-native/metro-config": "~0.84.0",
     "@rnx-kit/metro-config": "^2.2.4",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/metro-ts-resolver": "^0.1.2",
