@@ -1,8 +1,8 @@
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '#components/animated-icon.js';
-import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme.js';
+import { AnimatedIcon } from '#components/animated-icon';
+import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme';
 
 export default function HomeScreen() {
   return (
