@@ -44,11 +44,6 @@
         "uniwind"
       ]
     },
-    // FIXME: error from github api
-    // {
-    //   "source": "squirrelscan/skills:/",
-    //   "skills": ["audit-website"]
-    // }
     {
       "source": "vercel-labs/agent-skills",
       "skills": [
