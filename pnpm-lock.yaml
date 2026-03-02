@@ -209,7 +209,7 @@ importers:
         specifier: ^3.8.1
         version: 3.8.1
       rulesync:
-        specifier: ^7.6.3
+        specifier: ^7.12.1
         version: 7.12.1(jose@5.10.0)(valibot@1.2.0(typescript@5.9.3))
       turbo:
         specifier: ^2.8.10

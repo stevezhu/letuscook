@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/dyoshikawa/rulesync/refs/heads/main/config-schema.json",
-  "targets": ["agentsmd", "cursor", "geminicli"],
+  "targets": ["cursor", "claudecode", "geminicli"],
   "features": ["rules", "ignore", "mcp", "commands", "subagents", "skills"],
   "baseDirs": ["."],
   "delete": true,
@@ -8,5 +8,63 @@
   "global": false,
   "simulateCommands": false,
   "simulateSubagents": false,
-  "simulateSkills": true
+  "simulateSkills": false,
+  "sources": [
+    {
+      "source": "antfu/skills",
+      "skills": ["pnpm", "tsdown", "vite", "vitest"]
+    },
+    {
+      "source": "anthropics/skills",
+      "skills": ["frontend-design", "skill-creator", "doc-coauthoring"]
+    },
+    {
+      "source": "coreyhaines31/marketingskills"
+    },
+    {
+      "source": "expo/skills:plugins/expo-app-design/skills",
+      "skills": ["building-native-ui", "native-data-fetching"]
+    },
+    {
+      "source": "google-labs-code/stitch-skills",
+      "skills": ["design-md"]
+    },
+    {
+      "source": "charl-kruger/mdrip",
+      "skills": ["mdrip"]
+    },
+    {
+      "source": "obra/superpowers"
+    },
+    {
+      "source": "pproenca/dot-skills:skills/.experimental",
+      "skills": [
+        "expo-react-native-coder",
+        "expo-react-native-performance",
+        "uniwind"
+      ]
+    },
+    // FIXME: error from github api
+    // {
+    //   "source": "squirrelscan/skills:/",
+    //   "skills": ["audit-website"]
+    // }
+    {
+      "source": "vercel-labs/agent-skills",
+      "skills": [
+        "vercel-composition-patterns",
+        "vercel-react-best-practices",
+        "vercel-react-native-skills",
+        "web-design-guidelines"
+      ]
+    },
+    {
+      "source": "vercel-labs/skills",
+      "skills": ["find-skills"]
+    },
+    {
+      "source": "vercel/turborepo",
+      "skills": ["turborepo"]
+    }
+  ]
 }
