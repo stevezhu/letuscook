@@ -266,6 +266,55 @@
           "integrity": "sha256-105a93694f1d9ca87a0c8529705060822354bca249eb486c8c93e9ed121c9005"
         }
       }
+    },
+    "waynesutton/convexskills": {
+      "requestedRef": "main",
+      "resolvedRef": "8ef49c96675f760dd5569c0588c1abb04cd989dd",
+      "resolvedAt": "2026-03-03T02:56:18.351Z",
+      "skills": {
+        "avoid-feature-creep": {
+          "integrity": "sha256-57fcdf1f0d46cacc573ceebae152fbb251346fe1f99c899b5fbc436270d47afc"
+        },
+        "convex-agents": {
+          "integrity": "sha256-d7783603a18bbe80e34a01f4e1e6e8bcc1e17c567a745880161978942241885c"
+        },
+        "convex-best-practices": {
+          "integrity": "sha256-4e5f62f78ced1fa58d323d5ac6fad886d2dc6562b764b8f3b907f4ccba734b10"
+        },
+        "convex-component-authoring": {
+          "integrity": "sha256-c1d470c2ac83b71f9aac1b454aa37535a0e350664d7addc4b439604e52f65916"
+        },
+        "convex-cron-jobs": {
+          "integrity": "sha256-13d2c573819512b38df1aaaaf68389cf89025fc463d5b62a7734b8c2cb5729b0"
+        },
+        "convex-file-storage": {
+          "integrity": "sha256-736f5d835df968021b7b1b9695584886f45f93037685ec0f713434a7458dab0e"
+        },
+        "convex-functions": {
+          "integrity": "sha256-1bbe640d0123fb90886561f5e7d259e08b58fd88a4cdb542f2a767d3afea8d99"
+        },
+        "convex-http-actions": {
+          "integrity": "sha256-7723be73aa88d42984fa8dc031d5cacbe88ba10851e4fb8a5b57afa127a4df93"
+        },
+        "convex-migrations": {
+          "integrity": "sha256-ac28e96f896d0e27d3a9416c895d53474c44391647eb5e57eba3734638d07f54"
+        },
+        "convex-realtime": {
+          "integrity": "sha256-770935272e43199b2d2251ec8e2296d38d91844ae08998d2135ef08ddaed47c2"
+        },
+        "convex-schema-validator": {
+          "integrity": "sha256-8560c8ab9fc876983416bff7949cf9f14212dc4456293e385b02e08e4e42de92"
+        },
+        "convex-security-audit": {
+          "integrity": "sha256-1fc949a8b905ae065aa4d4217c7c69cc61a56628a3ace991aa06b182bfe6c320"
+        },
+        "convex-security-check": {
+          "integrity": "sha256-0ac603e62cadf14ef1d5daf276e90d625a1d912ff771331786920f181731d4b2"
+        },
+        "convex": {
+          "integrity": "sha256-0f9b6d8f99eb2cecbc202276df8d1b05e1c726dfff6663c0de0b6d0567f1b34b"
+        }
+      }
     }
   }
 }
