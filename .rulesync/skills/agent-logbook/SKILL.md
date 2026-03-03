@@ -2,7 +2,7 @@
 name: agent-logbook
 description: >
   Systematically record and manage AI agent activity, research, architectural
-  decisions (ADRs), and implementation plans in the .agent-docs/ directory.
+  decisions (ADRs), and implementation plans in the .agent-logbook/ directory.
   YOU MUST use this skill whenever you complete a task, encounter a significant
   technical blocker, evaluate new technologies, or before starting complex
   refactors. It is CRITICAL to trigger this whenever the user says "log this",
@@ -15,7 +15,7 @@ targets: ['*']
 
 # Agent Logbook
 
-The `.agent-docs/` directory is a permanent, searchable knowledge base. It
+The `.agent-logbook/` directory is a permanent, searchable knowledge base. It
 ensures that future agent sessions and human contributors understand the
 "why" behind the code, preventing re-exploration of dead ends and providing
 traceability from plan to execution.
@@ -35,28 +35,40 @@ traceability from plan to execution.
 ### 1. Initialization (If missing)
 If the directory structure doesn't exist, initialize it:
 ```bash
-mkdir -p .agent-docs/{activity,research,decisions,plans,templates}
+mkdir -p .agent-logbook/{activity,research,decisions,plans,templates}
 ```
 
 ### 2. Naming Convention
 **ALWAYS generate the UTC timestamp via shell — never guess or use local time.**
 - **Format**: `YYYY-MM-DD_HHMMSSZ_[agent]_[slug].md`
-- **Agent**: Use your model ID (e.g., `claude-3-7-sonnet`).
+- **Agent**: Use your agent name (e.g., `claudecode`, `cursor`, `geminicli`).
 - **Slug**: 3–6 words in `kebab-case` describing the **goal** (e.g., `fix-auth-refresh`).
 
 ```bash
 # Example for Activity
-echo "$(date -u +%Y-%m-%d_%H%M%SZ)_$(printenv AGENT_ID || echo "claude")_<task-slug>.md"
+echo "$(date -u +%Y-%m-%d_%H%M%SZ)_claudecode_<task-slug>.md"
 ```
 
-### 3. Frontmatter Standard
+### 3. Known Agent Names
+Use these exact names in the `agent` field and filename:
+
+| Agent         | Description                                      |
+| ------------- | ------------------------------------------------ |
+| `claudecode`  | Claude Code CLI (Anthropic)                      |
+| `cursor`      | Cursor IDE AI (may use multiple models via auto) |
+| `geminicli`   | Gemini CLI (may use multiple models via auto)    |
+
+For other agents, use a concise lowercase identifier (e.g., `copilot`, `aider`).
+
+### 4. Frontmatter Standard
 Every document **MUST** include YAML frontmatter.
 ```yaml
 ---
 date: 2026-03-02T14:45:00Z        # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
 type: activity | research | decision | plan
 status: complete | in-progress | abandoned | success | failure | partial
-agent: <model-id>                 # From your system prompt
+agent: claudecode                 # Agent name (see Known Agent Names above)
+models: [claude-sonnet-4-6]       # Model(s) used; list multiple if auto mode was active
 branch: <current-branch>          # git branch --show-current
 task_id: TICKET-123                # Optional
 cost: $0.00                        # Optional per-session spend

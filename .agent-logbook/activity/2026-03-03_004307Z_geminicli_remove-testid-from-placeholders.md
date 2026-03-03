@@ -2,7 +2,8 @@
 date: 2026-03-03T00:43:07Z
 type: activity
 status: complete
-agent: gemini-cli
+agent: geminicli
+models: [auto]
 branch: t1-convex-setup-navigation
 cost: $0.00
 tags: [mobile, ui, react-native, expo, maestro]

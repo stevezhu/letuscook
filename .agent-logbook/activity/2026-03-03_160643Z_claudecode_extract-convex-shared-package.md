@@ -2,7 +2,8 @@
 date: 2026-03-03T16:06:43Z
 type: activity
 status: complete
-agent: claude-sonnet-4-6
+agent: claudecode
+models: [claude-sonnet-4-6]
 branch: t2
 task_id: T2
 cost: $0.00

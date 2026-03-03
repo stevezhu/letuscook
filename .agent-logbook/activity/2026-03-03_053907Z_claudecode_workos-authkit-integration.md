@@ -2,7 +2,8 @@
 date: 2026-03-03T05:39:07Z
 type: activity
 status: complete
-agent: claude-opus-4-6
+agent: claudecode
+models: [claude-opus-4-6]
 branch: t2
 task_id: T2
 tags: [auth, workos, oauth, convex, mobile]
