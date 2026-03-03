@@ -14,7 +14,9 @@
       "types": "./worker-configuration.gen.d.ts"
     },
     "./convex/_generated/*": {
-      "types": "./convex/_generated/*.d.ts"
+      "types": "./convex/_generated/*.d.ts",
+      "import": "./convex/_generated/*.js",
+      "default": "./convex/_generated/*.js"
     }
   },
   "scripts": {

@@ -1,3 +1,4 @@
+import '#polyfills.js';
 import '#main.css';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 import {
@@ -6,9 +7,9 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { ConvexProviderWithAuth, ConvexReactClient } from 'convex/react';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useColorScheme } from 'react-native';
 import {
   SafeAreaListener,
@@ -17,6 +18,9 @@ import {
 import { Uniwind } from 'uniwind';
 
 import { AnimatedSplashOverlay } from '#components/animated-icon.js';
+import { UserSync } from '#components/user-sync.js';
+import { getAccessToken } from '#lib/auth.js';
+import { AuthProvider, useAuth } from '#providers/auth-provider.js';
 
 if (!process.env.EXPO_PUBLIC_CONVEX_URL) {
   throw new Error('EXPO_PUBLIC_CONVEX_URL is not set');
@@ -36,7 +40,16 @@ const queryClient = new QueryClient({
 });
 convexQueryClient.connect(queryClient);
 
-// TODO T2: wire WorkOS auth token
+function useConvexAuth() {
+  const { user, loading } = useAuth();
+  const fetchAccessToken = useCallback(
+    async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
+      return await getAccessToken({ forceRefresh: forceRefreshToken });
+    },
+    [],
+  );
+  return { isLoading: loading, isAuthenticated: !!user, fetchAccessToken };
+}
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -47,24 +60,27 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <QueryClientProvider client={queryClient}>
-      <ConvexProvider client={convex}>
-        <ThemeProvider
-          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-          <SafeAreaProvider>
-            <SafeAreaListener
-              onChange={({ insets }) => {
-                Uniwind.updateInsets(insets);
-              }}
-            >
-              <AnimatedSplashOverlay />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-              </Stack>
-            </SafeAreaListener>
-          </SafeAreaProvider>
-        </ThemeProvider>
-      </ConvexProvider>
+      <AuthProvider>
+        <ConvexProviderWithAuth client={convex} useAuth={useConvexAuth}>
+          <UserSync />
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <SafeAreaProvider>
+              <SafeAreaListener
+                onChange={({ insets }) => {
+                  Uniwind.updateInsets(insets);
+                }}
+              >
+                <AnimatedSplashOverlay />
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                </Stack>
+              </SafeAreaListener>
+            </SafeAreaProvider>
+          </ThemeProvider>
+        </ConvexProviderWithAuth>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
