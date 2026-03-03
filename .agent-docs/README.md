@@ -1,10 +1,13 @@
 # .agent-docs
 
+> [!IMPORTANT]
+> **Do NOT edit this README when adding new files to the folders below.** This file defines the organizational standard, not an index of every document created.
+
 A folder organization system and naming standard for tracking AI coding agent activity, research, and decisions in a git repository.
 
 All timestamps are **UTC**. Append `Z` to all times in filenames and frontmatter to make this explicit. No local timezones — ever. This eliminates sorting ambiguity when multiple agents or contributors operate across timezones.
 
-## Directory Structure
+## Directory Structure Example (DO NOT EDIT THIS)
 
 ```
 .agent-docs/
