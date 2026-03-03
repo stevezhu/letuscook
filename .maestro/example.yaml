@@ -1,4 +1,4 @@
 appId: com.letuscook.assistant
 ---
-- openLink: exp://192.168.0.252:8081
+- openLink: exp://localhost:8081
 - assertVisible: home placeholder

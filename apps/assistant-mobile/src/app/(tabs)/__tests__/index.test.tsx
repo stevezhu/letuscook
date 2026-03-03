@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import HomeScreen from './index.js';
+import HomeScreen from '../index.js';
 
 // TODO: just an example test to get started, replace with actual tests
 describe('HomeScreen', () => {
