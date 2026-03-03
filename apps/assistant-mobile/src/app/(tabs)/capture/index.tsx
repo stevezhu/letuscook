@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 export default function CaptureScreen() {
   return (
-    <View className="flex-1 items-center justify-center">
+    <View className="p-safe">
       <Text>capture placeholder</Text>
     </View>
   );
