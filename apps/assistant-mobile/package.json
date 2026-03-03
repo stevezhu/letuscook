@@ -19,13 +19,17 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@convex-dev/react-query": "^0.1.0",
     "@expo/metro-runtime": "catalog:mobile",
     "@expo/vector-icons": "^15.1.1",
     "@react-navigation/bottom-tabs": "^7.15.2",
+    "@react-navigation/drawer": "^7.9.1",
     "@react-navigation/elements": "^2.9.8",
     "@react-navigation/native": "catalog:mobile",
+    "@tanstack/react-query": "^5.74.11",
     "@workspace/constants": "workspace:*",
     "@workspace/rn-reusables": "workspace:*",
+    "convex": "^1.24.1",
     "expo": "catalog:mobile",
     "expo-constants": "catalog:mobile",
     "expo-device": "catalog:mobile",

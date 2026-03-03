@@ -1,4 +1,5 @@
 {
   "extends": "@stzhu/tsconfig/tsconfig.base.json",
+  "exclude": ["convex"],
   "compilerOptions": { "moduleResolution": "bundler", "rootDir": "." }
 }
