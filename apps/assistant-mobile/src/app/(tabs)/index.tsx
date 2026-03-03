@@ -1,8 +1,9 @@
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '#components/animated-icon';
-import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme';
+import { Text } from '@workspace/rn-reusables/components/text';
+import { AnimatedIcon } from '#components/animated-icon.js';
+import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme.js';
 
 export default function HomeScreen() {
   return (
@@ -16,6 +17,9 @@ export default function HomeScreen() {
       >
         <View className="flex-1 items-center justify-center gap-6 px-6">
           <AnimatedIcon />
+          <Text variant="h1" testID="welcome_to_expo">
+            Welcome to Expo
+          </Text>
         </View>
       </SafeAreaView>
     </View>

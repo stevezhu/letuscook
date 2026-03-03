@@ -1,5 +1,10 @@
 {
   "permissions": {
-    "deny": ["Read(!*.log)", "Read(!mdrip)", "Read(credentials/)"]
+    "deny": [
+      "Read(!**/.gemini/)",
+      "Read(!*.log)",
+      "Read(!mdrip)",
+      "Read(credentials/)"
+    ]
   }
 }

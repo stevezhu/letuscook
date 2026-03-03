@@ -15,6 +15,7 @@
     (subpath (string-append (param "HOME_DIR") "/.gitconfig"))
     ;; Allow pnpm/proto to manage their tools, shims, and store
     (subpath (string-append (param "HOME_DIR") "/.proto"))
+    (subpath (string-append (param "HOME_DIR") "/.maestro"))
     (subpath (string-append (param "HOME_DIR") "/Library/pnpm"))
     ;; Allow writes to included directories from --include-directories
     (subpath (param "INCLUDE_DIR_0"))

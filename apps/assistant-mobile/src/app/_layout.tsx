@@ -1,3 +1,4 @@
+import '#main.css';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 import {
   DarkTheme,

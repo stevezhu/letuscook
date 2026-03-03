@@ -1,7 +1,9 @@
-import { Text } from '@workspace/rn-reusables/components/text';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+
+import { Text } from '@workspace/rn-reusables/components/text';
 
 export default function SearchModal() {
   const [query, setQuery] = useState('');
@@ -18,17 +20,19 @@ export default function SearchModal() {
           },
         }}
       />
-      <View className="flex-1 items-center justify-center px-6">
-        {query.length === 0 ? (
-          <Text className="text-muted-foreground text-base">
-            Start typing to search
-          </Text>
-        ) : (
-          <Text className="text-muted-foreground text-base">
-            No results for "{query}"
-          </Text>
-        )}
-      </View>
+      <SafeAreaView className="flex-1 px-6">
+        <View className="flex-1 items-center justify-center">
+          {query.length === 0 ? (
+            <Text className="text-muted-foreground text-base">
+              Start typing to search
+            </Text>
+          ) : (
+            <Text className="text-muted-foreground text-base">
+              No results for "{query}"
+            </Text>
+          )}
+        </View>
+      </SafeAreaView>
     </>
   );
 }

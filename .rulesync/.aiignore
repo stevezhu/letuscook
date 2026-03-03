@@ -1,3 +1,4 @@
 credentials/
 !mdrip
 !*.log
+!**/.gemini/

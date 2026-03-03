@@ -1,44 +1,46 @@
-import { Stack } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, Text, View, Alert } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function SearchIndex() {
-  const [isFavorite, setIsFavorite] = useState(false);
-  return (
-    <>
-      {/* <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button
-          icon={isFavorite ? 'star.fill' : 'star'}
-          onPress={() => setIsFavorite(!isFavorite)}
-        />
-        <Stack.Toolbar.Button
-          icon="square.and.arrow.up"
-          onPress={() => Alert.alert('Share')}
-        />
-      </Stack.Toolbar>
-      <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button
-          icon="sidebar.left"
-          onPress={() => Alert.alert('Sidebar')}
-        />
-      </Stack.Toolbar> */}
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@workspace/rn-reusables/components/card';
+import { Text } from '@workspace/rn-reusables/components/text';
+import { BottomTabInset, MaxContentWidth, Spacing } from '#constants/theme.js';
 
-      <ScrollView>
-        <Text className="text-2xl font-bold">Note content...</Text>
-      </ScrollView>
-      {/* <Stack.Screen.Title>Search</Stack.Screen.Title>
-      <Stack.SearchBar
-        placement="automatic"
-        autoFocus={true}
-        placeholder="Search"
-        onChangeText={() => {}}
-      />
-      <Stack.Screen>
-        <Text>Search</Text>
-      </Stack.Screen> */}
-      {/* <ScrollView> */}
-      {/* </ScrollView> */}
-    </>
+export default function SearchIndex() {
+  return (
+    <View className="flex-1 flex-row justify-center">
+      <SafeAreaView
+        className="flex-1 px-6"
+        style={{
+          maxWidth: MaxContentWidth,
+          paddingBottom: BottomTabInset + Spacing.three,
+        }}
+      >
+        <ScrollView
+          contentContainerClassName="gap-6 py-6"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text variant="h1" className="mb-4">
+            Search
+          </Text>
+
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <CardTitle>Recent Note {i}</CardTitle>
+                <CardDescription>
+                  This is a placeholder for your recent activity and saved
+                  notes.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
