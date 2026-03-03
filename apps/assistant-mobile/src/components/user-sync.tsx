@@ -1,4 +1,4 @@
-import { api } from 'assistant-server/convex/_generated/api';
+import { api } from '@workspace/convex/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useEffect, useRef } from 'react';
 

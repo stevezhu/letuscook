@@ -1,0 +1,25 @@
+{
+  "name": "@workspace/convex",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./convex/_generated/*": {
+      "types": "./convex/_generated/*.d.ts",
+      "import": "./convex/_generated/*.js",
+      "default": "./convex/_generated/*.js"
+    }
+  },
+  "scripts": {
+    "dev": "convex dev",
+    "setup": "convex dev --until-success",
+    "test": "tsc --noEmit -p convex"
+  },
+  "dependencies": {
+    "convex": "^1.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

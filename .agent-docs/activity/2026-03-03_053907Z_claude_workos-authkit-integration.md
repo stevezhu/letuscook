@@ -37,10 +37,12 @@ The app needed authentication so users can sync captures, organize knowledge, an
 ## Work Performed
 
 ### Dependencies installed
+
 - `@workos-inc/node`, `expo-secure-store`, `expo-crypto`, `expo-standard-web-crypto` in the mobile app
 - Added `assistant-server` as a workspace dependency for importing Convex generated API types
 
 ### Files created (8)
+
 - **`polyfills.ts`** — WebCrypto polyfill required by `@workos-inc/node` in React Native. Imported as first line in root layout.
 - **`auth.config.ts`** — Convex auth config with two `customJwt` providers for WorkOS token validation (two issuer formats).
 - **`auth.ts`** — Core auth library: PKCE sign-in URL generation, code exchange, token storage in SecureStore, auto-refresh on expiry, session clearing. All module-level side effects made lazy to avoid test failures.
@@ -51,6 +53,7 @@ The app needed authentication so users can sync captures, organize knowledge, an
 - **`use-require-auth.tsx`** — Hook returning `{ isAuthenticated, isLoading, SignInCTA }` for auth-gated screens.
 
 ### Files modified (7)
+
 - **Root `_layout.tsx`** — Added polyfill import, replaced `ConvexProvider` with `ConvexProviderWithAuth` using a custom `useConvexAuth` hook that bridges the auth provider, wrapped with `AuthProvider`, added `UserSync` component.
 - **Tabs `_layout.tsx`** — Added profile button (CircleUserRound icon from lucide) in header left position. Taps sign in or sign out based on auth state.
 - **Home `index.tsx`** and **Search `index.tsx`** — Added auth gate: show `SignInCTA` when unauthenticated, render content when authenticated.
@@ -58,6 +61,7 @@ The app needed authentication so users can sync captures, organize knowledge, an
 - **Test `index.test.tsx`** — Updated to mock `convex/react` and `auth-provider` since HomeScreen now requires auth context.
 
 ### Key design decision: AuthProvider ↔ ConvexProvider ordering
+
 AuthProvider wraps ConvexProviderWithAuth (not inside it) because Convex needs the auth token from WorkOS. A separate `UserSync` component inside Convex handles the `createOrUpdateUser` mutation, avoiding a circular dependency.
 
 ## Outcome
