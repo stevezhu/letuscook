@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Validates .agent-logbook markdown frontmatter.
 # Usage: bash validate-frontmatter.sh [path]
-# Requires: yq, pnpm
+# Requires: yq, pnpm (for pnpx ajv-cli)
 
 set -euo pipefail
 
@@ -16,38 +16,24 @@ if [[ ! -e "$target" ]]; then
   exit 2
 fi
 
-tmpfile="$(mktemp /tmp/validate-fm-XXXXXX.json)"
-trap 'rm -f "$tmpfile"' EXIT
+tmpdir="$(mktemp -d /tmp/validate-fm-XXXXXX)"
+trap 'rm -rf "$tmpdir"' EXIT
 
-passed=0
-failed=0
+filename_failed=0
 
 while IFS= read -r file; do
   filename="$(basename "$file")"
-  errors=()
-
   if ! [[ "$filename" =~ $FILENAME_RE ]]; then
-    errors+=("filename: must match YYYY-MM-DD_HHMMSSZ_agent_slug.md")
-  fi
-
-  yq -o=json --front-matter=extract '.' "$file" > "$tmpfile" 2>/dev/null || \
-    errors+=("frontmatter: could not parse YAML")
-
-  if [[ ${#errors[@]} -eq 0 ]]; then
-    schema_out="$(pnpx --yes jsonschema -i "$tmpfile" -s "$SCHEMA" 2>&1)" || \
-      errors+=("$schema_out")
-  fi
-
-  if [[ ${#errors[@]} -eq 0 ]]; then
-    echo "PASS $file"
-    ((passed++)) || true
+    echo "FAIL (filename) $file"
+    ((filename_failed++)) || true
   else
-    echo "FAIL $file"
-    for e in "${errors[@]}"; do echo "  $e"; done
-    ((failed++)) || true
+    yq -o=json --front-matter=extract '.' "$file" > "$tmpdir/${filename%.md}.json"
   fi
 done < <(find "$target" -type f -name "*.md" ! -name "README.md" | grep -v '/templates/' | sort)
 
-echo ""
-echo "$passed passed, $failed failed"
-exit $((failed > 0 ? 1 : 0))
+schema_failed=0
+if compgen -G "$tmpdir/*.json" > /dev/null 2>&1; then
+  pnpx ajv-cli validate -s "$SCHEMA" -d "$tmpdir/*.json" || schema_failed=1
+fi
+
+exit $(( filename_failed + schema_failed > 0 ? 1 : 0 ))
