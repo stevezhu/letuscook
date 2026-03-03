@@ -48,25 +48,25 @@ Clerk is a managed authentication and user management platform that addresses th
 
 ### Advantages of Switching to Clerk
 
-| Area | Benefit |
-|---|---|
-| Session management | Fully managed; no custom code required |
-| Social logins | Supported out of the box with minimal config |
-| Security | Maintained by Clerk's dedicated security team |
-| Scalability | Designed to scale without infrastructure changes |
-| Developer velocity | Less boilerplate; faster feature development |
-| User management | Built-in admin dashboard |
+| Area               | Benefit                                          |
+| ------------------ | ------------------------------------------------ |
+| Session management | Fully managed; no custom code required           |
+| Social logins      | Supported out of the box with minimal config     |
+| Security           | Maintained by Clerk's dedicated security team    |
+| Scalability        | Designed to scale without infrastructure changes |
+| Developer velocity | Less boilerplate; faster feature development     |
+| User management    | Built-in admin dashboard                         |
 
 ### Disadvantages / Costs of Switching to Clerk
 
-| Area | Cost |
-|---|---|
-| Vendor dependency | We are now dependent on Clerk's availability and pricing decisions |
-| Pricing | Clerk has a free tier but costs scale with Monthly Active Users (MAUs); at high scale this may become significant |
+| Area                 | Cost                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vendor dependency    | We are now dependent on Clerk's availability and pricing decisions                                                                          |
+| Pricing              | Clerk has a free tier but costs scale with Monthly Active Users (MAUs); at high scale this may become significant                           |
 | Customization limits | Some advanced or highly custom authentication flows may be harder to implement within Clerk's constraints compared to building from scratch |
-| Migration effort | Existing user sessions and accounts need to be migrated from Lucia to Clerk, which requires a one-time migration effort |
-| Data residency | User authentication data is stored in Clerk's infrastructure, which may be a consideration for compliance requirements |
-| Lock-in | Migrating away from Clerk in the future would require re-implementing authentication infrastructure |
+| Migration effort     | Existing user sessions and accounts need to be migrated from Lucia to Clerk, which requires a one-time migration effort                     |
+| Data residency       | User authentication data is stored in Clerk's infrastructure, which may be a consideration for compliance requirements                      |
+| Lock-in              | Migrating away from Clerk in the future would require re-implementing authentication infrastructure                                         |
 
 ---
 

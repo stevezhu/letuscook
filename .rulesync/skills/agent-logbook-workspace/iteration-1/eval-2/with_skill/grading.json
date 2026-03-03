@@ -48,7 +48,14 @@
     "pass_rate": 1.0
   },
   "execution_metrics": {
-    "tool_calls": {"Read": 4, "Write": 5, "Bash": 1, "Edit": 0, "Glob": 0, "Grep": 0},
+    "tool_calls": {
+      "Read": 4,
+      "Write": 5,
+      "Bash": 1,
+      "Edit": 0,
+      "Glob": 0,
+      "Grep": 0
+    },
     "total_tool_calls": 10,
     "total_steps": 7,
     "files_created": [

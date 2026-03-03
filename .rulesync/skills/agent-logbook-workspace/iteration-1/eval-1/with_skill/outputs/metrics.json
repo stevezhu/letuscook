@@ -1,5 +1,12 @@
 {
-  "tool_calls": {"Read": 1, "Write": 3, "Bash": 2, "Edit": 0, "Glob": 0, "Grep": 0},
+  "tool_calls": {
+    "Read": 1,
+    "Write": 3,
+    "Bash": 2,
+    "Edit": 0,
+    "Glob": 0,
+    "Grep": 0
+  },
   "total_tool_calls": 6,
   "total_steps": 4,
   "files_created": [

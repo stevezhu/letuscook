@@ -21,6 +21,7 @@ The project backend (`assistant-server`) runs on Cloudflare Workers and requires
 ## Options Considered
 
 ### Drizzle ORM
+
 - Faster query execution with minimal abstraction overhead.
 - Schema defined in native TypeScript — no separate schema language or code generation step.
 - Small bundle size compatible with Cloudflare Workers edge runtime.
@@ -28,6 +29,7 @@ The project backend (`assistant-server`) runs on Cloudflare Workers and requires
 - CLI tooling is functional but less polished.
 
 ### Prisma
+
 - Mature ecosystem with broad adoption and extensive documentation.
 - Excellent CLI with migration management, database introspection, and Prisma Studio.
 - Slower at runtime due to its Rust-based query engine.

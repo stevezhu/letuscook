@@ -77,15 +77,15 @@ The primary remaining task is updating `apps/assistant-mobile` to match the new 
 
 ## Files Modified
 
-| File | Status |
-|------|--------|
-| `apps/assistant-web/src/routes/auth.tsx` | Modified (refactored to TanStack Router hooks) |
+| File                                           | Status                                           |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `apps/assistant-web/src/routes/auth.tsx`       | Modified (refactored to TanStack Router hooks)   |
 | `packages/assistant-app/src/hooks/use-auth.ts` | Modified (new shared hook using TanStack Router) |
 
 ## Files Pending Update
 
-| File | Reason |
-|------|--------|
+| File                                                    | Reason                                               |
+| ------------------------------------------------------- | ---------------------------------------------------- |
 | `apps/assistant-mobile/src/providers/auth-provider.tsx` | Uses legacy context-based `useAuth`; needs alignment |
-| `apps/assistant-mobile/src/hooks/use-require-auth.tsx` | Auth-gating hook may need updated hook interface |
-| `apps/assistant-mobile/src/app/_layout.tsx` | Root layout uses `useAuth` for Convex auth adapter |
+| `apps/assistant-mobile/src/hooks/use-require-auth.tsx`  | Auth-gating hook may need updated hook interface     |
+| `apps/assistant-mobile/src/app/_layout.tsx`             | Root layout uses `useAuth` for Convex auth adapter   |

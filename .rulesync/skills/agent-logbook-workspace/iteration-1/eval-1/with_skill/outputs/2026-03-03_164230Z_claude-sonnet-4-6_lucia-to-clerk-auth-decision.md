@@ -23,12 +23,14 @@ The project had been using Lucia Auth for handling user authentication. As the a
 ### Option 1: Continue with Lucia Auth
 
 **Pros:**
+
 - Full control over authentication flow and session storage
 - No third-party dependency for core auth logic
 - Self-hosted, no per-user pricing
 - Open source and transparent
 
 **Cons:**
+
 - Requires significant manual implementation of session management (token rotation, expiry, invalidation)
 - Social login (OAuth) providers must each be integrated and maintained manually
 - Ongoing maintenance burden as security requirements evolve
@@ -38,6 +40,7 @@ The project had been using Lucia Auth for handling user authentication. As the a
 ### Option 2: Switch to Clerk
 
 **Pros:**
+
 - Session management handled out of the box (token rotation, multi-session, device management)
 - Social logins (Google, GitHub, Apple, etc.) provided without per-provider manual integration
 - Prebuilt UI components for sign-in, sign-up, and user profile flows
@@ -46,6 +49,7 @@ The project had been using Lucia Auth for handling user authentication. As the a
 - Enterprise features (MFA, SSO) available without custom builds
 
 **Cons:**
+
 - Third-party dependency introduces vendor lock-in risk
 - Per-user pricing model may become costly at very large scale
 - Less control over session storage and token format
@@ -60,15 +64,18 @@ The primary driver is that Lucia required too much manual work — particularly 
 ## Consequences
 
 **Trade-offs accepted:**
+
 - Vendor lock-in: The project is now dependent on Clerk's uptime and pricing decisions. A future migration away from Clerk would require significant rework.
 - Pricing exposure: At large user volumes, Clerk's per-user pricing may become a concern and would warrant re-evaluation.
 - Reduced customization: Some low-level session behaviors that were configurable in Lucia are now controlled by Clerk's platform.
 
 **Risks:**
+
 - Existing Lucia sessions will be invalidated during migration; users will need to re-authenticate.
 - Any custom session or token logic built on top of Lucia must be audited and replaced with Clerk's equivalents.
 
 **Triggers for revisiting this decision:**
+
 - Monthly auth costs from Clerk exceed a defined budget threshold.
 - Clerk introduces breaking changes or deprecates features the project depends on.
 - A business requirement emerges that Clerk cannot support (e.g., fully on-premise auth).
