@@ -90,7 +90,41 @@ related_plan: plans/slug_v1.md # Link activity/decision back to its plan
 
 _Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort._
 
+### 5. Validate Documents
+
+Run the bundled script to catch missing fields, wrong enum values, bad date formats, or malformed filenames before committing:
+
+```bash
+# Validate all logbook docs (defaults to .agent-logbook/)
+bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts
+
+# Validate a specific file or subdirectory
+bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts .agent-logbook/activity/
+
+# Output as JSON (e.g. for piping into jq)
+bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts --json
+```
+
+The script checks every `.md` file (excluding `templates/`) for:
+- **Filename format**: `YYYY-MM-DD_HHMMSSZ_agent_slug.md`
+- **Required fields**: `date`, `type`, `status`, `agent`, `branch`
+- **`date`**: ISO 8601 UTC (`YYYY-MM-DDTHH:MM:SSZ`)
+- **`type`**: one of `activity | research | decision | plan`
+- **`status`**: one of `complete | in-progress | abandoned | success | failure | partial`
+
+Exit code `0` = all pass, `1` = one or more failures.
+
 ## Templates
+
+Include a `## References` section at the bottom of any document where you consulted
+external URLs (docs, GitHub issues, blog posts, RFCs, etc.). This makes it easy to
+trace where information came from and revisit sources in future sessions.
+
+```markdown
+## References
+
+- [Title or description](https://url)
+```
 
 ### Activity Log
 
@@ -114,6 +148,10 @@ Key actions, commands run, and reasoning for non-obvious choices.
 ## Outcome
 
 Result, remaining issues, and follow-up tasks.
+
+## References
+
+- [Title](https://url)
 ```
 
 ### Research Report
@@ -138,6 +176,10 @@ Benchmarks, comparisons, or data discovered.
 ## Recommendation
 
 Suggested path forward. Link to a Decision doc if applicable.
+
+## References
+
+- [Title](https://url)
 ```
 
 ### Decision (ADR)
@@ -166,6 +208,10 @@ What was chosen and why.
 ## Consequences
 
 Trade-offs, risks, and triggers for revisiting this decision.
+
+## References
+
+- [Title](https://url)
 ```
 
 ### Implementation Plan
@@ -190,4 +236,8 @@ Detailed, ordered tasks for execution.
 ## Open Questions
 
 Blockers or uncertainties to resolve.
+
+## References
+
+- [Title](https://url)
 ```
