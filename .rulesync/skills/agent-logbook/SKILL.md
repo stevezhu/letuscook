@@ -1,0 +1,128 @@
+---
+name: agent-logbook
+description: >
+  Systematically record and manage AI agent activity, research, architectural
+  decisions (ADRs), and implementation plans in the .agent-docs/ directory.
+  YOU MUST use this skill whenever you complete a task, encounter a significant
+  technical blocker, evaluate new technologies, or before starting complex
+  refactors. It is CRITICAL to trigger this whenever the user says "log this",
+  "document our progress", "write up the findings", "create an ADR", or "let's
+  plan this out". Do not wait for the user to ask — if you've made a non-trivial
+  decision or finished a research phase, proactively use this to maintain the
+  project's searchable knowledge base.
+targets: ['*']
+---
+
+# Agent Logbook
+
+The `.agent-docs/` directory is a permanent, searchable knowledge base. It
+ensures that future agent sessions and human contributors understand the
+"why" behind the code, preventing re-exploration of dead ends and providing
+traceability from plan to execution.
+
+## Directory Structure & Purposes
+
+| Folder        | Purpose                                                                 |
+| ------------- | ----------------------------------------------------------------------- |
+| `activity/`   | Chronological record of session execution: changes, commands, reasoning. |
+| `research/`   | Exploratory findings: library comparisons, bug investigations, API docs. |
+| `decisions/`  | ADRs (Architecture Decision Records): captures *why* a path was chosen. |
+| `plans/`      | Step-by-step specifications and scoping docs written *before* execution. |
+| `templates/`  | Boilerplate Markdown files for uniform documentation.                   |
+
+## Workflow
+
+### 1. Initialization (If missing)
+If the directory structure doesn't exist, initialize it:
+```bash
+mkdir -p .agent-docs/{activity,research,decisions,plans,templates}
+```
+
+### 2. Naming Convention
+**ALWAYS generate the UTC timestamp via shell — never guess or use local time.**
+- **Format**: `YYYY-MM-DD_HHMMSSZ_[agent]_[slug].md`
+- **Agent**: Use your model ID (e.g., `claude-3-7-sonnet`).
+- **Slug**: 3–6 words in `kebab-case` describing the **goal** (e.g., `fix-auth-refresh`).
+
+```bash
+# Example for Activity
+echo "$(date -u +%Y-%m-%d_%H%M%SZ)_$(printenv AGENT_ID || echo "claude")_<task-slug>.md"
+```
+
+### 3. Frontmatter Standard
+Every document **MUST** include YAML frontmatter.
+```yaml
+---
+date: 2026-03-02T14:45:00Z        # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
+type: activity | research | decision | plan
+status: complete | in-progress | abandoned | success | failure | partial
+agent: <model-id>                 # From your system prompt
+branch: <current-branch>          # git branch --show-current
+task_id: TICKET-123                # Optional
+cost: $0.00                        # Optional per-session spend
+tags: [auth, api]                 # Optional
+files_modified: [path/to/file.ts]  # Key files only
+related_plan: plans/slug_v1.md    # Link activity/decision back to its plan
+---
+```
+*Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort.*
+
+## Templates
+
+### Activity Log
+Use when finishing a task or session. Focus on "Work Performed" and "Outcome".
+```markdown
+# [Task Title]
+## Summary
+TL;DR of what was accomplished.
+## Context
+Why this was done. Link to plan if applicable.
+## Work Performed
+Key actions, commands run, and reasoning for non-obvious choices.
+## Outcome
+Result, remaining issues, and follow-up tasks.
+```
+
+### Research Report
+Use for evaluation phases. Include "Question", "Findings", and "Recommendation".
+```markdown
+# [Topic]
+## Summary
+TL;DR of findings.
+## Question
+The specific problem being investigated.
+## Findings
+Benchmarks, comparisons, or data discovered.
+## Recommendation
+Suggested path forward. Link to a Decision doc if applicable.
+```
+
+### Decision (ADR)
+Use when choosing between multiple architectural or technical paths.
+```markdown
+# [Decision Title]
+## Summary
+One-sentence description of the choice.
+## Context
+The situation leading to this decision.
+## Options Considered
+Pros/cons of each alternative evaluated.
+## Decision
+What was chosen and why.
+## Consequences
+Trade-offs, risks, and triggers for revisiting this decision.
+```
+
+### Implementation Plan
+Use **BEFORE** starting complex work to align on scope and steps.
+```markdown
+# [Feature Title]
+## Goal
+What this plan aims to achieve.
+## Scope
+What is and is NOT included.
+## Steps
+Detailed, ordered tasks for execution.
+## Open Questions
+Blockers or uncertainties to resolve.
+```
