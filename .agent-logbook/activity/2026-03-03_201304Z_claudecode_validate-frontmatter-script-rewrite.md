@@ -5,62 +5,91 @@ status: complete
 agent: claudecode
 models: [claude-sonnet-4-6]
 branch: t2
-tags: [agent-logbook, validation, bash]
+tags: [agent-logbook, skill-creator, rulesync, validation, bash]
 files_modified:
+  - .rulesync/skills/agent-logbook/SKILL.md
+  - .rulesync/skills/agent-logbook/scripts/validate-frontmatter.ts
   - .rulesync/skills/agent-logbook/scripts/validate-frontmatter.sh
   - .rulesync/skills/agent-logbook/scripts/schema.json
-  - .rulesync/skills/agent-logbook/SKILL.md
+  - .rulesync/rules/skill-creator.md
+  - .agent-logbook/README.md
 ---
 
-# Validate Frontmatter Script Rewrite
+# Agent Logbook Skill Improvements
 
 ## Summary
 
-Replaced the TypeScript `validate-frontmatter.ts` script with a simple bash
-script (`validate-frontmatter.sh`) + `schema.json`, using `yq` for frontmatter
-extraction and `pnpx ajv-cli` for JSON Schema validation.
+Improved the `agent-logbook` skill across two sessions: added conventions
+(References section in templates, skill-creator workspace rule), removed the
+redundant `README.md`, and built a frontmatter validator — first as a TypeScript
+script, then replaced with a simpler bash script + `schema.json` using `yq` and
+`pnpx ajv-cli`.
 
 ## Context
 
-Follow-up to the previous session
-(`2026-03-03_184629Z_claudecode_agent-logbook-skill-improvements.md`), which
-added the TypeScript validator. The TS approach was over-engineered: inline bun
-specifiers, a fake npm package wrapper, and workspace entanglement. The goal was
-to simplify to plain bash tooling with no package dependencies.
+Follow-up work after the initial skill eval run (see
+`2026-03-03_165425Z_claudecode_agent-logbook-skill-evals.md`). The goal was to
+make the skill more robust with tooling and cleaner conventions.
 
 ## Work Performed
 
-1. **Removed the TypeScript script** and its aborted standalone-package
-   iterations (`index.ts`, `package.json` in `scripts/validate-frontmatter/`).
+1. **Added `## References` section** to all four templates (activity, research,
+   decision, plan) and added a note at the top of the Templates section explaining
+   when to include it.
 
-2. **Tried `pnpx jsonschema`** — package has no binary, abandoned.
+2. **Deleted `.agent-logbook/README.md`** — content was superseded by `SKILL.md`.
+   One gap noted but accepted: README had per-folder naming variants (research and
+   decisions omitted agent name; plans used `feature_plan_v1.md` format). The
+   skill's unified format was kept as the new standard.
 
-3. **Tried piping yq output directly to `pnpx <validator>`** — pnpm dlx runs
-   in a temp working directory, so piped stdin and `/dev/stdin` both fail.
+3. **Created `.rulesync/rules/skill-creator.md`** — documents that skill-creator
+   eval workspaces must go in `.skill-creator/` at the project root, not inside
+   `.rulesync/skills/` (which rulesync scans and requires a `SKILL.md` in every
+   subdirectory). Also fixed the pre-existing rulesync breakage caused by
+   `agent-logbook-workspace` living in `.rulesync/skills/`.
 
-4. **Settled on `ajv-cli` with a temp dir**:
-   - Loop through `.md` files; validate filename regex in bash.
-   - Extract frontmatter as JSON via `yq -o=json --front-matter=extract '.' "$file"` into a temp dir.
-   - Run one `pnpx ajv-cli validate -s "$SCHEMA" -d "$tmpdir/*.json"` call for all files at once.
-   - `trap 'rm -rf "$tmpdir"' EXIT` for cleanup.
+4. **Added a TypeScript `validate-frontmatter.ts` script** (first iteration) using
+   `gray-matter@^4` for frontmatter parsing and `typebox@^0.34` + `TypeCompiler`
+   for schema validation. Supported `--json` output and `--help`; exit codes 0/1/2.
 
-5. **Created `schema.json`** — JSON Schema draft-07 covering all required and
+5. **Replaced the TypeScript script** with a simpler bash script
+   (`validate-frontmatter.sh`) + `schema.json`, using `yq` for frontmatter
+   extraction and `pnpx ajv-cli` for JSON Schema validation. The TS approach was
+   over-engineered (inline bun specifiers, fake npm package wrapper, workspace
+   entanglement).
+   - Tried `pnpx jsonschema` — package has no binary, abandoned.
+   - Tried piping yq output directly to `pnpx <validator>` — pnpm dlx runs in a
+     temp working directory, so piped stdin and `/dev/stdin` both fail.
+   - Settled on `ajv-cli` with a temp dir: loop through `.md` files, extract
+     frontmatter as JSON via `yq -o=json --front-matter=extract`, run one
+     `pnpx ajv-cli validate` call for all files, `trap` for cleanup.
+
+6. **Created `schema.json`** — JSON Schema draft-07 covering all required and
    optional frontmatter fields.
 
-6. **Updated SKILL.md** to reflect the new `bash validate-frontmatter.sh`
-   invocation.
+7. **Updated `SKILL.md`** throughout to reflect final state.
 
-7. **Ran `rulesync generate`** to sync to `.claude/`, `.cursor/`, `.gemini/`.
-
-8. **Verified** against all 7 existing logbook entries — all pass, exit 0.
+8. **Ran `rulesync generate`** to sync all changes to `.claude/`, `.cursor/`,
+   `.gemini/`.
 
 ## Outcome
 
 Script is ~35 lines of bash with no build step, no Node dependencies to manage,
 and no workspace interaction. `pnpx ajv-cli` is fetched on demand by pnpm dlx.
+Verified against all 7 existing logbook entries — all pass, exit 0.
 
 ### Key constraint discovered
 
 `pnpx` (pnpm dlx) runs in an isolated temp directory. Piped stdin and process
 substitution (`/dev/fd/N`) are not accessible to the subprocess, so a real temp
 file is required to pass data to any `pnpx`-invoked tool.
+
+### Follow-up tasks
+
+- [ ] Run `bash .claude/skills/agent-logbook/scripts/validate-frontmatter.sh`
+      after future logbook writes to catch issues early
+- [ ] Consider wiring the validator into `pnpm lint` or a pre-commit hook
+
+## References
+
+- [agentskills.io — Using scripts in skills](https://agentskills.io/skill-creation/using-scripts)
