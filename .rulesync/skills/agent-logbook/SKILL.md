@@ -96,13 +96,13 @@ Run the bundled script to catch missing fields, wrong enum values, bad date form
 
 ```bash
 # Validate all logbook docs (defaults to .agent-logbook/)
-bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts
+bash .claude/skills/agent-logbook/scripts/validate-frontmatter.sh
 
 # Validate a specific file or subdirectory
-bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts .agent-logbook/activity/
+bash .claude/skills/agent-logbook/scripts/validate-frontmatter.sh .agent-logbook/activity/
 
 # Output as JSON (e.g. for piping into jq)
-bun run .claude/skills/agent-logbook/scripts/validate-frontmatter.ts --json
+bash .claude/skills/agent-logbook/scripts/validate-frontmatter.sh --json
 ```
 
 The script checks every `.md` file (excluding `templates/`) for:
