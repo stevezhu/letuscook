@@ -22,24 +22,28 @@ traceability from plan to execution.
 
 ## Directory Structure & Purposes
 
-| Folder        | Purpose                                                                 |
-| ------------- | ----------------------------------------------------------------------- |
-| `activity/`   | Chronological record of session execution: changes, commands, reasoning. |
-| `research/`   | Exploratory findings: library comparisons, bug investigations, API docs. |
-| `decisions/`  | ADRs (Architecture Decision Records): captures *why* a path was chosen. |
-| `plans/`      | Step-by-step specifications and scoping docs written *before* execution. |
-| `templates/`  | Boilerplate Markdown files for uniform documentation.                   |
+| Folder       | Purpose                                                                  |
+| ------------ | ------------------------------------------------------------------------ |
+| `activity/`  | Chronological record of session execution: changes, commands, reasoning. |
+| `research/`  | Exploratory findings: library comparisons, bug investigations, API docs. |
+| `decisions/` | ADRs (Architecture Decision Records): captures _why_ a path was chosen.  |
+| `plans/`     | Step-by-step specifications and scoping docs written _before_ execution. |
+| `templates/` | Boilerplate Markdown files for uniform documentation.                    |
 
 ## Workflow
 
 ### 1. Initialization (If missing)
+
 If the directory structure doesn't exist, initialize it:
+
 ```bash
 mkdir -p .agent-logbook/{activity,research,decisions,plans,templates}
 ```
 
 ### 2. Naming Convention
+
 **ALWAYS generate the UTC timestamp via shell — never guess or use local time.**
+
 - **Format**: `YYYY-MM-DD_HHMMSSZ_[agent]_[slug].md`
 - **Agent**: Use your agent name (e.g., `claudecode`, `cursor`, `geminicli`).
 - **Slug**: 3–6 words in `kebab-case` describing the **goal** (e.g., `fix-auth-refresh`).
@@ -50,91 +54,140 @@ echo "$(date -u +%Y-%m-%d_%H%M%SZ)_claudecode_<task-slug>.md"
 ```
 
 ### 3. Known Agent Names
+
 Use these exact names in the `agent` field and filename:
 
-| Agent         | Description                                      |
-| ------------- | ------------------------------------------------ |
-| `claudecode`  | Claude Code CLI (Anthropic)                      |
-| `cursor`      | Cursor IDE AI (may use multiple models via auto) |
-| `geminicli`   | Gemini CLI (may use multiple models via auto)    |
+| Agent        | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| `claudecode` | Claude Code CLI (Anthropic)                                     |
+| `cursor`     | Cursor IDE AI (supports auto mode — check active model setting) |
+| `geminicli`  | Gemini CLI (supports auto mode — check active model setting)    |
 
 For other agents, use a concise lowercase identifier (e.g., `copilot`, `aider`).
 
 ### 4. Frontmatter Standard
+
 Every document **MUST** include YAML frontmatter.
+
 ```yaml
 ---
-date: 2026-03-02T14:45:00Z        # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
+date: 2026-03-02T14:45:00Z # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
 type: activity | research | decision | plan
 status: complete | in-progress | abandoned | success | failure | partial
-agent: claudecode                 # Agent name (see Known Agent Names above)
-models: [claude-sonnet-4-6]       # Model(s) used; list multiple if auto mode was active
-branch: <current-branch>          # git branch --show-current
-task_id: TICKET-123                # Optional
-cost: $0.00                        # Optional per-session spend
-tags: [auth, api]                 # Optional
-files_modified: [path/to/file.ts]  # Key files only
-related_plan: plans/slug_v1.md    # Link activity/decision back to its plan
+agent: claudecode # Agent name (see Known Agent Names above)
+models:
+  [claude-sonnet-4-6] # Model(s) used. ALWAYS try to determine the actual model(s).
+  # If you aren't able to find the actual models used, ask the user.
+  # Only use `auto` as a last resort when the model truly cannot be determined.
+branch: <current-branch> # git branch --show-current
+task_id: TICKET-123 # Optional
+cost: $0.00 # Optional per-session spend
+tags: [auth, api] # Optional
+files_modified: [path/to/file.ts] # Key files only
+related_plan: plans/slug_v1.md # Link activity/decision back to its plan
 ---
 ```
-*Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort.*
+
+_Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort._
 
 ## Templates
 
 ### Activity Log
+
 Use when finishing a task or session. Focus on "Work Performed" and "Outcome".
+
 ```markdown
 # [Task Title]
+
 ## Summary
+
 TL;DR of what was accomplished.
+
 ## Context
+
 Why this was done. Link to plan if applicable.
+
 ## Work Performed
+
 Key actions, commands run, and reasoning for non-obvious choices.
+
 ## Outcome
+
 Result, remaining issues, and follow-up tasks.
 ```
 
 ### Research Report
+
 Use for evaluation phases. Include "Question", "Findings", and "Recommendation".
+
 ```markdown
 # [Topic]
+
 ## Summary
+
 TL;DR of findings.
+
 ## Question
+
 The specific problem being investigated.
+
 ## Findings
+
 Benchmarks, comparisons, or data discovered.
+
 ## Recommendation
+
 Suggested path forward. Link to a Decision doc if applicable.
 ```
 
 ### Decision (ADR)
+
 Use when choosing between multiple architectural or technical paths.
+
 ```markdown
 # [Decision Title]
+
 ## Summary
+
 One-sentence description of the choice.
+
 ## Context
+
 The situation leading to this decision.
+
 ## Options Considered
+
 Pros/cons of each alternative evaluated.
+
 ## Decision
+
 What was chosen and why.
+
 ## Consequences
+
 Trade-offs, risks, and triggers for revisiting this decision.
 ```
 
 ### Implementation Plan
+
 Use **BEFORE** starting complex work to align on scope and steps.
+
 ```markdown
 # [Feature Title]
+
 ## Goal
+
 What this plan aims to achieve.
+
 ## Scope
+
 What is and is NOT included.
+
 ## Steps
+
 Detailed, ordered tasks for execution.
+
 ## Open Questions
+
 Blockers or uncertainties to resolve.
 ```

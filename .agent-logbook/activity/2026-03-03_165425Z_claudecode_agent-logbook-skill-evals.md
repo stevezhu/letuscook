@@ -52,6 +52,7 @@ The `agent-logbook` skill was previously created (and renamed from `agent-docs`)
 The skill is working correctly. The +48 point pass rate improvement (100% vs 52%) validates that the skill's value lies in enforcing structural conventions — without it, agents produce good content but consistently miss directory placement, timestamped filenames, and YAML frontmatter.
 
 ### Follow-up tasks
+
 - [ ] Run description optimization (`run_loop.py`) to tune the skill's trigger description
 - [ ] Consider updating eval runner prompts to write outputs to workspace only (avoid `.agent-docs/` pollution on future runs)
 - [ ] Package the skill as a `.skill` file when ready to distribute
