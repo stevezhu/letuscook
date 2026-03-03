@@ -18,7 +18,11 @@ import { Uniwind } from 'uniwind';
 
 import { AnimatedSplashOverlay } from '#components/animated-icon.js';
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+if (!process.env.EXPO_PUBLIC_CONVEX_URL) {
+  throw new Error('EXPO_PUBLIC_CONVEX_URL is not set');
+}
+
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL, {
   unsavedChangesWarning: false,
 });
 const convexQueryClient = new ConvexQueryClient(convex);
