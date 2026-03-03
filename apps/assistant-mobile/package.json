@@ -30,7 +30,7 @@
     "@tanstack/react-query": "^5.74.11",
     "@workos-inc/node": "^8.7.0",
     "@workspace/constants": "workspace:*",
-    "@workspace/convex": "workspace:*",
+    "@workspace/assistant-convex": "workspace:*",
     "@workspace/rn-reusables": "workspace:*",
     "convex": "^1.24.1",
     "expo": "catalog:mobile",
