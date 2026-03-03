@@ -6,17 +6,5 @@
       "Read(!mdrip)",
       "Read(credentials/)"
     ]
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.rulesync/hooks/session-start.sh"
-          }
-        ]
-      }
-    ]
   }
 }
