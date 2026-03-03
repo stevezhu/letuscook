@@ -194,6 +194,19 @@ importers:
         specifier: ^2.8.10
         version: 2.8.12
 
+  apps/assistant-convex:
+    dependencies:
+      convex:
+        specifier: ^1.24.1
+        version: 1.32.0(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.3.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   apps/assistant-desktop:
     dependencies:
       '@electron-toolkit/preload':
@@ -396,15 +409,15 @@ importers:
       '@workos-inc/node':
         specifier: ^8.7.0
         version: 8.7.0
-      '@workspace/assistant-convex':
-        specifier: workspace:*
-        version: link:../../packages/assistant-convex
       '@workspace/constants':
         specifier: workspace:*
         version: link:../../packages/constants
       '@workspace/rn-reusables':
         specifier: workspace:*
         version: link:../../packages/rn-reusables
+      assistant-convex:
+        specifier: workspace:*
+        version: link:../assistant-convex
       convex:
         specifier: ^1.24.1
         version: 1.32.0(react@19.2.0)
@@ -754,19 +767,6 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-
-  packages/assistant-convex:
-    dependencies:
-      convex:
-        specifier: ^1.24.1
-        version: 1.32.0(react@19.2.4)
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 25.3.3
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
 
   packages/constants: {}
 
