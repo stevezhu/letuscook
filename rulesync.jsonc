@@ -60,6 +60,9 @@
     {
       "source": "vercel/turborepo",
       "skills": ["turborepo"]
+    },
+    {
+      "source": "waynesutton/convexskills"
     }
   ]
 }
