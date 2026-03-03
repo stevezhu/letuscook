@@ -5,6 +5,10 @@ description: 'Project overview and general development guidelines'
 globs: ['**/*']
 ---
 
+## General Guidelines
+
+- **Package Manager**: Always use `pnpx` instead of `npx` for executing binaries to ensure consistency with the `pnpm` workspace.
+
 ## Task Completion
 
 After finishing each coding task, run the following from the project root and fix any issues before considering the task complete. Skip this for non-coding tasks such as editing documentation, rules, or configuration files.
