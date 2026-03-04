@@ -29,6 +29,7 @@
       "items": { "type": "string" },
       "minItems": 1
     },
+    "session_id": { "type": "string" },
     "task_id": { "type": "string" },
     "cost": { "type": "string" },
     "tags": { "type": "array", "items": { "type": "string" } },

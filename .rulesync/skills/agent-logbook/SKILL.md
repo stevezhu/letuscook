@@ -79,6 +79,7 @@ models: [claude-3-5-sonnet-latest] # Model(s) used. ALWAYS try to determine the 
 branch: <current-branch> # git branch --show-current
 task_id: TICKET-123 # Optional
 cost: $0.00 # Optional per-session spend
+session_id: abc123 # Optional — groups docs from the same agent session
 tags: [auth, api] # Optional
 files_modified: [path/to/file.ts] # Key files only
 related_plan: plans/slug_v1.md # Link activity/decision back to its plan
@@ -119,6 +120,17 @@ The script checks every `.md` file (excluding `templates/`) for:
 - **`status`**: one of `complete | in-progress | abandoned | success | failure | partial`
 
 Exit code `0` = all pass, `1` = one or more failures.
+
+### 7. Token Usage Stats
+
+If you have a Claude session ID (e.g. from the terminal output or `history.jsonl`), you can aggregate its token usage and models used across project files:
+
+```bash
+# Display stats for a specific session ID
+node .claude/skills/agent-logbook/scripts/claude-session-stats.js <session-id>
+```
+
+The script searches `~/.claude/projects/` for any `.jsonl` files matching the ID and sums up the usage metadata.
 
 ## Templates
 
