@@ -65,9 +65,21 @@ Use these exact names in the `agent` field and filename:
 
 For other agents, use a concise lowercase identifier (e.g., `copilot`, `aider`).
 
-### 4. Frontmatter Standard
+### 4. Frontmatter & Session Stats
 
-Every document **MUST** include YAML frontmatter.
+**Before writing any document**, run the stats script to get the session's models and token usage. Use the output to populate `session_id` and `models` in the frontmatter, then paste the full output as a `## Session Stats` section at the end of the document.
+
+```bash
+# Claude
+node .claude/skills/agent-logbook/scripts/session-stats.js claude <session-id>
+
+# Gemini
+node .claude/skills/agent-logbook/scripts/session-stats.js gemini <session-id>
+```
+
+If you do not have a session ID or the script fails, default `models` to `[unknown]` and omit `session_id`.
+
+Every document **MUST** include YAML frontmatter:
 
 ```yaml
 ---
@@ -75,11 +87,11 @@ date: 2026-03-02T14:45:00Z # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
 type: activity | research | decision | plan
 status: complete | in-progress | abandoned | success | failure | partial
 agent: claudecode # Agent name (see Known Agent Names above)
-models: [unknown] # Model(s) used. Default to [unknown] if cannot be determined.
+models: [claude-opus-4-6] # From stats script output. Default: [unknown]
 branch: <current-branch> # git branch --show-current
+session_id: abc123 # From stats script output
 task_id: TICKET-123 # Optional
 cost: $0.00 # Optional per-session spend
-session_id: abc123 # Optional — groups docs from the same agent session
 tags: [auth, api] # Optional
 files_modified: [path/to/file.ts] # Key files only
 related_plan: plans/slug_v1.md # Link activity/decision back to its plan
@@ -88,20 +100,7 @@ related_plan: plans/slug_v1.md # Link activity/decision back to its plan
 
 _Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort._
 
-### 5. Model Identification
-
-There is no consistent way to automatically detect the model being used across all agents and environments.
-
-**Default to `[unknown]`** in the `models` field. If you can confidently infer the model from the environment or previous context, use that instead.
-
-If you are using `claudecode` and have a session ID, you can use the stats script to see which models were used:
-
-```bash
-# Get models used in a specific Claude session
-node .claude/skills/agent-logbook/scripts/claude-session-stats.js <session-id>
-```
-
-### 6. Validate Documents
+### 5. Validate Documents
 
 Run the bundled script to catch missing fields, wrong enum values, bad date formats, or malformed filenames before committing:
 
@@ -126,141 +125,17 @@ The script checks every `.md` file (excluding `templates/`) for:
 
 Exit code `0` = all pass, `1` = one or more failures.
 
-### 7. Token Usage Stats
-
-If you have a Claude session ID (e.g. from the terminal output or `history.jsonl`), you can aggregate its token usage and models used across project files:
-
-```bash
-# Display stats for a specific session ID
-node .claude/skills/agent-logbook/scripts/claude-session-stats.js <session-id>
-```
-
-The script searches `~/.claude/projects/` for any `.jsonl` files matching the ID and sums up the usage metadata.
-
 ## Templates
 
 Include a `## References` section at the bottom of any document where you consulted
 external URLs (docs, GitHub issues, blog posts, RFCs, etc.). This makes it easy to
 trace where information came from and revisit sources in future sessions.
 
-```markdown
-## References
+Template files are in the `templates/` directory alongside this skill:
 
-- [Title or description](https://url)
-```
-
-### Activity Log
-
-Use when finishing a task or session. Focus on "Work Performed" and "Outcome".
-
-```markdown
-# [Task Title]
-
-## Summary
-
-TL;DR of what was accomplished.
-
-## Context
-
-Why this was done. Link to plan if applicable.
-
-## Work Performed
-
-Key actions, commands run, and reasoning for non-obvious choices.
-
-## Outcome
-
-Result, remaining issues, and follow-up tasks.
-
-## References
-
-- [Title](https://url)
-```
-
-### Research Report
-
-Use for evaluation phases. Include "Question", "Findings", and "Recommendation".
-
-```markdown
-# [Topic]
-
-## Summary
-
-TL;DR of findings.
-
-## Question
-
-The specific problem being investigated.
-
-## Findings
-
-Benchmarks, comparisons, or data discovered.
-
-## Recommendation
-
-Suggested path forward. Link to a Decision doc if applicable.
-
-## References
-
-- [Title](https://url)
-```
-
-### Decision (ADR)
-
-Use when choosing between multiple architectural or technical paths.
-
-```markdown
-# [Decision Title]
-
-## Summary
-
-One-sentence description of the choice.
-
-## Context
-
-The situation leading to this decision.
-
-## Options Considered
-
-Pros/cons of each alternative evaluated.
-
-## Decision
-
-What was chosen and why.
-
-## Consequences
-
-Trade-offs, risks, and triggers for revisiting this decision.
-
-## References
-
-- [Title](https://url)
-```
-
-### Implementation Plan
-
-Use **BEFORE** starting complex work to align on scope and steps.
-
-```markdown
-# [Feature Title]
-
-## Goal
-
-What this plan aims to achieve.
-
-## Scope
-
-What is and is NOT included.
-
-## Steps
-
-Detailed, ordered tasks for execution.
-
-## Open Questions
-
-Blockers or uncertainties to resolve.
-
-## References
-
-- [Title](https://url)
-```
+| Template                | Use when                                                                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `templates/activity.md` | Finishing a task or session. Focus on "Work Performed" and "Outcome". **Before writing**, run the stats script to get `session_id`, `models`, and token counts. Paste the raw output into `## Session Stats`. |
+| `templates/research.md` | Evaluation phases. Include "Question", "Findings", and "Recommendation".                                                                                                                                      |
+| `templates/decision.md` | Choosing between multiple architectural or technical paths.                                                                                                                                                   |
+| `templates/plan.md`     | **BEFORE** starting complex work to align on scope and steps.                                                                                                                                                 |

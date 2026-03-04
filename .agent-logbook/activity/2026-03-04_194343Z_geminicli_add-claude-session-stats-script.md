@@ -3,7 +3,7 @@ date: 2026-03-04T19:43:43Z
 type: activity
 status: success
 agent: geminicli
-models: [gemini-2.0-flash-thinking-exp-01-21]
+models: [gemini-3-auto]
 branch: main
 related_plan: plans/2026-03-04_194248Z_geminicli_claude-session-stats-script.md
 ---
