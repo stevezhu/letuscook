@@ -94,6 +94,7 @@ There is no consistent way to automatically detect the model being used across a
 > "Which model(s) were used in this session? (e.g., claude-sonnet-4-6, gemini-2.5-pro)"
 
 Record the user's answer in the `models` field. If the user is unsure or does not know, omit the field or use an empty array `[]`.
+
 ### 6. Validate Documents
 
 Run the bundled script to catch missing fields, wrong enum values, bad date formats, or malformed filenames before committing:
@@ -110,6 +111,7 @@ bash .claude/skills/agent-logbook/scripts/validate-frontmatter.sh --json
 ```
 
 The script checks every `.md` file (excluding `templates/`) for:
+
 - **Filename format**: `YYYY-MM-DD_HHMMSSZ_agent_slug.md`
 - **Required fields**: `date`, `type`, `status`, `agent`, `branch`
 - **`date`**: ISO 8601 UTC (`YYYY-MM-DDTHH:MM:SSZ`)

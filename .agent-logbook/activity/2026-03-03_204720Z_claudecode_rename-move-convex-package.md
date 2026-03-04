@@ -35,4 +35,5 @@ The Convex backend is an application rather than a shared library, so it belongs
 Package is now located at `apps/assistant-convex` with the name `assistant-convex`. All references updated and lockfile regenerated successfully.
 
 **Note:** This package went through two renames in the same session:
+
 - `packages/convex` (`@workspace/convex`) → `packages/assistant-convex` (`@workspace/assistant-convex`) → `apps/assistant-convex` (`assistant-convex`)
