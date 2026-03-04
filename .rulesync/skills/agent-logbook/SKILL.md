@@ -75,7 +75,7 @@ date: 2026-03-02T14:45:00Z # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
 type: activity | research | decision | plan
 status: complete | in-progress | abandoned | success | failure | partial
 agent: claudecode # Agent name (see Known Agent Names above)
-models: [claude-3-5-sonnet-latest] # Model(s) used. ALWAYS try to determine the actual model(s).
+models: [unknown] # Model(s) used. Default to [unknown] if cannot be determined.
 branch: <current-branch> # git branch --show-current
 task_id: TICKET-123 # Optional
 cost: $0.00 # Optional per-session spend
@@ -90,11 +90,16 @@ _Note: Use `status: abandoned` for dead ends — these are often more valuable t
 
 ### 5. Model Identification
 
-There is no consistent way to automatically detect the model being used across all agents and environments. **Always ask the user** before creating the log:
+There is no consistent way to automatically detect the model being used across all agents and environments.
 
-> "Which model(s) were used in this session? (e.g., claude-sonnet-4-6, gemini-2.5-pro)"
+**Default to `[unknown]`** in the `models` field. If you can confidently infer the model from the environment or previous context, use that instead.
 
-Record the user's answer in the `models` field. If the user is unsure or does not know, omit the field or use an empty array `[]`.
+If you are using `claudecode` and have a session ID, you can use the stats script to see which models were used:
+
+```bash
+# Get models used in a specific Claude session
+node .claude/skills/agent-logbook/scripts/claude-session-stats.js <session-id>
+```
 
 ### 6. Validate Documents
 
