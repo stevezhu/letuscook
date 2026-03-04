@@ -75,10 +75,7 @@ date: 2026-03-02T14:45:00Z # ISO 8601 UTC (date -u +%Y-%m-%dT%H:%M:%SZ)
 type: activity | research | decision | plan
 status: complete | in-progress | abandoned | success | failure | partial
 agent: claudecode # Agent name (see Known Agent Names above)
-models:
-  [claude-sonnet-4-6] # Model(s) used. ALWAYS try to determine the actual model(s).
-  # If you aren't able to find the actual models used, ask the user.
-  # Only use `auto` as a last resort when the model truly cannot be determined.
+models: [claude-3-5-sonnet-latest] # Model(s) used. ALWAYS try to determine the actual model(s).
 branch: <current-branch> # git branch --show-current
 task_id: TICKET-123 # Optional
 cost: $0.00 # Optional per-session spend
@@ -90,7 +87,14 @@ related_plan: plans/slug_v1.md # Link activity/decision back to its plan
 
 _Note: Use `status: abandoned` for dead ends — these are often more valuable than successes as they prevent future wasted effort._
 
-### 5. Validate Documents
+### 5. Model Identification
+
+There is no consistent way to automatically detect the model being used across all agents and environments. **Always ask the user** before creating the log:
+
+> "Which model(s) were used in this session? (e.g., claude-sonnet-4-6, gemini-2.5-pro)"
+
+Record the user's answer in the `models` field. If the user is unsure or does not know, omit the field or use an empty array `[]`.
+### 6. Validate Documents
 
 Run the bundled script to catch missing fields, wrong enum values, bad date formats, or malformed filenames before committing:
 

@@ -16,7 +16,16 @@ if [[ ! -e "$target" ]]; then
   exit 2
 fi
 
-tmpdir="$(mktemp -d /tmp/validate-fm-XXXXXX)"
+# Ensure we have a valid project-local temp directory for JSON extraction
+# This avoids macOS Seatbelt restrictions on /tmp/
+logbook_root=".agent-logbook"
+if [[ ! -d "$logbook_root" ]]; then
+  # Fallback to current directory if .agent-logbook doesn't exist (unlikely in this context)
+  logbook_root="."
+fi
+
+tmpdir="$logbook_root/.tmp-validate-fm-$(date +%s)"
+mkdir -p "$tmpdir"
 trap 'rm -rf "$tmpdir"' EXIT
 
 filename_failed=0

@@ -2,6 +2,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "ai:claude": "claude",
+    "ai:gemini": "SEATBELT_PROFILE=custom gemini",
     "build": "turbo run build --color",
     "codegen": "turbo run codegen",
     "deps:clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
