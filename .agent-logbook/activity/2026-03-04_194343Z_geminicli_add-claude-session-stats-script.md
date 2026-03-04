@@ -35,6 +35,7 @@ The script is now available and can be run via:
 `node .claude/skills/agent-logbook/scripts/claude-session-stats.js <session-id>`
 
 Example Output:
+
 ```
 Claude Session Stats: 060d3f6b-eea4-4a8c-8c42-77cbcf3213e2
 ========================================

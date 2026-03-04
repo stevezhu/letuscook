@@ -1,33 +1,45 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import readline from 'readline';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import readline from 'node:readline';
 
 const CLAUDE_PROJECTS_DIR = path.join(os.homedir(), '.claude', 'projects');
 
 async function getSessionInfo(sessionId) {
   try {
     const projectDirs = await fs.promises.readdir(CLAUDE_PROJECTS_DIR);
-    for (const projectDir of projectDirs) {
+    const sessionLookup = projectDirs.map(async (projectDir) => {
       const projectPath = path.join(CLAUDE_PROJECTS_DIR, projectDir);
       const stats = await fs.promises.stat(projectPath);
-      if (stats.isDirectory()) {
-        const sessionFile = path.join(projectPath, `${sessionId}.jsonl`);
-        const subagentsDir = path.join(projectPath, sessionId, 'subagents');
-
-        if (fs.existsSync(sessionFile)) {
-          let subagentFiles = [];
-          if (fs.existsSync(subagentsDir)) {
-            const files = await fs.promises.readdir(subagentsDir);
-            subagentFiles = files
-              .filter((f) => f.endsWith('.jsonl'))
-              .map((f) => path.join(subagentsDir, f));
-          }
-          return { sessionFile, subagentFiles };
-        }
+      if (!stats.isDirectory()) {
+        throw new Error(`Not a directory: ${projectPath}`);
       }
+
+      const sessionFile = path.join(projectPath, `${sessionId}.jsonl`);
+      const subagentsDir = path.join(projectPath, sessionId, 'subagents');
+
+      await fs.promises.access(sessionFile);
+
+      let subagentFiles = [];
+      try {
+        const files = await fs.promises.readdir(subagentsDir);
+        subagentFiles = files
+          .filter((f) => f.endsWith('.jsonl'))
+          .map((f) => path.join(subagentsDir, f));
+      } catch {}
+
+      return { sessionFile, subagentFiles };
+    });
+
+    try {
+      return await Promise.any(sessionLookup);
+    } catch (error) {
+      if (error instanceof AggregateError) {
+        return null;
+      }
+      throw error;
     }
   } catch (error) {
     console.error('Error searching projects directory:', error.message);
@@ -65,7 +77,7 @@ async function aggregateStats(filePath) {
           stats.models.add(data.message.model);
         }
       }
-    } catch (e) {
+    } catch {
       // ignore invalid json lines
     }
   }
