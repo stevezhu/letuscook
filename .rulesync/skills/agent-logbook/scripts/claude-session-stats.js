@@ -7,31 +7,35 @@ import readline from 'readline';
 
 const CLAUDE_PROJECTS_DIR = path.join(os.homedir(), '.claude', 'projects');
 
-async function getSessionFile(sessionId) {
+async function getSessionInfo(sessionId) {
   try {
     const projectDirs = await fs.promises.readdir(CLAUDE_PROJECTS_DIR);
-    const results = await Promise.all(
-      projectDirs.map(async (projectDir) => {
-        const projectPath = path.join(CLAUDE_PROJECTS_DIR, projectDir);
-        const stats = await fs.promises.stat(projectPath);
-        if (stats.isDirectory()) {
-          const sessionFile = path.join(projectPath, `${sessionId}.jsonl`);
-          if (fs.existsSync(sessionFile)) {
-            return sessionFile;
-          }
-        }
-        return null;
-      }),
-    );
+    for (const projectDir of projectDirs) {
+      const projectPath = path.join(CLAUDE_PROJECTS_DIR, projectDir);
+      const stats = await fs.promises.stat(projectPath);
+      if (stats.isDirectory()) {
+        const sessionFile = path.join(projectPath, `${sessionId}.jsonl`);
+        const subagentsDir = path.join(projectPath, sessionId, 'subagents');
 
-    return results.find((file) => file !== null) || null;
+        if (fs.existsSync(sessionFile)) {
+          let subagentFiles = [];
+          if (fs.existsSync(subagentsDir)) {
+            const files = await fs.promises.readdir(subagentsDir);
+            subagentFiles = files
+              .filter((f) => f.endsWith('.jsonl'))
+              .map((f) => path.join(subagentsDir, f));
+          }
+          return { sessionFile, subagentFiles };
+        }
+      }
+    }
   } catch (error) {
     console.error('Error searching projects directory:', error.message);
   }
   return null;
 }
 
-async function aggregateStats(sessionFile) {
+async function aggregateStats(filePath) {
   const stats = {
     input_tokens: 0,
     output_tokens: 0,
@@ -40,7 +44,7 @@ async function aggregateStats(sessionFile) {
     models: new Set(),
   };
 
-  const fileStream = fs.createReadStream(sessionFile);
+  const fileStream = fs.createReadStream(filePath);
   const rl = readline.createInterface({
     input: fileStream,
     crlfDelay: Infinity,
@@ -61,12 +65,20 @@ async function aggregateStats(sessionFile) {
           stats.models.add(data.message.model);
         }
       }
-    } catch {
+    } catch (e) {
       // ignore invalid json lines
     }
   }
 
   return stats;
+}
+
+function combineStats(target, source) {
+  target.input_tokens += source.input_tokens;
+  target.output_tokens += source.output_tokens;
+  target.cache_creation_input_tokens += source.cache_creation_input_tokens;
+  target.cache_read_input_tokens += source.cache_read_input_tokens;
+  source.models.forEach((m) => target.models.add(m));
 }
 
 async function main() {
@@ -76,34 +88,91 @@ async function main() {
     process.exit(1);
   }
 
-  const sessionFile = await getSessionFile(sessionId);
-  if (!sessionFile) {
+  const sessionInfo = await getSessionInfo(sessionId);
+  if (!sessionInfo) {
     console.error(`Session file not found for ID: ${sessionId}`);
     process.exit(1);
   }
 
-  const stats = await aggregateStats(sessionFile);
+  const mainStats = await aggregateStats(sessionInfo.sessionFile);
+  const totalStats = { ...mainStats, models: new Set(mainStats.models) };
+
+  const subagentsStats = {
+    input_tokens: 0,
+    output_tokens: 0,
+    cache_creation_input_tokens: 0,
+    cache_read_input_tokens: 0,
+    models: new Set(),
+    count: sessionInfo.subagentFiles.length,
+  };
+
+  const allSubagentStats = await Promise.all(
+    sessionInfo.subagentFiles.map((file) => aggregateStats(file)),
+  );
+  for (const stats of allSubagentStats) {
+    combineStats(subagentsStats, stats);
+    combineStats(totalStats, stats);
+  }
 
   console.log(`\nClaude Session Stats: ${sessionId}`);
   console.log(`========================================`);
-  console.log(`Project File: ${sessionFile}`);
-  console.log(`Models Used:  ${Array.from(stats.models).join(', ')}`);
+  console.log(
+    `Main Session Models: ${Array.from(mainStats.models).join(', ') || 'N/A'}`,
+  );
+  if (subagentsStats.count > 0) {
+    console.log(
+      `Subagent Models:     ${Array.from(subagentsStats.models).join(', ') || 'N/A'}`,
+    );
+  }
+  console.log(`----------------------------------------`);
+  console.log(`MAIN SESSION:`);
+  console.log(
+    `  Input Tokens:          ${mainStats.input_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Output Tokens:         ${mainStats.output_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Cache Creation Input:  ${mainStats.cache_creation_input_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Cache Read Input:      ${mainStats.cache_read_input_tokens.toLocaleString()}`,
+  );
+
+  if (subagentsStats.count > 0) {
+    console.log(`----------------------------------------`);
+    console.log(`SUBAGENTS (${subagentsStats.count} total):`);
+    console.log(
+      `  Input Tokens:          ${subagentsStats.input_tokens.toLocaleString()}`,
+    );
+    console.log(
+      `  Output Tokens:         ${subagentsStats.output_tokens.toLocaleString()}`,
+    );
+    console.log(
+      `  Cache Creation Input:  ${subagentsStats.cache_creation_input_tokens.toLocaleString()}`,
+    );
+    console.log(
+      `  Cache Read Input:      ${subagentsStats.cache_read_input_tokens.toLocaleString()}`,
+    );
+  }
+
+  console.log(`----------------------------------------`);
+  console.log(`TOTAL USAGE:`);
+  console.log(
+    `  Total Input Tokens:    ${totalStats.input_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Total Output Tokens:   ${totalStats.output_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Total Cache Creation:  ${totalStats.cache_creation_input_tokens.toLocaleString()}`,
+  );
+  console.log(
+    `  Total Cache Read:      ${totalStats.cache_read_input_tokens.toLocaleString()}`,
+  );
   console.log(`----------------------------------------`);
   console.log(
-    `Total Input Tokens:          ${stats.input_tokens.toLocaleString()}`,
-  );
-  console.log(
-    `Total Output Tokens:         ${stats.output_tokens.toLocaleString()}`,
-  );
-  console.log(
-    `Total Cache Creation Input:  ${stats.cache_creation_input_tokens.toLocaleString()}`,
-  );
-  console.log(
-    `Total Cache Read Input:      ${stats.cache_read_input_tokens.toLocaleString()}`,
-  );
-  console.log(`----------------------------------------`);
-  console.log(
-    `Total Tokens:                ${(stats.input_tokens + stats.output_tokens + stats.cache_creation_input_tokens + stats.cache_read_input_tokens).toLocaleString()}`,
+    `GRAND TOTAL TOKENS:      ${(totalStats.input_tokens + totalStats.output_tokens + totalStats.cache_creation_input_tokens + totalStats.cache_read_input_tokens).toLocaleString()}`,
   );
   console.log(`========================================\n`);
 }

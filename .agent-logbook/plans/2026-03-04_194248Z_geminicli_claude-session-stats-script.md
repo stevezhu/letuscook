@@ -19,14 +19,14 @@ Create a script to aggregate token usage and models used for a specific Claude s
 - Create a Node.js script (using `fs`, `path`, and potentially `readline` for large JSONL files).
 - Script should accept a session ID as an argument.
 - Script should search all subdirectories in `~/.claude/projects` for `.jsonl` files.
-- For a matching session ID, it should aggregate:
-  - Total input tokens
-  - Total output tokens
-  - Total cache creation input tokens
-  - Total cache read input tokens
-  - List of models used (unique)
-- Output the stats in a clean format.
-
+- Script should also search for a directory named after the session ID in each project folder, and if it contains a `subagents` subdirectory, aggregate stats from all `.jsonl` files within it.
+- For a matching session ID and its subagents, it should aggregate:
+    - Total input tokens
+    - Total output tokens
+    - Total cache creation input tokens
+    - Total cache read input tokens
+    - List of models used (unique)
+- Output the stats in a clean format, showing breakdown between main session and subagents.
 ## Steps
 
 1.  **Research Data Structure:**
