@@ -11,6 +11,7 @@ dist
 .swc
 .output
 out
+*.tsbuildinfo
 
 # misc
 .DS_Store

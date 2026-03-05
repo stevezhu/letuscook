@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "convex dev",
     "setup": "convex dev --until-success",
-    "test": "tsc --noEmit -p convex"
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "convex": "^1.24.1"

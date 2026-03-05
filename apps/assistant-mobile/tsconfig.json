@@ -1,18 +1,7 @@
 {
-  "extends": "expo/tsconfig.base.json",
-  "include": [
-    "*.config.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "*.gen.d.ts",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "uniwind-types.d.ts"
-  ],
-  "references": [{ "path": "./tsconfig.metro.json" }],
-  "compilerOptions": {
-    "strict": true,
-    "moduleResolution": "bundler",
-    "paths": { "#*": ["./src/*"] }
-  }
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.config.json" }
+  ]
 }

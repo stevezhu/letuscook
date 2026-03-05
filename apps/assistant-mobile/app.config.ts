@@ -1,5 +1,5 @@
 import constants from '@workspace/constants' with { type: 'json' };
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import { ExpoConfig, ConfigContext } from 'expo/config/index.js';
 
 import packageJson from './package.json' with { type: 'json' };
 
@@ -30,6 +30,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     'expo-router',
+    'expo-web-browser',
+    'expo-secure-store',
     [
       'expo-splash-screen',
       {

@@ -14,6 +14,7 @@
     "ios": "expo start --ios",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "pretest": "tsc -b --noEmit",
     "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start",
     "test": "jest",
