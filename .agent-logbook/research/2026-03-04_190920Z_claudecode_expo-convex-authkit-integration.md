@@ -1,5 +1,7 @@
 ---
-date: 2026-03-04T19:09:20Z
+
+## date: 2026-03-04T19:09:20Z
+
 type: research
 status: complete
 agent: claudecode
@@ -7,7 +9,6 @@ models: [claude-opus-4-6]
 branch: t2
 session_id: 060d3f6b-eea4-4a8c-8c42-77cbcf3213e2
 tags: [auth, expo, convex, workos, authkit, monorepo]
----
 
 # Expo + Convex + WorkOS AuthKit Integration in a Monorepo
 
@@ -19,15 +20,16 @@ This document synthesizes all reference implementations for integrating **Expo (
 
 Our monorepo (`letuscook`) already has:
 
-- **`apps/assistant-mobile`** — Expo app with Expo Router, TanStack Query, UniWind
+- `**apps/assistant-mobile`** — Expo app with Expo Router, TanStack Query, UniWind
   - Scheme: `letuscook` (defined in `app.config.ts`)
   - Already depends on `assistant-convex` workspace package
-- **`apps/assistant-convex`** — Convex backend
+- `**apps/assistant-convex`** — Convex backend
   - Already has `convex/auth.config.ts` with WorkOS JWT validation (two `customJwt` providers)
   - Already has a `users` table with `workosUserId` field and `createOrUpdateUser` / `getCurrentUser` functions
   - Does NOT yet have `@convex-dev/workos-authkit` component installed
 
 ## References Analyzed
+
 
 | #   | Reference                                                                                                                         | What it covers                                                       | What it lacks                               |
 | --- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
@@ -40,6 +42,7 @@ Our monorepo (`letuscook`) already has:
 | 7   | [WorkOS docs: React Native Expo](https://workos.com/docs/integrations/react-native-expo)                                          | WorkOS SSO in Expo using AuthSession + WebBrowser                    | Older SSO-only approach, no PKCE, no Convex |
 | 8   | [Expo docs: Authentication](https://docs.expo.dev/guides/authentication/)                                                         | General OAuth patterns with `expo-auth-session`                      | No WorkOS-specific guidance                 |
 | 9   | [Expo docs: Using Convex](https://docs.expo.dev/guides/using-convex/)                                                             | Basic Convex integration in Expo                                     | No auth                                     |
+
 
 ---
 
@@ -388,9 +391,7 @@ WORKOS_WEBHOOK_SECRET=whsec_...     # Only if using @convex-dev/workos-authkit
 ### What It Provides (Reference 4)
 
 1. **Webhook-driven user sync**: WorkOS sends `user.created`, `user.updated`, `user.deleted` events to your Convex HTTP endpoint. The component processes these and maintains a users table.
-
-2. **`getAuthUser(ctx)`**: Query helper that reads the current authenticated user from the component's internal user table by matching `ctx.auth.getUserIdentity().subject`.
-
+2. `**getAuthUser(ctx)`: Query helper that reads the current authenticated user from the component's internal user table by matching `ctx.auth.getUserIdentity().subject`.
 3. **Event handlers**: Custom logic when users are created/updated/deleted:
 
 ```typescript
@@ -406,7 +407,7 @@ export const { authKitEvent } = authKit.events({
 });
 ```
 
-4. **Action handlers**: Block registration/authentication:
+1. **Action handlers**: Block registration/authentication:
 
 ```typescript
 export const { authKitAction } = authKit.actions({
@@ -419,7 +420,7 @@ export const { authKitAction } = authKit.actions({
 });
 ```
 
-5. **Auth config helper**: `authKit.getAuthConfigProviders()` generates the same two JWT providers we already have manually.
+1. **Auth config helper**: `authKit.getAuthConfigProviders()` generates the same two JWT providers we already have manually.
 
 ### Comparison: Manual vs Component User Syncing
 
@@ -502,21 +503,13 @@ AuthKit client + event/action handlers.
 ## Key Gotchas & Warnings
 
 1. **Polyfill order is critical**: The crypto polyfill MUST be the first import in the entry point. If any code runs before it, `@workos-inc/node` SDK calls will fail with `"Property 'crypto' doesn't exist"`.
-
 2. **Development build required**: This will NOT work in Expo Go. Custom URL schemes and native crypto modules require a dev build.
-
 3. **Token refresh**: The access token from WorkOS expires. The auth library must handle refresh transparently. Reference 1 checks token expiry with a 10-second buffer and uses `authenticateWithRefreshToken()`.
-
 4. **Convex `useConvexAuth()` vs custom `useAuth()`**: Always use `useConvexAuth()` for conditional rendering of authenticated content. It ensures the Convex backend has validated the token. Use the custom `useAuth()` only for user profile info and sign in/out actions.
-
-5. **`ConvexProviderWithAuth` interface**: The `useAuth` callback must return `{ isLoading: boolean, isAuthenticated: boolean, fetchAccessToken: () => Promise<string | null> }`. This is the bridge between any auth provider and Convex.
-
+5. `**ConvexProviderWithAuth` interface: The `useAuth` callback must return `{ isLoading: boolean, isAuthenticated: boolean, fetchAccessToken: () => Promise<string | null> }`. This is the bridge between any auth provider and Convex.
 6. **WorkOS redirect URI**: Must be registered in the WorkOS Dashboard. For our app: `letuscook://callback`.
-
-7. **`@workos-inc/node` on React Native**: This package is designed for Node.js but works in React Native with the crypto polyfill. It does NOT require an API key for PKCE-only flows (public client mode).
-
+7. `**@workos-inc/node` on React Native: This package is designed for Node.js but works in React Native with the crypto polyfill. It does NOT require an API key for PKCE-only flows (public client mode).
 8. **No CORS needed for mobile**: Unlike the web integration (Reference 5), mobile apps don't need CORS configured in WorkOS Dashboard since they don't make browser-origin requests.
-
 9. **Monorepo import paths**: The mobile app imports Convex types via `import { api } from 'assistant-convex/convex/_generated/api'` (workspace package name, not relative path).
 
 ---

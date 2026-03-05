@@ -1,17 +1,13 @@
-import { Text } from '@workspace/rn-reusables/components/text';
+import * as Auth from 'expo-auth-session';
 import { View } from 'react-native';
 
-import { useRequireAuth } from '#hooks/use-require-auth.js';
+import { SignInButton } from '#modules/auth/SignInButton.js';
 
 export default function HomeScreen() {
-  const { isAuthenticated, isLoading, SignInCTA } = useRequireAuth();
-
-  if (isLoading) return null;
-  if (!isAuthenticated) return <SignInCTA />;
-
+  console.log('auth', Auth.getDefaultReturnUrl(), Auth.makeRedirectUri());
   return (
     <View className="p-safe">
-      <Text>home placeholder</Text>
+      <SignInButton />
     </View>
   );
 }

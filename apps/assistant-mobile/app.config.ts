@@ -13,9 +13,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: 'letuscook',
   userInterfaceStyle: 'automatic',
   ios: {
+    bundleIdentifier: 'com.letuscook',
     icon: './assets/expo.icon',
   },
   android: {
+    package: 'com.letuscook',
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',

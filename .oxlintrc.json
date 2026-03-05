@@ -22,6 +22,7 @@
   ],
   "rules": {
     "import/namespace": "off",
+    "import/no-duplicates": "error",
     "react/jsx-no-constructed-context-values": "off"
   },
   "settings": {

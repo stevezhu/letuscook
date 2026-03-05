@@ -22,7 +22,8 @@ out
 
 # local env files
 .env*
-!.env*.example
+!.env*.template
+!.env
 
 # turbo
 .turbo

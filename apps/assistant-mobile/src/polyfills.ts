@@ -4,5 +4,9 @@ import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 polyfillWebCrypto();
 
 if (!globalThis.crypto.subtle) {
-  globalThis.crypto.subtle = { digest } as SubtleCrypto;
+  Object.defineProperty(globalThis.crypto, 'subtle', {
+    value: { digest } as SubtleCrypto,
+    configurable: true,
+    enumerable: true,
+  });
 }
