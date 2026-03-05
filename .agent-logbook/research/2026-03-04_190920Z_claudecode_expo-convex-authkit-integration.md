@@ -5,6 +5,7 @@ status: complete
 agent: claudecode
 models: [claude-opus-4-6]
 branch: t2
+session_id: 060d3f6b-eea4-4a8c-8c42-77cbcf3213e2
 tags: [auth, expo, convex, workos, authkit, monorepo]
 ---
 
@@ -28,17 +29,17 @@ Our monorepo (`letuscook`) already has:
 
 ## References Analyzed
 
-| # | Reference | What it covers | What it lacks |
-|---|-----------|---------------|---------------|
-| 1 | [workos/expo-authkit-example](https://github.com/workos/expo-authkit-example) | Expo + WorkOS AuthKit with PKCE, SecureStore, WebBrowser | No Convex, no monorepo |
-| 2 | [get-convex/turbo-expo-nextjs-clerk-convex-monorepo](https://github.com/get-convex/turbo-expo-nextjs-clerk-convex-monorepo) | Monorepo structure for Convex + Expo | Uses Clerk (not AuthKit), yarn not pnpm |
-| 3 | [get-convex/templates/template-react-vite-authkit](https://github.com/get-convex/templates/tree/main/template-react-vite-authkit) | Convex + AuthKit (React web) with `ConvexProviderWithAuthKit` | Web only, no Expo, no monorepo |
-| 4 | [get-convex/workos-authkit](https://github.com/get-convex/workos-authkit) | `@convex-dev/workos-authkit` component for user syncing via webhooks | Web only, no Expo |
-| 5 | [Convex docs: Auth with AuthKit](https://docs.convex.dev/auth/authkit) | Official Convex + AuthKit setup (React & Next.js) | No Expo/React Native |
-| 6 | [Convex docs: React Native Quickstart](https://docs.convex.dev/quickstart/react-native) | Basic Convex + Expo setup | No auth |
-| 7 | [WorkOS docs: React Native Expo](https://workos.com/docs/integrations/react-native-expo) | WorkOS SSO in Expo using AuthSession + WebBrowser | Older SSO-only approach, no PKCE, no Convex |
-| 8 | [Expo docs: Authentication](https://docs.expo.dev/guides/authentication/) | General OAuth patterns with `expo-auth-session` | No WorkOS-specific guidance |
-| 9 | [Expo docs: Using Convex](https://docs.expo.dev/guides/using-convex/) | Basic Convex integration in Expo | No auth |
+| #   | Reference                                                                                                                         | What it covers                                                       | What it lacks                               |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
+| 1   | [workos/expo-authkit-example](https://github.com/workos/expo-authkit-example)                                                     | Expo + WorkOS AuthKit with PKCE, SecureStore, WebBrowser             | No Convex, no monorepo                      |
+| 2   | [get-convex/turbo-expo-nextjs-clerk-convex-monorepo](https://github.com/get-convex/turbo-expo-nextjs-clerk-convex-monorepo)       | Monorepo structure for Convex + Expo                                 | Uses Clerk (not AuthKit), yarn not pnpm     |
+| 3   | [get-convex/templates/template-react-vite-authkit](https://github.com/get-convex/templates/tree/main/template-react-vite-authkit) | Convex + AuthKit (React web) with `ConvexProviderWithAuthKit`        | Web only, no Expo, no monorepo              |
+| 4   | [get-convex/workos-authkit](https://github.com/get-convex/workos-authkit)                                                         | `@convex-dev/workos-authkit` component for user syncing via webhooks | Web only, no Expo                           |
+| 5   | [Convex docs: Auth with AuthKit](https://docs.convex.dev/auth/authkit)                                                            | Official Convex + AuthKit setup (React & Next.js)                    | No Expo/React Native                        |
+| 6   | [Convex docs: React Native Quickstart](https://docs.convex.dev/quickstart/react-native)                                           | Basic Convex + Expo setup                                            | No auth                                     |
+| 7   | [WorkOS docs: React Native Expo](https://workos.com/docs/integrations/react-native-expo)                                          | WorkOS SSO in Expo using AuthSession + WebBrowser                    | Older SSO-only approach, no PKCE, no Convex |
+| 8   | [Expo docs: Authentication](https://docs.expo.dev/guides/authentication/)                                                         | General OAuth patterns with `expo-auth-session`                      | No WorkOS-specific guidance                 |
+| 9   | [Expo docs: Using Convex](https://docs.expo.dev/guides/using-convex/)                                                             | Basic Convex integration in Expo                                     | No auth                                     |
 
 ---
 
@@ -49,6 +50,7 @@ Our monorepo (`letuscook`) already has:
 #### Option A: Use `@workos-inc/node` SDK directly with PKCE (from Reference 1)
 
 **How it works:**
+
 1. Use `WorkOS` from `@workos-inc/node` in "public client mode" (no API key needed for PKCE)
 2. Generate auth URL with `workos.userManagement.getAuthorizationUrlWithPKCE()`
 3. Open in `WebBrowser.openAuthSessionAsync()`
@@ -58,12 +60,14 @@ Our monorepo (`letuscook`) already has:
 7. Pass access token to Convex via `ConvexProviderWithAuth`
 
 **Requires:**
+
 - WebCrypto polyfill (`expo-standard-web-crypto` + `expo-crypto`) for PKCE
 - Custom `AuthContext` managing all auth state
 - Custom token refresh logic
 - Manual `fetchAccessToken` implementation for Convex
 
 **Polyfill setup** (from Reference 1):
+
 ```typescript
 // src/polyfills.ts — MUST be imported first in entry point
 import { polyfillWebCrypto } from 'expo-standard-web-crypto';
@@ -84,6 +88,7 @@ registerRootComponent(App);
 ```
 
 **Dependencies:**
+
 - `@workos-inc/node` ^8.0.0
 - `expo-web-browser`
 - `expo-linking`
@@ -94,22 +99,26 @@ registerRootComponent(App);
 #### Option B: Use `@workos-inc/authkit-react` SDK (from References 3, 5)
 
 **How it works:**
+
 1. Use `AuthKitProvider` and `useAuth()` from `@workos-inc/authkit-react`
 2. SDK handles auth flow, token storage, and refresh internally
 3. Bridge to Convex via `ConvexProviderWithAuthKit` from `@convex-dev/workos`
 4. SDK uses `getAccessToken()` which Convex provider calls to get JWT
 
 **Requires:**
+
 - CORS configured in WorkOS Dashboard for the app domain
 - The `authkit-react` SDK — designed for web browsers; **unclear if it works in React Native**
 
 **Dependencies:**
+
 - `@workos-inc/authkit-react` ^0.16.0
 - `@convex-dev/workos` (provides `ConvexProviderWithAuthKit`)
 
 ### Recommended: Option A (PKCE with `@workos-inc/node`)
 
 **Rationale:**
+
 - `@workos-inc/authkit-react` is designed for web and relies on browser-specific APIs (window.location, cookies, CORS). It will NOT work in React Native without major workarounds.
 - The `expo-authkit-example` (Reference 1) is the official WorkOS example for React Native and uses the `@workos-inc/node` SDK with PKCE.
 - PKCE is the standard for native mobile OAuth — it avoids exposing client secrets.
@@ -122,7 +131,9 @@ registerRootComponent(App);
 ### Layer 1: Convex Backend (`apps/assistant-convex`)
 
 #### auth.config.ts (Already exists)
+
 The current `auth.config.ts` is correct and matches all references:
+
 ```typescript
 // apps/assistant-convex/convex/auth.config.ts
 import { AuthConfig } from 'convex/server';
@@ -151,16 +162,18 @@ export default {
 #### Optional: `@convex-dev/workos-authkit` Component (from Reference 4)
 
 This is an **additional layer** for syncing WorkOS user data to Convex via webhooks. It provides:
+
 - Automatic user create/update/delete syncing from WorkOS events
 - `getAuthUser()` helper for querying the synced user
 - Action handlers for custom auth/registration logic
 - HTTP route handler for WorkOS webhooks
 
 **Setup requires:**
+
 ```typescript
 // convex/convex.config.ts
-import workOSAuthKit from "@convex-dev/workos-authkit/convex.config";
-import { defineApp } from "convex/server";
+import workOSAuthKit from '@convex-dev/workos-authkit/convex.config';
+import { defineApp } from 'convex/server';
 const app = defineApp();
 app.use(workOSAuthKit);
 export default app;
@@ -168,21 +181,22 @@ export default app;
 
 ```typescript
 // convex/auth.ts
-import { AuthKit } from "@convex-dev/workos-authkit";
-import { components } from "./_generated/api";
+import { AuthKit } from '@convex-dev/workos-authkit';
+import { components } from './_generated/api';
 export const authKit = new AuthKit(components.workOSAuthKit);
 ```
 
 ```typescript
 // convex/http.ts
-import { httpRouter } from "convex/server";
-import { authKit } from "./auth";
+import { httpRouter } from 'convex/server';
+import { authKit } from './auth';
 const http = httpRouter();
 authKit.registerRoutes(http);
 export default http;
 ```
 
 **Environment variables needed on Convex:**
+
 - `WORKOS_CLIENT_ID`
 - `WORKOS_API_KEY`
 - `WORKOS_WEBHOOK_SECRET`
@@ -199,11 +213,13 @@ The expo-authkit-example uses a custom `index.ts` entry point with polyfills loa
 Since Expo Router uses `expo-router/entry` as the entry point, the polyfill must be loaded in the root layout before any auth code runs. Alternatively, we can set a custom entry point.
 
 **Recommended approach — custom entry via `package.json`:**
+
 ```json
 {
   "main": "./index.ts"
 }
 ```
+
 ```typescript
 // index.ts
 import './src/polyfills';
@@ -236,6 +252,7 @@ const workos = new WorkOS({ clientId: WORKOS_CLIENT_ID });
 #### Auth Context (`src/context/AuthContext.tsx`)
 
 Adapted from Reference 1. Key responsibilities:
+
 1. Load stored session on mount
 2. Handle deep link callbacks for OAuth redirect
 3. Provide `signIn` / `signOut` / `user` / `loading` state
@@ -248,6 +265,7 @@ Adapted from Reference 1. Key responsibilities:
 ```
 
 **Deep linking setup:**
+
 - `expo-linking` handles the `letuscook://callback` redirect
 - Both warm-start (via `WebBrowser.openAuthSessionAsync` return value) and cold-start (via `Linking.addEventListener`) must be handled
 
@@ -293,6 +311,7 @@ function useAuthFromWorkOS() {
 The `@workos-inc/node` SDK and crypto polyfills are only needed in `apps/assistant-mobile`. The Convex auth config and `@convex-dev/workos-authkit` component are only in `apps/assistant-convex`.
 
 **assistant-mobile/package.json additions:**
+
 ```json
 {
   "dependencies": {
@@ -307,6 +326,7 @@ The `@workos-inc/node` SDK and crypto polyfills are only needed in `apps/assista
 ```
 
 **assistant-convex/package.json additions (if using the component):**
+
 ```json
 {
   "dependencies": {
@@ -319,6 +339,7 @@ The `@workos-inc/node` SDK and crypto polyfills are only needed in `apps/assista
 #### app.config.ts Changes
 
 The scheme is already `letuscook`. We need to add plugins:
+
 ```typescript
 plugins: [
   'expo-router',
@@ -331,6 +352,7 @@ plugins: [
 #### Development Build Required
 
 A development build (`npx expo run:ios` / `run:android`) is required because:
+
 1. Expo Go cannot handle custom URL schemes for OAuth callbacks
 2. The `expo-crypto` native module requires compilation
 3. `expo-secure-store` requires native code
@@ -340,12 +362,14 @@ A development build (`npx expo run:ios` / `run:android`) is required because:
 ## Environment Variables
 
 ### Expo app (`apps/assistant-mobile/.env`)
+
 ```
 EXPO_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 EXPO_PUBLIC_WORKOS_CLIENT_ID=client_XXXXXXXXX
 ```
 
 ### Convex deployment (via `npx convex env set`)
+
 ```
 WORKOS_CLIENT_ID=client_XXXXXXXXX
 WORKOS_API_KEY=sk_test_...          # Only if using @convex-dev/workos-authkit
@@ -353,6 +377,7 @@ WORKOS_WEBHOOK_SECRET=whsec_...     # Only if using @convex-dev/workos-authkit
 ```
 
 ### WorkOS Dashboard Configuration
+
 - **Redirect URI**: `letuscook://callback`
 - **Sessions > CORS**: Not needed for mobile (CORS is a browser concept)
 
@@ -367,11 +392,12 @@ WORKOS_WEBHOOK_SECRET=whsec_...     # Only if using @convex-dev/workos-authkit
 2. **`getAuthUser(ctx)`**: Query helper that reads the current authenticated user from the component's internal user table by matching `ctx.auth.getUserIdentity().subject`.
 
 3. **Event handlers**: Custom logic when users are created/updated/deleted:
+
 ```typescript
 export const { authKitEvent } = authKit.events({
-  "user.created": async (ctx, event) => {
+  'user.created': async (ctx, event) => {
     // Create row in your own users table
-    await ctx.db.insert("users", {
+    await ctx.db.insert('users', {
       authId: event.data.id,
       email: event.data.email,
       name: `${event.data.firstName} ${event.data.lastName}`,
@@ -381,11 +407,12 @@ export const { authKitEvent } = authKit.events({
 ```
 
 4. **Action handlers**: Block registration/authentication:
+
 ```typescript
 export const { authKitAction } = authKit.actions({
   userRegistration: async (_ctx, action, response) => {
-    if (action.userData.email.endsWith("@blocked.com")) {
-      return response.deny("Not allowed");
+    if (action.userData.email.endsWith('@blocked.com')) {
+      return response.deny('Not allowed');
     }
     return response.allow();
   },
@@ -396,28 +423,32 @@ export const { authKitAction } = authKit.actions({
 
 ### Comparison: Manual vs Component User Syncing
 
-| Aspect | Current Manual Approach | `@convex-dev/workos-authkit` Component |
-|--------|------------------------|---------------------------------------|
-| User creation | Client calls `createOrUpdateUser` mutation after login | Webhook-driven, automatic |
-| User updates | Only on login | Real-time via webhook events |
-| User deletion | Not handled | Automatic via webhook |
-| Out-of-band changes | Not detected | Caught by webhooks |
-| Admin actions in WorkOS | Not synced | Synced automatically |
-| Dependencies | None | `@convex-dev/workos-authkit`, `@workos-inc/node` |
-| Setup complexity | Simple | Requires webhook config + env vars |
+| Aspect                  | Current Manual Approach                                | `@convex-dev/workos-authkit` Component           |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------------ |
+| User creation           | Client calls `createOrUpdateUser` mutation after login | Webhook-driven, automatic                        |
+| User updates            | Only on login                                          | Real-time via webhook events                     |
+| User deletion           | Not handled                                            | Automatic via webhook                            |
+| Out-of-band changes     | Not detected                                           | Caught by webhooks                               |
+| Admin actions in WorkOS | Not synced                                             | Synced automatically                             |
+| Dependencies            | None                                                   | `@convex-dev/workos-authkit`, `@workos-inc/node` |
+| Setup complexity        | Simple                                                 | Requires webhook config + env vars               |
 
 ---
 
 ## File-by-File Implementation Reference
 
 ### `apps/assistant-mobile/index.ts` (New file)
+
 Entry point that loads polyfills before Expo Router.
 
 ### `apps/assistant-mobile/src/polyfills.ts` (New file)
+
 WebCrypto polyfill using `expo-standard-web-crypto` + `expo-crypto`.
 
 ### `apps/assistant-mobile/src/lib/auth.ts` (New file)
+
 Core auth logic adapted from Reference 1. Functions:
+
 - `getSignInUrl()` — PKCE auth URL generation
 - `handleCallback(code)` — Token exchange
 - `getUser()` — Current user with auto-refresh
@@ -426,14 +457,18 @@ Core auth logic adapted from Reference 1. Functions:
 - `getSessionId()` / `getLogoutUrl()` — WorkOS logout
 
 ### `apps/assistant-mobile/src/context/AuthContext.tsx` (New file)
+
 React context providing auth state. Handles:
+
 - Session restoration on mount
 - Deep link callback handling
 - Sign in/out flows
 - Token provision for Convex
 
 ### `apps/assistant-mobile/src/app/_layout.tsx` (Modify)
+
 Wrap with providers:
+
 ```tsx
 <AuthProvider>
   <ConvexProviderWithAuth client={convex} useAuth={useAuthHook}>
@@ -443,18 +478,23 @@ Wrap with providers:
 ```
 
 ### `apps/assistant-mobile/app.config.ts` (Modify)
+
 Add `expo-web-browser` and `expo-secure-store` to plugins array.
 
 ### `apps/assistant-convex/convex/auth.config.ts` (No changes needed)
+
 Already correctly configured.
 
 ### `apps/assistant-convex/convex/convex.config.ts` (New file — only if using component)
+
 Register `@convex-dev/workos-authkit` component.
 
 ### `apps/assistant-convex/convex/http.ts` (New file — only if using component)
+
 Register webhook routes.
 
 ### `apps/assistant-convex/convex/auth.ts` (New file — only if using component)
+
 AuthKit client + event/action handlers.
 
 ---
