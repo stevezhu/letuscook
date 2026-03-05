@@ -84,7 +84,6 @@ export function createAuthProvider({
 
       const subscription = Linking.addEventListener('url', handleUrl);
       Linking.getInitialURL().then((url) => {
-        console.log('initial url', url);
         if (url) handleUrl({ url });
       });
 
@@ -98,13 +97,12 @@ export function createAuthProvider({
       try {
         console.log('[Auth] Starting sign in...');
         setLoading(true);
-        const url = await authClient.getSignInUrl();
+        const redirectUri = authClient.getRedirectUri();
+        console.log('[Auth] Redirect URI:', redirectUri);
+        const url = await authClient.getSignInUrl({ redirectUri });
         console.log('[Auth] Got sign in URL');
 
-        const result = await WebBrowser.openAuthSessionAsync(
-          url,
-          authClient.getRedirectUri(),
-        );
+        const result = await WebBrowser.openAuthSessionAsync(url, redirectUri);
         console.log('[Auth] WebBrowser result:', result.type);
 
         if (result.type !== 'success' || !result.url) {
@@ -147,7 +145,12 @@ export function createAuthProvider({
         setUser(null);
 
         if (sessionId) {
-          await WebBrowser.openBrowserAsync(authClient.getLogoutUrl(sessionId));
+          const returnTo = authClient.getRedirectUri();
+          console.log('[Auth] Return to:', returnTo);
+
+          const logoutUrl = authClient.getLogoutUrl({ sessionId, returnTo });
+          console.log('[Auth] Logout URL:', logoutUrl);
+          await WebBrowser.openAuthSessionAsync(logoutUrl, returnTo);
         }
 
         return { success: true };

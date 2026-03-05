@@ -12,6 +12,7 @@
  * Note: Requires react-native-quick-crypto polyfill (see src/polyfills.ts)
  */
 import { WorkOS } from '@workos-inc/node';
+import * as AuthSession from 'expo-auth-session';
 import * as SecureStore from 'expo-secure-store';
 
 // Environment variables (set in .env or app.config.js)
@@ -66,24 +67,19 @@ function parseJwtPayload(token: string): Record<string, unknown> {
 export class ExpoAuthClient {
   private sessionKey: string;
   private pkceKey: string;
-  // Custom URL scheme for OAuth callback
-  private redirectUri: string;
   private workos: WorkOS;
 
   constructor({
     sessionKey,
     pkceKey,
     clientId,
-    redirectUri,
   }: {
     sessionKey: string;
     pkceKey: string;
     clientId: string;
-    redirectUri: string;
   }) {
     this.sessionKey = sessionKey;
     this.pkceKey = pkceKey;
-    this.redirectUri = redirectUri;
     // Initialize WorkOS in public client mode (no API key needed for PKCE)
     this.workos = new WorkOS({ clientId });
   }
@@ -124,18 +120,25 @@ export class ExpoAuthClient {
     await SecureStore.deleteItemAsync(this.pkceKey);
   }
 
-  getRedirectUri(): string {
-    return this.redirectUri;
+  getRedirectUri({ path }: { path?: string } = {}): string {
+    return AuthSession.makeRedirectUri({
+      isTripleSlashed: true,
+      path,
+    });
   }
 
   /**
    * Generate sign-in URL with PKCE challenge.
    * The WorkOS SDK handles PKCE generation automatically via getAuthorizationUrlWithPKCE.
    */
-  async getSignInUrl(): Promise<string> {
+  async getSignInUrl({
+    redirectUri,
+  }: {
+    redirectUri: string;
+  }): Promise<string> {
     const { url, codeVerifier } =
       await this.workos.userManagement.getAuthorizationUrlWithPKCE({
-        redirectUri: this.redirectUri,
+        redirectUri,
         provider: 'authkit',
       });
 
@@ -152,10 +155,16 @@ export class ExpoAuthClient {
   /**
    * Get WorkOS logout URL for the current session.
    */
-  getLogoutUrl(sessionId: string): string {
+  getLogoutUrl({
+    sessionId,
+    returnTo,
+  }: {
+    sessionId: string;
+    returnTo?: string;
+  }): string {
     return this.workos.userManagement.getLogoutUrl({
       sessionId,
-      returnTo: this.redirectUri,
+      returnTo,
     });
   }
 

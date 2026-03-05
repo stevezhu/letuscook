@@ -6,6 +6,7 @@ import {
 import { Button } from '@workspace/rn-reusables/components/button';
 import { Separator } from '@workspace/rn-reusables/components/separator';
 import { Text } from '@workspace/rn-reusables/components/text';
+import { Redirect } from 'expo-router';
 import { View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.js';
@@ -13,7 +14,7 @@ import { useAuth } from '#modules/auth/auth-context.js';
 export default function AccountIndex() {
   const { user, signOut } = useAuth();
   if (!user) {
-    throw new Error('User not found');
+    return <Redirect href="/" />;
   }
 
   return (

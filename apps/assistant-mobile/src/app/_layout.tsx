@@ -18,11 +18,7 @@ import {
 import { Uniwind } from 'uniwind';
 
 import { AnimatedSplashOverlay } from '#components/animated-icon.js';
-import {
-  CONVEX_URL,
-  WORKOS_REDIRECT_URI,
-  WORKOS_CLIENT_ID,
-} from '#constants/env.js';
+import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.js';
 import { createAuthProvider, useAuth } from '#modules/auth/auth-context.js';
 import { ExpoAuthClient } from '#modules/auth/auth.js';
 
@@ -49,7 +45,6 @@ const authClient = once(
   () =>
     new ExpoAuthClient({
       clientId: WORKOS_CLIENT_ID,
-      redirectUri: WORKOS_REDIRECT_URI,
       sessionKey: 'workos_session',
       pkceKey: 'workos_pkce',
     }),
