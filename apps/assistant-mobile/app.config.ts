@@ -1,5 +1,5 @@
 import constants from '@workspace/constants' with { type: 'json' };
-import { ExpoConfig, ConfigContext } from 'expo/config/index.js';
+import type { ExpoConfig, ConfigContext } from 'expo/config/index.js';
 
 import packageJson from './package.json' with { type: 'json' };
 
@@ -31,8 +31,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/favicon.png',
   },
   plugins: [
+    'expo-image',
     'expo-router',
-    'expo-web-browser',
     'expo-secure-store',
     [
       'expo-splash-screen',
@@ -44,6 +44,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    'expo-web-browser',
   ],
   experiments: {
     typedRoutes: true,

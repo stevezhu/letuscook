@@ -8,6 +8,7 @@
     "allowJs": true,
     "maxNodeModuleJsDepth": 1,
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "composite": true,
     "skipLibCheck": true
   }
