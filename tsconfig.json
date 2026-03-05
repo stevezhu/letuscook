@@ -1,0 +1,8 @@
+{
+  "include": ["*.config.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "module": "node20",
+    "moduleResolution": "node16"
+  }
+}

@@ -9,8 +9,5 @@
     "uniwind-types.d.ts"
   ],
   "references": [{ "path": "./tsconfig.config.json" }],
-  "compilerOptions": {
-    "strict": true,
-    "moduleResolution": "bundler"
-  }
+  "compilerOptions": { "strict": true, "moduleResolution": "bundler" }
 }

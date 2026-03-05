@@ -11,7 +11,7 @@ catalog:
   '@stzhu/eslint-config': ^0.10.0
   '@stzhu/prettier-plugin-tsconfig': ^0.7.1
   '@stzhu/tsconfig': ^0.1.1
-  '@types/node': ^25.3.0
+  '@types/node': ^25.3.3
   '@types/react': ^19.2.14
   '@types/react-dom': ^19.2.3
   electron: ^40.6.0
@@ -24,37 +24,6 @@ catalog:
   typescript: ^5.9.3
   vite: ^7.3.1
   vitest: ^4.0.18
-
-catalogs:
-  mobile:
-    '@expo/metro-runtime': ~55.0.6
-    '@react-navigation/native': ^7.1.31
-    '@types/react': ~19.2.14
-    expo: ~55.0.2
-    expo-constants: ~55.0.7
-    expo-device: ~55.0.9
-    expo-font: ~55.0.4
-    expo-glass-effect: ~55.0.7
-    expo-haptics: ~55.0.8
-    expo-image: ~55.0.5
-    expo-linking: ~55.0.7
-    expo-router: ~55.0.2
-    expo-splash-screen: ~55.0.9
-    expo-status-bar: ~55.0.4
-    expo-symbols: ~55.0.4
-    expo-system-ui: ~55.0.9
-    expo-updates: ~55.0.11
-    expo-web-browser: ~55.0.9
-    react: 19.2.0
-    react-dom: 19.2.0
-    react-native: 0.83.2
-    react-native-gesture-handler: ~2.30.0
-    react-native-reanimated: 4.2.1
-    react-native-safe-area-context: ~5.6.2
-    react-native-screens: ~4.23.0
-    react-native-web: ~0.21.2
-    react-native-worklets: 0.7.2
-    uniwind: ^1.4.0
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
