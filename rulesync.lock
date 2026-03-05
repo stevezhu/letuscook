@@ -4,7 +4,7 @@
     "antfu/skills": {
       "requestedRef": "main",
       "resolvedRef": "3fb90f01f5298b00de0a2500aab1ddd1357e6eb2",
-      "resolvedAt": "2026-03-02T23:37:21.205Z",
+      "resolvedAt": "2026-03-05T04:01:08.095Z",
       "skills": {
         "pnpm": {
           "integrity": "sha256-4c071c7abc636e3fbba9ff3b7248d7abae31a9062c7435baf37651b430815de3"
@@ -22,8 +22,8 @@
     },
     "anthropics/skills": {
       "requestedRef": "main",
-      "resolvedRef": "3d59511518591fa82e6cfcf0438d68dd5dad3e76",
-      "resolvedAt": "2026-03-02T23:37:24.870Z",
+      "resolvedRef": "7029232b9212482c0476da354b83364bd28fab2f",
+      "resolvedAt": "2026-03-05T04:01:13.748Z",
       "skills": {
         "doc-coauthoring": {
           "integrity": "sha256-fd8325cb199c45d53792e9fbc144d72832900c77aa31bc3b781099d5cbe81266"
@@ -38,111 +38,111 @@
     },
     "coreyhaines31/marketingskills": {
       "requestedRef": "main",
-      "resolvedRef": "a3516be13d24b5e2fc1be6b3c1f24ca380b895d7",
-      "resolvedAt": "2026-03-02T23:37:45.055Z",
+      "resolvedRef": "2f5db8d95cff07fcc67d6f2be7fb0a677bf897e6",
+      "resolvedAt": "2026-03-05T04:01:43.783Z",
       "skills": {
         "ab-test-setup": {
-          "integrity": "sha256-6b088e0e820e45bab5a9e2672eeaa33b3b41b9161f156a844166d08bd61572be"
+          "integrity": "sha256-7f8a3201004d515e4665639d789e5d4031ab7f903ae3ddfeeb07762777d9b512"
         },
         "ad-creative": {
-          "integrity": "sha256-88f6c4be0a446feb187078f52856f8b00ec6b10477739f21cfe58b3f493f2b2f"
+          "integrity": "sha256-0d5339fdce1388537b6d6fd50b49b3972757edf5953b71a2ac5c342ed2ebc866"
         },
         "ai-seo": {
-          "integrity": "sha256-b5a68032a0cef77b3146697d2eb30b929aadad5dd01c9bf96a544eb7ac845b25"
+          "integrity": "sha256-6103cc9ce7d221a25ffdfd4ef72cf42dc9a06e104a89b2c93be0a2f40d2cd02c"
         },
         "analytics-tracking": {
-          "integrity": "sha256-f9e82b03f02c3a935b205963af83fde82454e1b59904a831dbc7743c010785bc"
+          "integrity": "sha256-757d45338d686b7717a4bd66f24f78167e0cc81ea32ff58d8487afd6a3519e0b"
         },
         "churn-prevention": {
-          "integrity": "sha256-e7d3a7749b5ad0b307965b7de3feff6b9cb5993892a222b9c99e36bc70eb9cd5"
+          "integrity": "sha256-c7f601d93a607ca30920293f2127ba1cfdbf176e28e69f345c2817be1a764c3a"
         },
         "cold-email": {
-          "integrity": "sha256-76c2397b6d79fa82e8046e533b700b0981f4fba2fda9ec59c989478404427f41"
+          "integrity": "sha256-a02e3342c0b671f8031fb86117b12ae1d5630257302c0633e2ea08719a7886f0"
         },
         "competitor-alternatives": {
-          "integrity": "sha256-67fb797d4090fa03e5fb124c8c4ff2f3f2b1be324b88dc20dbda20173d3fb862"
+          "integrity": "sha256-564479067ff0d64545b2715069ec8fab3d08c47038d2c7cadff5e082730b5cf9"
         },
         "content-strategy": {
-          "integrity": "sha256-de940c752efb80a409c0cac69ec5c5cf930c665fe3e0481afc72d7b0f56f712a"
+          "integrity": "sha256-7d622fa4a286768b6f0d8a47ab435dff64340fb7be1e463a442725e185549dc3"
         },
         "copy-editing": {
-          "integrity": "sha256-2002a86f204654b11ab7897cc444594067858c183ed6aca8153304160b96c9fb"
+          "integrity": "sha256-24b45df01a2f771e2d6be32877f39756712d23bbf76d6c4c04d9b1e60bf3c812"
         },
         "copywriting": {
-          "integrity": "sha256-dc3eee9e9664633814d5e5727175bf2939f4b26b230188362f5428c785f1fd47"
+          "integrity": "sha256-d8074b4718afad4cfcda115a1003dab5b814ceea7a4a58768ca432429624ee9b"
         },
         "email-sequence": {
-          "integrity": "sha256-5da9d28d548e5e47ef772e7194e1458097a2c5489ba70040dc0d71bc95eae207"
+          "integrity": "sha256-a5f44981d32a76f98a28f033110b1f59a6686dfdc6b1b3ce7e7468ab608894d4"
         },
         "form-cro": {
-          "integrity": "sha256-14d6bf5980acf555f0e87c18e30c0e229dbb62ad3d360ac5e58b630aaf405804"
+          "integrity": "sha256-04bde943082e8d5631958efea2d1496d87f7fecb8692a9f4441cc6fe6d58b950"
         },
         "free-tool-strategy": {
-          "integrity": "sha256-6363e05dfe4e87b1bb5cd48cb63214b9627bf70b2465f2abf4e9eb9862fd7e35"
+          "integrity": "sha256-2790a3d7b4d63ede4b15fbd22a3ff094dae3e2e5578f0e12777c01912b494aca"
         },
         "launch-strategy": {
-          "integrity": "sha256-efc6e91e8ba3682b222142cb711fa125174aae25ed522e85bc90dd36c1192ac9"
+          "integrity": "sha256-11b73e17e58a951e2682ebd320e54978f4c918895512f094e1a96e58d69e889c"
         },
         "marketing-ideas": {
-          "integrity": "sha256-14156f4cdc63d904c6df535d6f7826c32d8cd2fcee8897f079fd9507b05be9d6"
+          "integrity": "sha256-e615a56e025620d6bd112feedc5c18d9e0b6c36873907f330661ff73cc1e4fa2"
         },
         "marketing-psychology": {
-          "integrity": "sha256-bdee9170f88e9fa8a43e8e3ca5a6d4bb6ac05723b2b0024d9b42c60b531f10b0"
+          "integrity": "sha256-0cb6c8a63cc02ce446f4f1372c91844f745e487b06a55513e5b35caaf5e040d4"
         },
         "onboarding-cro": {
-          "integrity": "sha256-db4b6101538e7fab79b74d66723571e2c5403c83a399fa4025af5f9dafcaecdb"
+          "integrity": "sha256-99f4eca4807c285239a9918d22062a3b447eefb6c54f923ab03d9f967eadec8f"
         },
         "page-cro": {
-          "integrity": "sha256-19dccb52feb65e43650f0d8329da5761e0f89f8abf390761e133da6ad31b4151"
+          "integrity": "sha256-cb8d4afe44bf52e8c3eb0bf8bab8fdce88af436964fd7ef828327c07b84379f2"
         },
         "paid-ads": {
-          "integrity": "sha256-d53ad1196f91978688718c6b36855da4be1dfbf61a3a0ca4a74fec826bf99842"
+          "integrity": "sha256-b6ae92f8b4171b6c7eddba650bbe2ade3c39f7cebca2327b0f84afeef2e1db47"
         },
         "paywall-upgrade-cro": {
-          "integrity": "sha256-1d6cfc83d1778393a9dba9a3d38868cf2140ceea18c599400bddef2665aa28f8"
+          "integrity": "sha256-f817eaaefe55809bd2427a4b468db2e2da758dc24818b44d0b67f84ba00c8e94"
         },
         "popup-cro": {
-          "integrity": "sha256-03f1fb91de5bb426279aef2ec28f59c7d8262f760ffd1597fd5148cdb8f6b27e"
+          "integrity": "sha256-6bcb73bb2d8be6fac2c9d62906e60e0073b61a981ccc90c51315518bd4e6c5f4"
         },
         "pricing-strategy": {
-          "integrity": "sha256-647418d662182276c3d40f9c828f718935fbab1604cf4466712c9a111462a9cf"
+          "integrity": "sha256-7567c252a1b76aeaa695afb56e353ee841051810072ce6ef9d4d2111ad613eaa"
         },
         "product-marketing-context": {
-          "integrity": "sha256-16653edad8aee36df90c53635328da9ca4b87fb47f4aeadfd3d1ecd46a503ef3"
+          "integrity": "sha256-c2929bf4c4f104cbd59ce34cbdc4b5911eb72ead065f1b674bffa8f28002c3eb"
         },
         "programmatic-seo": {
-          "integrity": "sha256-08eda75052862262d9bed9ac119e8178d3877c1b445ee9bdf334bbcf5b61c432"
+          "integrity": "sha256-b2729730d4da6fcd4bcaa2ba5f94169b30dbe28f67ed246bc91d00990d473324"
         },
         "referral-program": {
-          "integrity": "sha256-d4e453920db46965bf85af308e9eb2ba61ab17e70c5d166901b8e302f22b901c"
+          "integrity": "sha256-0addee2516429f0baee2e001c98ebd59d7a618a278cf7830431e028a2093500c"
         },
         "revops": {
-          "integrity": "sha256-6f5b8c2f7f238167083ce255cc6d3330b926f8eea718f9e79fb7a3f1a2dac58e"
+          "integrity": "sha256-5afe3ac0f47c1503a86ed4186a437ccaefa82b3233d5ad49a3d0af62a9de0d9a"
         },
         "sales-enablement": {
-          "integrity": "sha256-695779a9edfd8e9b463fd23e4021a8056e797338e4f84e5c344d7c87f4a0a137"
+          "integrity": "sha256-4e622e947d2dec51d2a87e5606509b2cf090fcd91fe117e503fc2503b85f7db0"
         },
         "schema-markup": {
-          "integrity": "sha256-56fb1f7a9c4decc8a79f3aafe975217b1838a997400b5abf9555b3297775ae70"
+          "integrity": "sha256-c615859aa70d2ddc7dc847a1d40c12a70b20844248a91370cfc0ea514ac3be76"
         },
         "seo-audit": {
-          "integrity": "sha256-fa7dd32ed15c680d38ac0744cd7b67ace5ba0f70f5a4da497bbaea47285a7cff"
+          "integrity": "sha256-a6c94bab3dbdbeaa9f80d54f145c126ad699e4e880e2e88bdeb9024018984f65"
         },
         "signup-flow-cro": {
-          "integrity": "sha256-a53fe01869271d290e7264eb923d18403931b89a9907792953b2a4c637b61a90"
+          "integrity": "sha256-24b8dcc04b2a1959ae9be70e8af09188403f5e6a162c77afb615eb45ac479df3"
         },
         "site-architecture": {
-          "integrity": "sha256-a09861ed5d898d1bfe860b610e6fae5f04f6491c815f50ae22972754ff7d9a3f"
+          "integrity": "sha256-5ae06d389f0a23cc10388404956c29bb2526416810be2b01c0e3246b8d788d02"
         },
         "social-content": {
-          "integrity": "sha256-a161434bfd3bb4adfd61e6f432843d79f295ae6da1e7c40e43b23f9ad98928ba"
+          "integrity": "sha256-db74774a9d9568d38b22e4dce0c8d8cf8553e81c04a8bd1c7826d696b4b18f56"
         }
       }
     },
     "expo/skills:plugins/expo-app-design/skills": {
       "requestedRef": "main",
-      "resolvedRef": "7f9d6a9aad51236f68433b028a8e2940515f0ff2",
-      "resolvedAt": "2026-03-02T23:37:47.927Z",
+      "resolvedRef": "46fa1f8b93479046445706c528af4c70d270e727",
+      "resolvedAt": "2026-03-05T04:01:47.442Z",
       "skills": {
         "building-native-ui": {
           "integrity": "sha256-860b96caf314d600a9df2bbac10c9288a562d340719fedc0546c7e362da64814"
@@ -155,7 +155,7 @@
     "google-labs-code/stitch-skills": {
       "requestedRef": "main",
       "resolvedRef": "51d6d5ab56b9b46e1947bc4dabcd7f53bd343b3e",
-      "resolvedAt": "2026-03-02T23:37:48.965Z",
+      "resolvedAt": "2026-03-05T04:01:49.186Z",
       "skills": {
         "design-md": {
           "integrity": "sha256-bee75bd0e412811b5c1b778a2b79c191257afce42c1cf1d18f68388c0c7c065b"
@@ -165,7 +165,7 @@
     "charl-kruger/mdrip": {
       "requestedRef": "main",
       "resolvedRef": "3bc11285b4c6c3a498e1d4eeebe17dde447bebf2",
-      "resolvedAt": "2026-03-02T23:37:49.885Z",
+      "resolvedAt": "2026-03-05T04:01:51.433Z",
       "skills": {
         "mdrip": {
           "integrity": "sha256-74078e7e7778c0a3145fc9c90e1df44409ea20702e2f6bea664fc7404711f9b6"
@@ -175,7 +175,7 @@
     "obra/superpowers": {
       "requestedRef": "main",
       "resolvedRef": "e4a2375cb705ca5800f0833528ce36a3faf9017a",
-      "resolvedAt": "2026-03-02T23:37:58.294Z",
+      "resolvedAt": "2026-03-05T04:01:59.836Z",
       "skills": {
         "brainstorming": {
           "integrity": "sha256-c22d161df902cd08a6eaf43a8da9c0b8d8811d706f88c2c6489d0596648ec8d4"
@@ -224,7 +224,7 @@
     "pproenca/dot-skills:skills/.experimental": {
       "requestedRef": "master",
       "resolvedRef": "6df0cbb9974298eeb109c9aaead853db8394cf54",
-      "resolvedAt": "2026-03-02T23:38:20.401Z",
+      "resolvedAt": "2026-03-05T04:02:27.073Z",
       "skills": {
         "expo-react-native-coder": {
           "integrity": "sha256-aa8ebddc3dfbeaa938786d0c31319655e4d6be7681d740f6a055d423badcd285"
@@ -237,10 +237,20 @@
         }
       }
     },
+    "stevezhu/skills": {
+      "requestedRef": "main",
+      "resolvedRef": "f866c489b3a0444f578051e0034655d20de7ed3f",
+      "resolvedAt": "2026-03-05T04:02:28.607Z",
+      "skills": {
+        "agent-logbook": {
+          "integrity": "sha256-485f4557c812ef8e300669ca23f331d8cc6d57bd28b6b1818397a3025756c1f9"
+        }
+      }
+    },
     "vercel-labs/agent-skills": {
       "requestedRef": "main",
       "resolvedRef": "cc8bd7a5b51e41270f20b43466ffa4149c18cc01",
-      "resolvedAt": "2026-03-02T23:38:21.119Z",
+      "resolvedAt": "2026-03-05T04:02:29.428Z",
       "skills": {
         "web-design-guidelines": {
           "integrity": "sha256-f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
@@ -249,8 +259,8 @@
     },
     "vercel-labs/skills": {
       "requestedRef": "main",
-      "resolvedRef": "5ac56d8d6b6f74a7f8169e2bc9b45336aa01a8bf",
-      "resolvedAt": "2026-03-02T23:38:21.735Z",
+      "resolvedRef": "bacd4981aead1170a6f5466ea2627106c7e816e2",
+      "resolvedAt": "2026-03-05T04:02:30.251Z",
       "skills": {
         "find-skills": {
           "integrity": "sha256-c1720ff6ac18832a05d91cd913eee8781310e9f376ce77b8d5fc25a32e530a89"
@@ -259,18 +269,18 @@
     },
     "vercel/turborepo": {
       "requestedRef": "main",
-      "resolvedRef": "0e593bb90230991903af1b34aad4e42a1fddec63",
-      "resolvedAt": "2026-03-02T23:38:26.303Z",
+      "resolvedRef": "923e20087ab2c379d80916884c5af3d44a333de3",
+      "resolvedAt": "2026-03-05T04:02:36.067Z",
       "skills": {
         "turborepo": {
-          "integrity": "sha256-105a93694f1d9ca87a0c8529705060822354bca249eb486c8c93e9ed121c9005"
+          "integrity": "sha256-e699480fdf5fb93c8b46aca011c90b7e20adffc95d3cd67d1d424b102c36b6b7"
         }
       }
     },
     "waynesutton/convexskills": {
       "requestedRef": "main",
       "resolvedRef": "8ef49c96675f760dd5569c0588c1abb04cd989dd",
-      "resolvedAt": "2026-03-03T02:56:18.351Z",
+      "resolvedAt": "2026-03-05T04:02:48.987Z",
       "skills": {
         "avoid-feature-creep": {
           "integrity": "sha256-57fcdf1f0d46cacc573ceebae152fbb251346fe1f99c899b5fbc436270d47afc"
