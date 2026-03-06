@@ -12,6 +12,7 @@
   },
   "scripts": {
     "dev": "convex dev",
+    "init": "convex codegen",
     "setup": "convex dev --until-success",
     "test": "tsc --noEmit"
   },

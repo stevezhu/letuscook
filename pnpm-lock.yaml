@@ -336,9 +336,6 @@ importers:
       '@workspace/rn-reusables':
         specifier: workspace:*
         version: link:../../packages/rn-reusables
-      assistant-convex:
-        specifier: workspace:*
-        version: link:../assistant-convex
       convex:
         specifier: ^1.24.1
         version: 1.32.0(react@19.2.0)
