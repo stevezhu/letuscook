@@ -14,7 +14,7 @@
     "ios": "expo run:ios",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "pretest": "tsc -b --noEmit",
+    "pretest": "tsc --noEmit",
     "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start",
     "test": "jest",
@@ -45,7 +45,7 @@
     "expo-haptics": "~55.0.8",
     "expo-image": "~55.0.5",
     "expo-linking": "~55.0.7",
-    "expo-router": "~55.0.2",
+    "expo-router": "~55.0.4",
     "expo-secure-store": "^55.0.8",
     "expo-splash-screen": "~55.0.9",
     "expo-standard-web-crypto": "^55.0.5",
@@ -68,6 +68,7 @@
     "uniwind": "^1.4.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@react-native/metro-config": "~0.83.2",
     "@rnx-kit/metro-config": "^2.2.4",
     "@stzhu/eslint-config": "catalog:",

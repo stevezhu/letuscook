@@ -16,12 +16,12 @@ import { type User, ExpoAuthClient } from './auth.js';
 // Ensure auth sessions complete properly on web
 WebBrowser.maybeCompleteAuthSession();
 
-interface AuthContextValue {
+export type AuthContextValue = {
   user: User | null;
   loading: boolean;
   signIn: () => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<{ success: boolean; error?: string }>;
-}
+};
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -83,9 +83,13 @@ export function createAuthProvider({
       };
 
       const subscription = Linking.addEventListener('url', handleUrl);
-      Linking.getInitialURL().then((url) => {
-        if (url) handleUrl({ url });
-      });
+      Linking.getInitialURL()
+        .then((url) => {
+          if (url) return handleUrl({ url });
+        })
+        .catch((error) => {
+          console.error('Failed to get initial URL:', error);
+        });
 
       return () => subscription.remove();
     }, []);

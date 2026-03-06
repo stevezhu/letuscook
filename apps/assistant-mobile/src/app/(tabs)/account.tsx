@@ -4,13 +4,6 @@ import {
   AvatarImage,
 } from '@workspace/rn-reusables/components/avatar';
 import { Button } from '@workspace/rn-reusables/components/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@workspace/rn-reusables/components/card';
-import { Separator } from '@workspace/rn-reusables/components/separator';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
