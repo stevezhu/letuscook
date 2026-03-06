@@ -3,31 +3,29 @@
   "globalDependencies": ["pnpm-workspace.yaml"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "codegen"]
+      "dependsOn": ["^build", "init"]
     },
     "init": {
-      "dependsOn": ["^init"]
-    },
-    "codegen": {
-      "dependsOn": ["^codegen"]
+      "dependsOn": ["^init"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
     },
     "dev": {
       "cache": false,
-      "dependsOn": ["codegen"],
+      "dependsOn": ["init"],
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["init"]
     },
     "lint:fix": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["init"]
     },
     "test": {
-      "dependsOn": ["codegen"]
+      "dependsOn": ["init"]
     },
     "test:watch": {
       "cache": false,
-      "dependsOn": ["codegen"],
+      "dependsOn": ["init"],
       "persistent": true
     }
   },
