@@ -11,7 +11,7 @@
     "./main.css": "./src/main.css"
   },
   "scripts": {
-    "build": "tsr generate",
+    "codegen": "tsr generate",
     "dev": "tsr watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

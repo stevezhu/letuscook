@@ -11,6 +11,7 @@ dist
 .swc
 .output
 out
+*.tsbuildinfo
 
 # misc
 .DS_Store
@@ -20,8 +21,8 @@ out
 *.log
 
 # local env files
-.env*
-!.env*.example
+.env.*
+!.env.example
 
 # turbo
 .turbo

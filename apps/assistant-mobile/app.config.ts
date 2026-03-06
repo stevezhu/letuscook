@@ -1,5 +1,5 @@
 import constants from '@workspace/constants' with { type: 'json' };
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import type { ExpoConfig, ConfigContext } from 'expo/config/index.js';
 
 import packageJson from './package.json' with { type: 'json' };
 
@@ -13,9 +13,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: 'letuscook',
   userInterfaceStyle: 'automatic',
   ios: {
+    bundleIdentifier: 'com.letuscook',
     icon: './assets/expo.icon',
   },
   android: {
+    package: 'com.letuscook',
     adaptiveIcon: {
       backgroundColor: '#E6F4FE',
       foregroundImage: './assets/images/android-icon-foreground.png',
@@ -29,7 +31,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './assets/images/favicon.png',
   },
   plugins: [
+    'expo-image',
     'expo-router',
+    'expo-secure-store',
     [
       'expo-splash-screen',
       {
@@ -40,6 +44,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    'expo-web-browser',
   ],
   experiments: {
     typedRoutes: true,

@@ -6,9 +6,10 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import { ConvexProviderWithAuth, ConvexReactClient } from 'convex/react';
+import { once } from 'es-toolkit';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useColorScheme } from 'react-native';
 import {
   SafeAreaListener,
@@ -17,12 +18,16 @@ import {
 import { Uniwind } from 'uniwind';
 
 import { AnimatedSplashOverlay } from '#components/animated-icon.js';
+import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.js';
+import { createAuthProvider, useAuth } from '#modules/auth/auth-context.js';
+import { ExpoAuthClient } from '#modules/auth/auth.js';
 
-if (!process.env.EXPO_PUBLIC_CONVEX_URL) {
-  throw new Error('EXPO_PUBLIC_CONVEX_URL is not set');
-}
+export const unstable_settings = {
+  initialRouteName: '(tabs)',
+  anchor: '(tabs)',
+};
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL, {
+const convex = new ConvexReactClient(CONVEX_URL, {
   unsavedChangesWarning: false,
 });
 const convexQueryClient = new ConvexQueryClient(convex);
@@ -36,35 +41,61 @@ const queryClient = new QueryClient({
 });
 convexQueryClient.connect(queryClient);
 
-// TODO T2: wire WorkOS auth token
+const authClient = once(
+  () =>
+    new ExpoAuthClient({
+      clientId: WORKOS_CLIENT_ID,
+      sessionKey: 'workos_session',
+      pkceKey: 'workos_pkce',
+    }),
+);
 
-export const unstable_settings = {
-  initialRouteName: '(tabs)',
-  anchor: '(tabs)',
-};
+const getAuthProvider = once(() =>
+  createAuthProvider({ authClient: authClient() }),
+);
+
+const getUseConvexAuth = once(() => {
+  return function useConvexAuth() {
+    const { user, loading } = useAuth();
+    const fetchAccessToken = useCallback(
+      async (_: {
+        // TODO: not supported for now
+        forceRefreshToken: boolean;
+      }) => {
+        return await authClient().getAccessToken();
+      },
+      [],
+    );
+    return { isLoading: loading, isAuthenticated: !!user, fetchAccessToken };
+  };
+});
 
 export default function RootLayout() {
+  const AuthProvider = getAuthProvider();
+  const useConvexAuth = getUseConvexAuth();
   const colorScheme = useColorScheme();
   return (
     <QueryClientProvider client={queryClient}>
-      <ConvexProvider client={convex}>
-        <ThemeProvider
-          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-          <SafeAreaProvider>
-            <SafeAreaListener
-              onChange={({ insets }) => {
-                Uniwind.updateInsets(insets);
-              }}
-            >
-              <AnimatedSplashOverlay />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-              </Stack>
-            </SafeAreaListener>
-          </SafeAreaProvider>
-        </ThemeProvider>
-      </ConvexProvider>
+      <AuthProvider>
+        <ConvexProviderWithAuth client={convex} useAuth={useConvexAuth}>
+          <ThemeProvider
+            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
+            <SafeAreaProvider>
+              <SafeAreaListener
+                onChange={({ insets }) => {
+                  Uniwind.updateInsets(insets);
+                }}
+              >
+                <AnimatedSplashOverlay />
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" />
+                </Stack>
+              </SafeAreaListener>
+            </SafeAreaProvider>
+          </ThemeProvider>
+        </ConvexProviderWithAuth>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

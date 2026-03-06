@@ -12,16 +12,12 @@
     },
     "./worker-configuration": {
       "types": "./worker-configuration.gen.d.ts"
-    },
-    "./convex/_generated/*": {
-      "types": "./convex/_generated/*.d.ts"
     }
   },
   "scripts": {
-    "codegen": "wrangler types worker-configuration.gen.d.ts --env-file .dev.vars",
-    "convex:dev": "convex dev",
+    "codegen": "wrangler types worker-configuration.gen.d.ts",
     "dev": "wrangler dev --ip 0.0.0.0 --port 8787",
-    "init": "cp -n .dev.vars.example .dev.vars",
+    "init": "shx cp -n .env.example .env.local",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "tsc --noEmit"
@@ -31,7 +27,6 @@
     "@ai-sdk/google": "^3.0.36",
     "@ai-sdk/openai": "^3.0.39",
     "ai": "^6.0.108",
-    "convex": "^1.24.1",
     "hono": "catalog:"
   },
   "devDependencies": {
@@ -41,6 +36,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.50.0",
+    "shx": "^0.4.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "wrangler": "^4.68.0"

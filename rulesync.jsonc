@@ -45,6 +45,10 @@
       ]
     },
     {
+      "source": "stevezhu/skills",
+      "skills": ["agent-logbook"]
+    },
+    {
       "source": "vercel-labs/agent-skills",
       "skills": [
         "vercel-composition-patterns",
@@ -60,6 +64,9 @@
     {
       "source": "vercel/turborepo",
       "skills": ["turborepo"]
+    },
+    {
+      "source": "waynesutton/convexskills"
     }
   ]
 }

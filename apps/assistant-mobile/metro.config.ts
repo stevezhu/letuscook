@@ -1,7 +1,7 @@
 import { mergeConfig, type MetroConfig } from '@react-native/metro-config';
 import rnxMetroConfig from '@rnx-kit/metro-config';
 import { createTsResolveRequest } from '@stzhu/metro-ts-resolver';
-import { getDefaultConfig } from 'expo/metro-config.js'; // eslint-disable-line n/no-missing-import
+import { getDefaultConfig } from 'expo/metro-config.js';
 import { withUniwindConfig } from 'uniwind/metro';
 
 const config = getDefaultConfig(import.meta.dirname);

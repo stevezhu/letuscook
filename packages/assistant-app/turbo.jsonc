@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "outputs": ["src/routeTree.gen.ts"]
+    }
+  }
+}
