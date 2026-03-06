@@ -23,7 +23,7 @@
     "concurrently": "^9.2.1",
     "oxfmt": "^0.36.0",
     "oxlint": "^1.50.0",
-    "oxlint-tsgolint": "^0.15.0",
+    "oxlint-tsgolint": "^0.16.0",
     "prettier": "^3.8.1",
     "rulesync": "^7.12.1",
     "syncpack": "^14.0.1",
