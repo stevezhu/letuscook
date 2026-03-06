@@ -1,9 +1,18 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.js';
 
 export default function TabsLayout() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">

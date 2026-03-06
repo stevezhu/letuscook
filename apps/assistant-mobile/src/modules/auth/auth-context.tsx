@@ -141,9 +141,6 @@ export function createAuthProvider({
     }> => {
       try {
         const sessionId = await authClient.getSessionId();
-        await authClient.clearSession();
-        setUser(null);
-
         if (sessionId) {
           const returnTo = authClient.getRedirectUri();
           console.log('[Auth] Return to:', returnTo);
@@ -151,6 +148,9 @@ export function createAuthProvider({
           const logoutUrl = authClient.getLogoutUrl({ sessionId, returnTo });
           console.log('[Auth] Logout URL:', logoutUrl);
           await WebBrowser.openAuthSessionAsync(logoutUrl, returnTo);
+
+          await authClient.clearSession();
+          setUser(null);
         }
 
         return { success: true };
