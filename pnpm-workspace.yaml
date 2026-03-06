@@ -11,7 +11,7 @@ catalog:
   '@stzhu/eslint-config': ^0.10.0
   '@stzhu/prettier-plugin-tsconfig': ^0.7.1
   '@stzhu/tsconfig': ^0.1.1
-  '@types/node': ^25.3.3
+  '@types/node': ^25.3.5
   '@types/react': ^19.2.14
   '@types/react-dom': ^19.2.3
   electron: ^40.6.0
