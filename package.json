@@ -2,11 +2,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "turbo run build --color",
+    "build": "turbo run build",
     "codegen": "turbo run codegen",
     "deps:clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "deps:reset": "rm pnpm-lock.yaml && pnpm -w run deps:clean && pnpm install",
-    "dev": "turbo run dev --color",
+    "dev": "turbo run dev",
     "format": "oxfmt && prettier -w '**/{ts,js}config{,.?*}.json'",
     "format:check": "oxfmt --check && prettier -c '**/{ts,js}config{,.?*}.json'",
     "init": "turbo run init",

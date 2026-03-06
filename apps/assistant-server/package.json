@@ -15,9 +15,9 @@
     }
   },
   "scripts": {
-    "codegen": "wrangler types worker-configuration.gen.d.ts --env-file .dev.vars",
+    "codegen": "wrangler types worker-configuration.gen.d.ts",
     "dev": "wrangler dev --ip 0.0.0.0 --port 8787",
-    "init": "cp -n .dev.vars.example .dev.vars || true",
+    "init": "shx cp -n .env.example .env.local",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "tsc --noEmit"
@@ -36,6 +36,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.50.0",
+    "shx": "^0.4.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "wrangler": "^4.68.0"

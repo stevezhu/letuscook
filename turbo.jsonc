@@ -1,32 +1,38 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["pnpm-workspace.yaml"],
+  "$schema": "./node_modules/turbo/schema.json",
+  "globalDependencies": ["pnpm-workspace.yaml", ".env", ".env.*"],
   "tasks": {
-    "build": {
-      "dependsOn": ["^build", "init"]
-    },
+    // for initializing projects mainly for local development; this is not the same as codegen
     "init": {
-      "dependsOn": ["^init"],
-      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
+      "cache": false
     },
-    "dev": {
-      "cache": false,
-      "dependsOn": ["init"],
-      "persistent": true
+    "codegen": {
+      "dependsOn": ["^codegen"]
     },
     "lint": {
-      "dependsOn": ["init"]
+      "dependsOn": ["codegen"]
     },
     "lint:fix": {
-      "dependsOn": ["init"]
+      "dependsOn": ["codegen"],
+      "cache": false
     },
     "test": {
-      "dependsOn": ["init"]
+      "dependsOn": ["codegen"]
     },
     "test:watch": {
+      "dependsOn": ["codegen"],
       "cache": false,
-      "dependsOn": ["init"],
-      "persistent": true
+      "persistent": true,
+      "interactive": true
+    },
+    "dev": {
+      "dependsOn": ["codegen"],
+      "cache": false,
+      "persistent": true,
+      "interactive": true
+    },
+    "build": {
+      "dependsOn": ["^build", "codegen"]
     }
   },
   "ui": "tui"
