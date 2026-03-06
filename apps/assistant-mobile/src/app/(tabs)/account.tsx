@@ -23,10 +23,7 @@ export default function AccountIndex() {
     return <Redirect href="/" />;
   }
 
-  const fullName =
-    user.firstName && user.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user.email;
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ');
 
   const initials =
     [user.firstName?.[0], user.lastName?.[0]]
@@ -39,11 +36,11 @@ export default function AccountIndex() {
       className="flex-1 bg-background"
       contentContainerClassName="p-6"
     >
-      <View className="p-safe-t flex-col gap-8">
-        <View className="flex-col items-center justify-center gap-4 py-8">
+      <View className="flex-col gap-8">
+        <View className="flex-col items-center justify-center gap-4">
           <Avatar
             alt={`${fullName}'s Avatar`}
-            className="w-24 h-24 border-4 border-background shadow-lg shadow-black/10"
+            className="w-24 h-24 shadow-lg shadow-black/10"
           >
             <AvatarImage
               source={{ uri: user.profilePictureUrl ?? undefined }}
@@ -59,59 +56,6 @@ export default function AccountIndex() {
             <Text className="text-muted-foreground text-lg">{user.email}</Text>
           </View>
         </View>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Details</CardTitle>
-          </CardHeader>
-          <CardContent className="gap-6">
-            <View className="gap-1.5">
-              <Text className="text-muted-foreground text-sm font-medium">
-                Email Address
-              </Text>
-              <Text className="text-foreground text-base">{user.email}</Text>
-            </View>
-
-            <Separator />
-
-            <View className="gap-1.5">
-              <Text className="text-muted-foreground text-sm font-medium">
-                User ID
-              </Text>
-              <Text className="text-foreground text-base font-mono">
-                {user.id}
-              </Text>
-            </View>
-
-            {user.firstName && (
-              <>
-                <Separator />
-                <View className="gap-1.5">
-                  <Text className="text-muted-foreground text-sm font-medium">
-                    First Name
-                  </Text>
-                  <Text className="text-foreground text-base">
-                    {user.firstName}
-                  </Text>
-                </View>
-              </>
-            )}
-
-            {user.lastName && (
-              <>
-                <Separator />
-                <View className="gap-1.5">
-                  <Text className="text-muted-foreground text-sm font-medium">
-                    Last Name
-                  </Text>
-                  <Text className="text-foreground text-base">
-                    {user.lastName}
-                  </Text>
-                </View>
-              </>
-            )}
-          </CardContent>
-        </Card>
 
         <View className="flex-col gap-4">
           <Button

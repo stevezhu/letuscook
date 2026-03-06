@@ -1,3 +1,4 @@
+import { Button } from '@workspace/rn-reusables/components/button';
 import {
   Card,
   CardContent,
@@ -6,15 +7,26 @@ import {
   CardTitle,
 } from '@workspace/rn-reusables/components/card';
 import { Text } from '@workspace/rn-reusables/components/text';
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.js';
-import { SignInButton } from '#modules/auth/SignInButton.js';
 
 export default function HomeScreen() {
-  const { user } = useAuth();
+  const { loading, user, signIn } = useAuth();
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerClassName="p-6">
+    <ScrollView
+      className="flex-1 bg-background"
+      contentContainerClassName="p-6"
+    >
       <View className="p-safe-t flex-col gap-8">
         <View className="flex-col gap-2">
           <Text className="text-muted-foreground text-lg font-medium">
@@ -34,7 +46,9 @@ export default function HomeScreen() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SignInButton />
+              <Button onPress={signIn}>
+                <Text>Sign In</Text>
+              </Button>
             </CardContent>
           </Card>
         )}
