@@ -23,7 +23,7 @@
     "@webext-core/messaging": "^2.3.0",
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
-    "lucide-react": "^0.575.0",
+    "lucide-react": "^0.577.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "wxt": "^0.20.18"
