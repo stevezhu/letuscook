@@ -60,10 +60,10 @@ pnpm --filter assistant-mobile add @react-native-async-storage/async-storage
 
 ### 3. Create `apps/assistant-mobile/src/modules/capture/use-guest-capture-store.ts`
 
-- Custom hook using `useState` + `AsyncStorage` (no Zustand)
-- Loads from AsyncStorage on mount (`loading` state)
-- `addGuestCapture(rawContent, captureType)` → checks limit, generates UUID via `Crypto.randomUUID()`, writes through to AsyncStorage
-- `clearGuestCaptures()` → clears state + `AsyncStorage.removeItem()`
+- Custom hook using `@tanstack/react-query` `useSuspenseQuery` for async queries and `useMutation` for mutations (no `useState` or Zustand)
+- Loads from AsyncStorage via `useSuspenseQuery`
+- `addGuestCapture(rawContent, captureType)` → `useMutation` that checks limit, generates UUID via `Crypto.randomUUID()`, writes through to AsyncStorage, and invalidates the query
+- `clearGuestCaptures()` → `useMutation` that clears AsyncStorage and invalidates the query
 - Exposes `captures` with `captureState: 'offline'` appended via `useMemo` for UI rendering
 
 ### 4. Create `apps/assistant-convex/convex/captures.ts`
@@ -78,9 +78,9 @@ pnpm --filter assistant-mobile add @react-native-async-storage/async-storage
 
 ### 5. Create `apps/assistant-mobile/src/modules/capture/use-migrate-guest-captures.ts`
 
-- Hook wrapping the Convex mutation call
-- Accepts guest captures array, calls `migrateGuestCaptures`, clears local store on success
-- Exposes: `isMigrating: boolean`, `migrationCount: number | null`, `migrate: () => Promise<void>`
+- Hook wrapping the Convex mutation call using `@tanstack/react-query` `useMutation`
+- Accepts guest captures array, calls `migrateGuestCaptures` in the mutation function, clears local store on success
+- Exposes standard `useMutation` return values (e.g., `mutateAsync`, `isPending`)
 - On failure: does NOT clear AsyncStorage (retry on next sign-in)
 
 ### 6. Create `apps/assistant-mobile/src/modules/capture/capture-migration-provider.tsx`
@@ -88,7 +88,7 @@ pnpm --filter assistant-mobile add @react-native-async-storage/async-storage
 - Wrapper component placed inside `ConvexProviderWithAuth` in the provider tree
 - Watches `useAuth().user` transitions (null → non-null) via `useRef` tracking previous value
 - On sign-in: if guest captures exist, auto-triggers migration
-- Renders minimal progress banner: `<View>` with `<ActivityIndicator>` + `<Text>"Syncing X captures…"</Text>` when `isMigrating`
+- Renders minimal progress banner: `<View>` with `<ActivityIndicator>` + `<Text>"Syncing X captures…"</Text>` when `isPending`
 - Must also check Convex `isAuthenticated` before calling mutation (auth token timing)
 
 ### 7. Modify `apps/assistant-mobile/src/app/_layout.tsx`
@@ -108,7 +108,7 @@ pnpm run lint:fix && pnpm -w run lint && pnpm -w run test
 
 ## Key Design Decisions
 
-- **No external state manager** — simple `useState` + AsyncStorage write-through is sufficient for single-user local data
+- **No external state manager** — `@tanstack/react-query` + AsyncStorage write-through is sufficient for single-user local data
 - **Single Convex mutation** for all captures (not batched) — 100 small text captures is well within transaction limits
 - **Separate migration provider** rather than modifying `AuthProvider` — keeps auth pure, avoids coupling
 - **`processCapture` stub** as `internalAction` — ensures codebase compiles/deploys before T5
