@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
-import type { ApiClient } from './ApiClient.js';
-import { ApiClientContext } from './useApiClient.js';
+import type { ApiClient } from './ApiClient.ts';
+import { ApiClientContext } from './useApiClient.ts';
 
 export type ApiClientProviderProps = {
   apiClient: ApiClient;

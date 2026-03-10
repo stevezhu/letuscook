@@ -1,10 +1,10 @@
 export const WORKOS_CLIENT_ID = ensureVar(
-  process.env.EXPO_PUBLIC_WORKOS_CLIENT_ID,
+  process.env['EXPO_PUBLIC_WORKOS_CLIENT_ID'],
   'EXPO_PUBLIC_WORKOS_CLIENT_ID is not set',
 );
 
 export const CONVEX_URL = ensureVar(
-  process.env.EXPO_PUBLIC_CONVEX_URL,
+  process.env['EXPO_PUBLIC_CONVEX_URL'],
   'EXPO_PUBLIC_CONVEX_URL is not set',
 );
 

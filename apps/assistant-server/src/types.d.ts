@@ -1,1 +1,1 @@
-export type AppType = typeof import('./index.js').default;
+export type AppType = typeof import('./index.ts').default;

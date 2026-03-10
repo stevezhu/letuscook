@@ -1,6 +1,6 @@
 import type { ApiClient } from '@workspace/assistant-app';
 
-import type { Api } from '#preload/api/index.js';
+import type { Api } from '#preload/api/index.ts';
 
 declare global {
   interface Window {

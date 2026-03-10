@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --fix",
     "rn-reusables:add-all": "pnpm dlx @react-native-reusables/cli@latest add --all --overwrite",
     "rn-reusables:update-patches": "git diff src > patches/src.diff",
-    "test": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@rn-primitives/accordion": "^1.2.0",
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@stzhu/eslint-config": "catalog:",
+    "@stzhu/tsconfig": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "~19.2.14",
     "eslint": "catalog:",

@@ -1,8 +1,8 @@
 import { fn } from 'storybook/test';
 
-import preview from '#.storybook/preview.js';
+import preview from '#.storybook/preview.ts';
 
-import { NotFoundFallback } from './NotFoundFallback.js';
+import { NotFoundFallback } from './NotFoundFallback.tsx';
 
 const meta = preview.meta({
   component: NotFoundFallback,

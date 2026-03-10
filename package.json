@@ -10,10 +10,10 @@
     "format": "oxfmt && prettier -w '**/{ts,js}config{,.?*}.json'",
     "format:check": "oxfmt --check && prettier -c '**/{ts,js}config{,.?*}.json'",
     "init": "turbo run init",
-    "lint": "syncpack lint && pnpm run format:check && concurrently 'pnpm run lint:fast' 'turbo run lint'",
-    "lint:fast": "oxlint --type-aware",
-    "lint:fast:fix": "oxlint --type-aware --fix",
-    "lint:fix": "pnpm run format && pnpm run lint:fast:fix && turbo run lint:fix",
+    "lint": "turbo run format:check lint:oxc lint",
+    "lint:fix": "turbo run format && turbo run lint:oxc:fix && turbo run lint:fix",
+    "lint:oxc": "oxlint --type-aware",
+    "lint:oxc:fix": "oxlint --type-aware --fix",
     "rulesync:install": "GITHUB_TOKEN=$(gh auth token) rulesync install",
     "test": "turbo run test"
   },
@@ -21,13 +21,13 @@
     "@stzhu/prettier-plugin-tsconfig": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "^9.2.1",
-    "oxfmt": "^0.36.0",
-    "oxlint": "^1.50.0",
+    "oxfmt": "^0.37.0",
+    "oxlint": "^1.52.0",
     "oxlint-tsgolint": "^0.16.0",
     "prettier": "^3.8.1",
-    "rulesync": "^7.15.1",
+    "rulesync": "^7.18.1",
     "syncpack": "^14.0.1",
-    "turbo": "^2.8.14"
+    "turbo": "^2.8.15"
   },
   "engines": {
     "node": ">=25",

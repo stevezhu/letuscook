@@ -1,7 +1,7 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { ActivityIndicator, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.js';
+import { useAuth } from '#modules/auth/auth-context.tsx';
 
 export default function TabsLayout() {
   const { user, loading } = useAuth();

@@ -1,13 +1,29 @@
 {
   "extends": "expo/tsconfig.base.json",
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "*.gen.d.ts",
+    "*.config.ts",
+    "src/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "uniwind-types.d.ts"
   ],
-  "references": [{ "path": "./tsconfig.config.json" }],
-  "compilerOptions": { "strict": true, "moduleResolution": "bundler" }
+  "exclude": ["metro.config.ts"],
+  "references": [{ "path": "./tsconfig.metro.json" }],
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedSideEffectImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "target": "esnext",
+    "preserveWatchOutput": true
+  }
 }

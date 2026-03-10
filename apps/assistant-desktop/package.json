@@ -1,6 +1,6 @@
 {
   "name": "assistant-desktop",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "An Electron application with React and TypeScript",
   "homepage": "https://example.com",
   "author": "Example <example@example.com>",
@@ -20,8 +20,7 @@
     "lint": "eslint .",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron-vite preview",
-    "test": "pnpm run typecheck",
-    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
+    "typecheck": "pnpm run '/^(typecheck:node|typecheck:web)$/'",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false"
   },
@@ -41,7 +40,7 @@
     "@stzhu/tsconfig": "catalog:",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.90.21",
-    "@tanstack/react-router": "^1.162.6",
+    "@tanstack/react-router": "^1.166.6",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

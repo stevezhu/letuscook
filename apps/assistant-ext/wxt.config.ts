@@ -5,7 +5,7 @@ import { productName } from '@workspace/constants';
 import { defineConfig } from 'wxt';
 
 import { name as packageName } from './package.json';
-import viteConfig from './vite.config.js';
+import viteConfig from './vite.config.ts';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({

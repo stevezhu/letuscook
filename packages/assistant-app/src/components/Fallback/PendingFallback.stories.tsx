@@ -1,6 +1,6 @@
-import preview from '#.storybook/preview.js';
+import preview from '#.storybook/preview.ts';
 
-import { PendingFallback } from './PendingFallback.js';
+import { PendingFallback } from './PendingFallback.tsx';
 
 const meta = preview.meta({
   component: PendingFallback,

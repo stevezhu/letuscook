@@ -59,6 +59,9 @@ type PkceState = {
  */
 function parseJwtPayload(token: string): Record<string, unknown> {
   const base64 = token.split('.')[1];
+  if (!base64) {
+    throw new Error('Invalid JWT token');
+  }
   // Handle URL-safe base64
   const normalized = base64.replace(/-/g, '+').replace(/_/g, '/');
   return JSON.parse(atob(normalized));
@@ -94,7 +97,7 @@ export class ExpoAuthClient {
     try {
       const session: StoredSession = JSON.parse(sessionData);
       const payload = parseJwtPayload(session.accessToken);
-      return (payload.sid as string) ?? null;
+      return (payload['sid'] as string) ?? null;
     } catch {
       return null;
     }
@@ -214,7 +217,7 @@ export class ExpoAuthClient {
 
     // Check if token is expired (with 10 second buffer)
     const payload = parseJwtPayload(session.accessToken);
-    const exp = payload.exp as number;
+    const exp = payload['exp'] as number;
     const isExpired = Date.now() > exp * 1000 - 10000;
 
     if (isExpired) {

@@ -2,6 +2,14 @@
   "$schema": "./node_modules/turbo/schema.json",
   "globalDependencies": ["pnpm-workspace.yaml", ".env", ".env.*"],
   "tasks": {
+    "//#format:check": {},
+    "//#format": {
+      "cache": false
+    },
+    "//#lint:oxc": {},
+    "//#lint:oxc:fix": {
+      "cache": false
+    },
     // for initializing projects mainly for local development; this is not the same as codegen
     "init": {
       "cache": false
@@ -16,8 +24,11 @@
       "dependsOn": ["codegen"],
       "cache": false
     },
-    "test": {
+    "typecheck": {
       "dependsOn": ["codegen"]
+    },
+    "test": {
+      "dependsOn": ["codegen", "typecheck"]
     },
     "test:watch": {
       "dependsOn": ["codegen"],

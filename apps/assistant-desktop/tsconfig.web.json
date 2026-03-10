@@ -1,5 +1,8 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+  "extends": [
+    "@stzhu/tsconfig/tsconfig.react.json",
+    "@electron-toolkit/tsconfig/tsconfig.web.json"
+  ],
   "include": ["src/renderer/src/**/*", "src/preload/*.d.ts"],
-  "compilerOptions": { "rootDir": ".", "composite": true }
+  "compilerOptions": { "composite": true }
 }

@@ -1,12 +1,8 @@
 {
   "extends": [
-    "@electron-toolkit/tsconfig/tsconfig.node.json",
-    "@stzhu/tsconfig/tsconfig.base.json"
+    "@stzhu/tsconfig/tsconfig.node.json",
+    "@electron-toolkit/tsconfig/tsconfig.node.json"
   ],
   "include": ["*.config.ts", "src/main/**/*", "src/preload/**/*"],
-  "compilerOptions": {
-    "moduleResolution": "bundler",
-    "rootDir": ".",
-    "composite": true
-  }
+  "compilerOptions": { "allowImportingTsExtensions": true, "composite": true }
 }

@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "storybook": "storybook dev -p 6006",
-    "test": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@workspace/constants": "workspace:*",
@@ -34,7 +34,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/eslint-plugin-query": "^5.91.4",
     "@tanstack/eslint-plugin-router": "^1.161.4",
-    "@tanstack/router-cli": "^1.162.6",
+    "@tanstack/router-cli": "^1.166.6",
     "@vitejs/plugin-react": "^5.1.4",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.50.0",

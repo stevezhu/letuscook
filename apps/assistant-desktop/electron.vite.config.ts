@@ -1,6 +1,6 @@
 import { defineConfig } from 'electron-vite';
 
-import renderer from './vite.config.js';
+import renderer from './vite.config.ts';
 
 export default defineConfig({
   main: {},

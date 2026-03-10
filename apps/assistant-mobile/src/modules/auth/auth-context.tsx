@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 
-import { type User, ExpoAuthClient } from './auth.js';
+import { type User, ExpoAuthClient } from './auth.ts';
 
 // Ensure auth sessions complete properly on web
 WebBrowser.maybeCompleteAuthSession();
@@ -55,17 +55,17 @@ export function createAuthProvider({
         const parsed = Linking.parse(url);
         if (parsed.path !== 'callback') return;
 
-        const error = parsed.queryParams?.error as string | undefined;
+        const error = parsed.queryParams?.['error'] as string | undefined;
         if (error) {
           console.error(
             'OAuth error:',
             error,
-            parsed.queryParams?.error_description,
+            parsed.queryParams?.['error_description'],
           );
           return;
         }
 
-        const code = parsed.queryParams?.code as string | undefined;
+        const code = parsed.queryParams?.['code'] as string | undefined;
         if (!code) {
           console.error('No authorization code in callback');
           return;
@@ -86,6 +86,7 @@ export function createAuthProvider({
       Linking.getInitialURL()
         .then((url) => {
           if (url) return handleUrl({ url });
+          return;
         })
         .catch((error) => {
           console.error('Failed to get initial URL:', error);
@@ -115,13 +116,13 @@ export function createAuthProvider({
 
         const parsed = Linking.parse(result.url);
 
-        const error = parsed.queryParams?.error as string | undefined;
+        const error = parsed.queryParams?.['error'] as string | undefined;
         if (error) {
-          const errorDesc = parsed.queryParams?.error_description as string;
+          const errorDesc = parsed.queryParams?.['error_description'] as string;
           return { success: false, error: errorDesc || error };
         }
 
-        const code = parsed.queryParams?.code as string | undefined;
+        const code = parsed.queryParams?.['code'] as string | undefined;
         if (!code) {
           return { success: false, error: 'No authorization code received' };
         }

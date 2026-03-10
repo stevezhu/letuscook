@@ -1,10 +1,10 @@
 import { Button } from '@workspace/shadcn/components/button';
 import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
-import preview from '#.storybook/preview.js';
+import preview from '#.storybook/preview.ts';
 
-import { Fallback } from './Fallback.js';
-import { FallbackIcon } from './FallbackIcon.js';
+import { Fallback } from './Fallback.tsx';
+import { FallbackIcon } from './FallbackIcon.tsx';
 
 const meta = preview.meta({
   title: 'Components/Fallback/Fallback',
