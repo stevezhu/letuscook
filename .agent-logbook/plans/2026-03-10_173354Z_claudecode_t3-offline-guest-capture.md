@@ -15,6 +15,18 @@ tags: [capture, offline, asyncstorage, migration]
 
 Implement the client-side guest capture store (AsyncStorage) that allows users to capture items before signing in. On sign-in, all guest captures are migrated to Convex and enqueued for processing. Guest captures appear as "Offline" in the UI until migration.
 
+## Skills
+
+- `agent-logbook`
+- `convex`
+- `convex-best-practices`
+- `executing-plans`
+- `expo-react-native-coder`
+- `native-data-fetching`
+- `test-driven-development`
+- `verification-before-completion`
+- `maestro-e2e`
+
 ## Scope
 
 ### In Scope
