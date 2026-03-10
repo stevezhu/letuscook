@@ -10,12 +10,12 @@
     "format": "oxfmt && prettier -w '**/{ts,js}config{,.?*}.json'",
     "format:check": "oxfmt --check && prettier -c '**/{ts,js}config{,.?*}.json'",
     "init": "turbo run init",
-    "lint": "turbo run --output-logs=errors-only format:check lint:oxc lint",
-    "lint:fix": "turbo run --output-logs=errors-only format && turbo run --output-logs=errors-only lint:oxc:fix && turbo run --output-logs=errors-only lint:fix",
+    "lint": "turbo run format:check lint:oxc lint",
+    "lint:fix": "turbo run format && turbo run lint:oxc:fix && turbo run lint:fix",
     "lint:oxc": "oxlint --type-aware",
     "lint:oxc:fix": "oxlint --type-aware --fix",
     "rulesync:install": "GITHUB_TOKEN=$(gh auth token) rulesync install",
-    "test": "turbo run --output-logs=errors-only test"
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@stzhu/prettier-plugin-tsconfig": "catalog:",
