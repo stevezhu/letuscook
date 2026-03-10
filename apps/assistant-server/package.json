@@ -23,10 +23,6 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.53",
-    "@ai-sdk/google": "^3.0.36",
-    "@ai-sdk/openai": "^3.0.39",
-    "ai": "^6.0.108",
     "hono": "catalog:"
   },
   "devDependencies": {
