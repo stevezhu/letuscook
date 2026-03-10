@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as captures from "../captures.js";
 import type * as scripts_seedAgentUser from "../scripts/seedAgentUser.js";
 import type * as users from "../users.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  captures: typeof captures;
   "scripts/seedAgentUser": typeof scripts_seedAgentUser;
   users: typeof users;
 }>;

@@ -15,6 +15,7 @@ export default defineConfig([
       'simple-import-sort/imports': 'off',
       'simple-import-sort/exports': 'off',
       'n/no-missing-import': 'off',
+      'import/no-unresolved': 'off',
     },
   },
   oxlint.configs['flat/recommended'],
