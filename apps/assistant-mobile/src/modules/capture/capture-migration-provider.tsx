@@ -17,19 +17,27 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
   const { isAuthenticated } = useConvexAuth();
   const { captures } = useGuestCaptureStore();
   const migration = useMigrateGuestCaptures();
-  const prevUserRef = useRef<typeof user>(user);
+  const hasAttemptedRef = useRef(false);
 
   useEffect(() => {
-    const prevUser = prevUserRef.current;
-    prevUserRef.current = user;
+    // Reset attempted flag when user logs out
+    if (user === null) {
+      hasAttemptedRef.current = false;
+      return;
+    }
 
-    // Trigger migration on sign-in transition (null → non-null)
-    if (prevUser === null && user !== null && isAuthenticated) {
-      if (captures.length > 0) {
-        // Strip captureState before sending to Convex
-        const guestCaptures = captures.map(({ captureState: _, ...c }) => c);
-        migration.mutate(guestCaptures);
-      }
+    // Trigger migration if we have a valid user, captures to migrate,
+    // and we haven't already attempted it since the user became non-null.
+    if (
+      user !== null &&
+      isAuthenticated &&
+      captures.length > 0 &&
+      !hasAttemptedRef.current
+    ) {
+      hasAttemptedRef.current = true;
+      // Strip captureState before sending to Convex
+      const guestCaptures = captures.map(({ captureState: _, ...c }) => c);
+      migration.mutate(guestCaptures);
     }
   }, [user, isAuthenticated, captures, migration]);
 

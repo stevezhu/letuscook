@@ -91,11 +91,10 @@ describe('guest capture store logic', () => {
     const result = await addCapture('Hello world', 'text');
 
     expect(result.status).toBe('ok');
-    if (result.status === 'ok') {
-      expect(result.capture.rawContent).toBe('Hello world');
-      expect(result.capture.captureType).toBe('text');
-      expect(result.capture.id).toBe('test-uuid-1');
-    }
+    const capture = (result as { status: 'ok'; capture: GuestCapture }).capture;
+    expect(capture.rawContent).toBe('Hello world');
+    expect(capture.captureType).toBe('text');
+    expect(capture.id).toBe('test-uuid-1');
 
     const captures = await loadCaptures();
     expect(captures).toHaveLength(1);
@@ -135,10 +134,12 @@ describe('guest capture store logic', () => {
   });
 
   test('allows adding up to exactly the limit', async () => {
+    /* eslint-disable no-await-in-loop */
     for (let i = 0; i < GUEST_CAPTURE_LIMIT; i++) {
       const result = await addCapture(`capture ${String(i)}`, 'text');
       expect(result.status).toBe('ok');
     }
+    /* eslint-enable no-await-in-loop */
 
     const captures = await loadCaptures();
     expect(captures).toHaveLength(GUEST_CAPTURE_LIMIT);

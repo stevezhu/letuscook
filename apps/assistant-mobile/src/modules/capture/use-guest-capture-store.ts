@@ -19,9 +19,14 @@ import {
 const QUERY_KEY = ['guest_captures'];
 
 async function loadCaptures(): Promise<GuestCapture[]> {
-  const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);
-  if (!raw) return [];
-  return JSON.parse(raw) as GuestCapture[];
+  try {
+    const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as GuestCapture[];
+  } catch (error) {
+    console.error('[GuestCaptureStore] Failed to load captures:', error);
+    return [];
+  }
 }
 
 async function saveCaptures(captures: GuestCapture[]): Promise<void> {
