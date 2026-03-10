@@ -1,13 +1,10 @@
 {
-  "extends": "expo/tsconfig.base.json",
+  "extends": ["expo/tsconfig.base.json", "@stzhu/tsconfig/tsconfig.react.json"],
   "include": [
     "*.config.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "*.gen.d.ts",
+    "src/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "uniwind-types.d.ts"
-  ],
-  "compilerOptions": { "strict": true, "moduleResolution": "bundler" }
+  ]
 }

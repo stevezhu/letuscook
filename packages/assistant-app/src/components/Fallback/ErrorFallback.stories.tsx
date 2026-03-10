@@ -1,8 +1,8 @@
 import { fn } from 'storybook/test';
 
-import preview from '#.storybook/preview.js';
+import preview from '#.storybook/preview.ts';
 
-import { ErrorFallback } from './ErrorFallback.js';
+import { ErrorFallback } from './ErrorFallback.tsx';
 
 const meta = preview.meta({
   component: ErrorFallback,

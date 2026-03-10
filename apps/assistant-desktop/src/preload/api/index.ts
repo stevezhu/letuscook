@@ -1,15 +1,15 @@
 import { IpcEmitter } from '@electron-toolkit/typed-ipc/renderer';
 import type { ApiClient } from '@workspace/assistant-app';
 
-import { IpcEvents } from '#preload/IpcEvents.js';
+import { IpcEvents } from '#preload/IpcEvents.ts';
 
 const emitter = new IpcEmitter<IpcEvents>();
 
 export const api = {
   getVersions: () => {
     return {
-      electron: process.versions.electron,
-      chrome: process.versions.chrome,
+      electron: process.versions['electron'],
+      chrome: process.versions['chrome'],
       node: process.versions.node,
     };
   },

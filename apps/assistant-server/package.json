@@ -1,6 +1,6 @@
 {
   "name": "assistant-server",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "imports": {
@@ -20,7 +20,7 @@
     "init": "shx cp -n .env.example .env.local",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "hono": "catalog:"

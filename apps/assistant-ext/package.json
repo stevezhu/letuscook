@@ -1,6 +1,6 @@
 {
   "name": "assistant-ext",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "description": "Boilerplate for a WXT-based browser extension",
   "type": "module",
@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "postinstall": "wxt prepare",
-    "test": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox"
   },
@@ -37,7 +37,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^5.1.4",
     "@wxt-dev/auto-icons": "^1.1.1",
-    "@wxt-dev/module-react": "^1.1.5",
+    "@wxt-dev/module-react": "^1.2.1",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.50.0",
     "tailwindcss": "catalog:",

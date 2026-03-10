@@ -1,8 +1,8 @@
 import { Button } from '@workspace/shadcn/components/button';
 import { FileX } from 'lucide-react';
 
-import { Fallback } from './Fallback.js';
-import { FallbackIcon } from './FallbackIcon.js';
+import { Fallback } from './Fallback.tsx';
+import { FallbackIcon } from './FallbackIcon.tsx';
 
 export type NotFoundFallbackProps = {
   title?: string;

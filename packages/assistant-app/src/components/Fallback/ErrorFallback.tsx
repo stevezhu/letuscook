@@ -8,8 +8,8 @@ import {
 import { AlertTriangle } from 'lucide-react';
 import { useState } from 'react';
 
-import { Fallback } from './Fallback.js';
-import { FallbackIcon } from './FallbackIcon.js';
+import { Fallback } from './Fallback.tsx';
+import { FallbackIcon } from './FallbackIcon.tsx';
 
 export type ErrorFallbackProps = {
   error: Error;

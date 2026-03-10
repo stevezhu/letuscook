@@ -1,7 +1,7 @@
 import { Loader2 } from 'lucide-react';
 
-import { Fallback } from './Fallback.js';
-import { FallbackIcon } from './FallbackIcon.js';
+import { Fallback } from './Fallback.tsx';
+import { FallbackIcon } from './FallbackIcon.tsx';
 
 export type PendingFallbackProps = {
   title?: string;

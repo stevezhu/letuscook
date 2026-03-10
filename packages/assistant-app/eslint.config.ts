@@ -1,4 +1,3 @@
-import importConfig from '@stzhu/eslint-config/import';
 import react from '@stzhu/eslint-config/react';
 import storybook from '@stzhu/eslint-config/storybook';
 import tailwind from '@stzhu/eslint-config/tailwind';
@@ -13,7 +12,6 @@ export default defineConfig(
       parserOptions: { tsconfigRootDir: import.meta.dirname },
     },
   },
-  importConfig.configs['file-extension-in-import'],
   react.configs.recommended,
   tailwind.configs.recommended,
   {

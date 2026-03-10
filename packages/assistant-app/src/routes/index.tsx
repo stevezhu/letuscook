@@ -4,7 +4,7 @@ import { productName } from '@workspace/constants';
 import { Button } from '@workspace/shadcn/components/button';
 import { useState } from 'react';
 
-import { useApiClient } from '#api/useApiClient.js';
+import { useApiClient } from '#api/useApiClient.ts';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,

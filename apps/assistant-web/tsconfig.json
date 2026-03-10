@@ -1,4 +1,4 @@
 {
   "extends": "@stzhu/tsconfig/tsconfig.react.json",
-  "compilerOptions": { "rootDir": "." }
+  "include": ["*.config.ts", "*.d.ts", "src/**/*"]
 }

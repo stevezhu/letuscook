@@ -9,7 +9,7 @@ import {
 import { Text } from '@workspace/rn-reusables/components/text';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.js';
+import { useAuth } from '#modules/auth/auth-context.tsx';
 
 export default function HomeScreen() {
   const { loading, user, signIn } = useAuth();

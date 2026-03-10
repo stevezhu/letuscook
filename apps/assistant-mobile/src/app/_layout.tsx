@@ -17,10 +17,10 @@ import {
 } from 'react-native-safe-area-context';
 import { Uniwind } from 'uniwind';
 
-import { AnimatedSplashOverlay } from '#components/animated-icon.js';
-import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.js';
-import { createAuthProvider, useAuth } from '#modules/auth/auth-context.js';
-import { ExpoAuthClient } from '#modules/auth/auth.js';
+import { AnimatedSplashOverlay } from '#components/animated-icon.tsx';
+import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.ts';
+import { createAuthProvider, useAuth } from '#modules/auth/auth-context.tsx';
+import { ExpoAuthClient } from '#modules/auth/auth.ts';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',

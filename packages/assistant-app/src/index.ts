@@ -1,6 +1,6 @@
-import { queryClient, router } from './router.js';
+import { queryClient, router } from './router.tsx';
 
-export type { RouterIds, RouterType } from './router.js';
+export type { RouterIds, RouterType } from './router.tsx';
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -11,12 +11,12 @@ declare module '@tanstack/react-router' {
 
 export { queryClient, router };
 
-export type { ApiClient } from '#api/ApiClient.js';
+export type { ApiClient } from '#api/ApiClient.ts';
 export {
   ApiClientProvider,
   type ApiClientProviderProps,
-} from '#api/ApiClientProvider.js';
-export { useApiClient } from '#api/useApiClient.js';
+} from '#api/ApiClientProvider.tsx';
+export { useApiClient } from '#api/useApiClient.ts';
 
 // By re exporting the api from TanStack router, we can enforce that other packages
 // rely on this one instead, making the type register being applied

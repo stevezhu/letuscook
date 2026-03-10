@@ -1,3 +1,3 @@
-export * from './ErrorFallback.js';
-export * from './NotFoundFallback.js';
-export * from './PendingFallback.js';
+export * from './ErrorFallback.tsx';
+export * from './NotFoundFallback.tsx';
+export * from './PendingFallback.tsx';

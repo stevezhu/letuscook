@@ -11,9 +11,9 @@ import {
   ErrorFallback,
   NotFoundFallback,
   PendingFallback,
-} from '#components/Fallback/index.js';
+} from '#components/Fallback/index.ts';
 
-import { routeTree } from './routeTree.gen.js';
+import { routeTree } from './routeTree.gen.ts';
 
 export const queryClient = new QueryClient();
 

@@ -9,7 +9,7 @@ import {
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { createAppApiClient, createHonoClient } from '#apiClient.js';
+import { createAppApiClient, createHonoClient } from '#apiClient.ts';
 
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Failed to get root element');

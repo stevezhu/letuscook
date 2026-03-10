@@ -10,11 +10,11 @@
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
-    "@tanstack/react-router": "^1.162.6",
+    "@tanstack/react-router": "^1.166.6",
     "@workspace/assistant-app": "workspace:*",
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",

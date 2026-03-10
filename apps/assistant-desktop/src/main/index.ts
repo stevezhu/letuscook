@@ -7,7 +7,7 @@ import {
   REACT_DEVELOPER_TOOLS,
 } from 'electron-devtools-installer';
 
-import { setupIpcHandlers } from '#main/ipcHandlers/index.js';
+import { setupIpcHandlers } from '#main/ipcHandlers/index.ts';
 
 import icon from '../../resources/icon.png?asset';
 

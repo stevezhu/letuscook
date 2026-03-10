@@ -1,7 +1,7 @@
 import { electronAPI } from '@electron-toolkit/preload';
 import { contextBridge } from 'electron';
 
-import { api, apiClient } from '#preload/api/index.js';
+import { api, apiClient } from '#preload/api/index.ts';
 
 if (!process.contextIsolated) {
   throw new Error('Context isolation is required');

@@ -1,6 +1,6 @@
 {
   "name": "assistant-mobile",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
@@ -14,10 +14,11 @@
     "ios": "expo run:ios",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "pretest": "tsc --noEmit",
-    "reset-project": "node ./scripts/reset-project.js",
     "start": "expo start",
     "test": "jest",
+    "typecheck": "pnpm run '/^(typecheck:app|typecheck:metro)$/'",
+    "typecheck:app": "tsc --noEmit",
+    "typecheck:metro": "tsc --noEmit -p tsconfig.metro.json --composite false",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -68,7 +69,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@react-native/metro-config": "~0.83.2",
+    "@react-native/metro-config": "~0.83.4",
     "@rnx-kit/metro-config": "^2.2.4",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/metro-ts-resolver": "^0.1.2",

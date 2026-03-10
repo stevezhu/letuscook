@@ -8,7 +8,7 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.js';
+import { useAuth } from '#modules/auth/auth-context.tsx';
 
 export default function AccountIndex() {
   const { user, signOut } = useAuth();
@@ -22,7 +22,7 @@ export default function AccountIndex() {
     [user.firstName?.[0], user.lastName?.[0]]
       .filter(Boolean)
       .join('')
-      .toUpperCase() || user.email[0].toUpperCase();
+      .toUpperCase() || user.email[0]?.toUpperCase();
 
   return (
     <ScrollView

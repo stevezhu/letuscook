@@ -1,5 +1,4 @@
 import expo from '@stzhu/eslint-config/expo';
-import importConfig from '@stzhu/eslint-config/import';
 import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
@@ -11,7 +10,6 @@ export default defineConfig([
     },
   },
   expo.configs.recommended,
-  importConfig.configs['file-extension-in-import'],
   {
     rules: {
       'simple-import-sort/imports': 'off',

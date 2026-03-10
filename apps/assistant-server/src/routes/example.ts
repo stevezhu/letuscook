@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 
-import { HonoBindings } from '#HonoBindings.js';
+import { HonoBindings } from '#HonoBindings.ts';
 
 export default new Hono<{ Bindings: HonoBindings }>().get('/test', (c) => {
   console.log({

@@ -6,9 +6,9 @@ import {
   XCircle,
 } from 'lucide-react';
 
-import preview from '#.storybook/preview.js';
+import preview from '#.storybook/preview.ts';
 
-import { FallbackIcon } from './FallbackIcon.js';
+import { FallbackIcon } from './FallbackIcon.tsx';
 
 const meta = preview.meta({
   component: FallbackIcon,

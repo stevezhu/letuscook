@@ -37,7 +37,6 @@ worker-configuration.gen.d.ts
 
 # Expo
 .expo/
-expo-env.d.ts
 
 # Native
 .kotlin/

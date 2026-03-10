@@ -2,7 +2,7 @@ import { IpcListener } from '@electron-toolkit/typed-ipc';
 import type { AppType } from 'assistant-server/types';
 import { hc } from 'hono/client';
 
-import { IpcEvents } from '#preload/IpcEvents.js';
+import { IpcEvents } from '#preload/IpcEvents.ts';
 
 export function setupExampleHandlers(
   ipcListener: IpcListener<IpcEvents>,
