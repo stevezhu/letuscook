@@ -21,6 +21,7 @@ import { AnimatedSplashOverlay } from '#components/animated-icon.tsx';
 import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.ts';
 import { createAuthProvider, useAuth } from '#modules/auth/auth-context.tsx';
 import { ExpoAuthClient } from '#modules/auth/auth.ts';
+import { CaptureMigrationProvider } from '#modules/capture/capture-migration-provider.tsx';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -78,22 +79,30 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ConvexProviderWithAuth client={convex} useAuth={useConvexAuth}>
-          <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-          >
-            <SafeAreaProvider>
-              <SafeAreaListener
-                onChange={({ insets }) => {
-                  Uniwind.updateInsets(insets);
-                }}
-              >
-                <AnimatedSplashOverlay />
-                <Stack screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="(tabs)" />
-                </Stack>
-              </SafeAreaListener>
-            </SafeAreaProvider>
-          </ThemeProvider>
+          {/*
+            CaptureMigrationProvider is placed inside ConvexProviderWithAuth
+            so that it has access to both authentication state and the Convex client.
+            It wraps the UI to passively detect sign-in events and trigger
+            the guest capture migration process without blocking rendering.
+          */}
+          <CaptureMigrationProvider>
+            <ThemeProvider
+              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            >
+              <SafeAreaProvider>
+                <SafeAreaListener
+                  onChange={({ insets }) => {
+                    Uniwind.updateInsets(insets);
+                  }}
+                >
+                  <AnimatedSplashOverlay />
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="(tabs)" />
+                  </Stack>
+                </SafeAreaListener>
+              </SafeAreaProvider>
+            </ThemeProvider>
+          </CaptureMigrationProvider>
         </ConvexProviderWithAuth>
       </AuthProvider>
     </QueryClientProvider>

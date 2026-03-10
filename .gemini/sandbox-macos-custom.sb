@@ -17,6 +17,7 @@
     (subpath (string-append (param "HOME_DIR") "/.proto"))
     (subpath (string-append (param "HOME_DIR") "/.maestro"))
     (subpath (string-append (param "HOME_DIR") "/Library/pnpm"))
+    (subpath (string-append (param "HOME_DIR") "/tmp"))
     ;; Allow writes to included directories from --include-directories
     (subpath (param "INCLUDE_DIR_0"))
     (subpath (param "INCLUDE_DIR_1"))

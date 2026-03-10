@@ -50,4 +50,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     typedRoutes: true,
     reactCompiler: true,
   },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
 });

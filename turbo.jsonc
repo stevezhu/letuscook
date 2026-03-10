@@ -3,9 +3,7 @@
   "globalDependencies": ["pnpm-workspace.yaml", ".env", ".env.*"],
   "tasks": {
     "//#format:check": {},
-    "//#format": {
-      "cache": false
-    },
+    "//#format": {},
     "//#lint:oxc": {},
     "//#lint:oxc:fix": {
       "cache": false
