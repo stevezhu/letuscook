@@ -12,6 +12,8 @@ export type CaptureMigrationProviderProps = {
   children: ReactNode;
 };
 
+// TODO: test this component
+
 /**
  * Watches for a user to transition from unauthenticated to authenticated,
  * and triggers a one-time migration of any offline captures to Convex.

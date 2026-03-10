@@ -39,6 +39,8 @@ jest.mock('expo-crypto', () => ({
   randomUUID: jest.fn(() => `test-uuid-${String(++mockUuidCounter)}`),
 }));
 
+// TODO: convert this test to test the useGuestCaptureStore() hook
+
 describe('guest capture store logic', () => {
   async function loadCaptures(): Promise<GuestCapture[]> {
     const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);

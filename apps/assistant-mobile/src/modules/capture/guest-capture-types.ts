@@ -35,4 +35,4 @@ export type AddGuestCaptureResult =
 export const GUEST_CAPTURE_LIMIT = 100;
 
 /** AsyncStorage key used to persist the guest captures array. */
-export const GUEST_CAPTURES_STORAGE_KEY = 'guest_captures';
+export const GUEST_CAPTURES_STORAGE_KEY = 'guestCaptures';
