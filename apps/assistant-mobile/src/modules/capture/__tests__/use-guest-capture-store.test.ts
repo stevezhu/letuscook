@@ -5,6 +5,8 @@
  * uses useSuspenseQuery which requires complex Suspense test setup.
  */
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Crypto from 'expo-crypto';
 
 import {
   GUEST_CAPTURE_LIMIT,
@@ -37,44 +39,38 @@ jest.mock('expo-crypto', () => ({
   randomUUID: jest.fn(() => `test-uuid-${String(++mockUuidCounter)}`),
 }));
 
-// Import after mocks
-// eslint-disable-next-line import/first
-import AsyncStorage from '@react-native-async-storage/async-storage';
-// eslint-disable-next-line import/first
-import * as Crypto from 'expo-crypto';
-
-async function loadCaptures(): Promise<GuestCapture[]> {
-  const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);
-  if (!raw) return [];
-  return JSON.parse(raw) as GuestCapture[];
-}
-
-async function addCapture(
-  rawContent: string,
-  captureType: GuestCapture['captureType'],
-) {
-  const current = await loadCaptures();
-  if (current.length >= GUEST_CAPTURE_LIMIT) {
-    return { status: 'LIMIT_REACHED' as const };
-  }
-  const capture: GuestCapture = {
-    id: Crypto.randomUUID(),
-    rawContent,
-    captureType,
-    capturedAt: Date.now(),
-  };
-  await AsyncStorage.setItem(
-    GUEST_CAPTURES_STORAGE_KEY,
-    JSON.stringify([...current, capture]),
-  );
-  return { status: 'ok' as const, capture };
-}
-
-async function clearCaptures(): Promise<void> {
-  await AsyncStorage.removeItem(GUEST_CAPTURES_STORAGE_KEY);
-}
-
 describe('guest capture store logic', () => {
+  async function loadCaptures(): Promise<GuestCapture[]> {
+    const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as GuestCapture[];
+  }
+
+  async function addCapture(
+    rawContent: string,
+    captureType: GuestCapture['captureType'],
+  ) {
+    const current = await loadCaptures();
+    if (current.length >= GUEST_CAPTURE_LIMIT) {
+      return { status: 'LIMIT_REACHED' as const };
+    }
+    const capture: GuestCapture = {
+      id: Crypto.randomUUID(),
+      rawContent,
+      captureType,
+      capturedAt: Date.now(),
+    };
+    await AsyncStorage.setItem(
+      GUEST_CAPTURES_STORAGE_KEY,
+      JSON.stringify([...current, capture]),
+    );
+    return { status: 'ok' as const, capture };
+  }
+
+  async function clearCaptures(): Promise<void> {
+    await AsyncStorage.removeItem(GUEST_CAPTURES_STORAGE_KEY);
+  }
+
   beforeEach(() => {
     for (const key of Object.keys(mockStorage)) {
       delete mockStorage[key];

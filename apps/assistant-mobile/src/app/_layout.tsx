@@ -79,6 +79,12 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ConvexProviderWithAuth client={convex} useAuth={useConvexAuth}>
+          {/*
+            CaptureMigrationProvider is placed inside ConvexProviderWithAuth
+            so that it has access to both authentication state and the Convex client.
+            It wraps the UI to passively detect sign-in events and trigger
+            the guest capture migration process without blocking rendering.
+          */}
           <CaptureMigrationProvider>
             <ThemeProvider
               value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}

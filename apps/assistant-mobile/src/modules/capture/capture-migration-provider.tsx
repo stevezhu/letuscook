@@ -12,11 +12,18 @@ export type CaptureMigrationProviderProps = {
   children: ReactNode;
 };
 
+/**
+ * Watches for a user to transition from unauthenticated to authenticated,
+ * and triggers a one-time migration of any offline captures to Convex.
+ */
 function MigrationWatcher({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const { isAuthenticated } = useConvexAuth();
   const { captures } = useGuestCaptureStore();
   const migration = useMigrateGuestCaptures();
+
+  // Track whether we've attempted migration in the current user session
+  // This prevents multiple migration requests on a cold start or fast re-renders
   const hasAttemptedRef = useRef(false);
 
   useEffect(() => {
@@ -35,7 +42,9 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
       !hasAttemptedRef.current
     ) {
       hasAttemptedRef.current = true;
-      // Strip captureState before sending to Convex
+
+      // Strip `captureState: 'offline'` before sending to Convex
+      // since the Convex schema expects standard objects.
       const guestCaptures = captures.map(({ captureState: _, ...c }) => c);
       migration.mutate(guestCaptures);
     }
@@ -43,6 +52,7 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
 
   return (
     <>
+      {/* Show a non-blocking banner at the top while migrating */}
       {migration.isPending && (
         <View className="absolute top-safe left-0 right-0 z-50 flex-row items-center justify-center gap-2 bg-muted px-4 py-2">
           <ActivityIndicator size="small" />
@@ -56,6 +66,13 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * A provider that wraps the application to enable automatic capture migrations.
+ *
+ * It uses a `Suspense` boundary with `fallback={children}` to prevent
+ * the application from showing a blank screen or blocking rendering while the
+ * `useGuestCaptureStore` initially loads data from AsyncStorage.
+ */
 export function CaptureMigrationProvider({
   children,
 }: CaptureMigrationProviderProps) {
