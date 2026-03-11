@@ -39,8 +39,9 @@ onlyBuiltDependencies:
 
 overrides:
   react-refresh: ^0.18.0
-  '@workos-inc/authkit-react': ^0.16.0
-  '@workos-inc/node': ^8.0.0
+  # TODO: fix workos lib versions
+  # '@workos-inc/authkit-react': ^0.16.0
+  # '@workos-inc/node': ^8.0.0
 
 packageExtensions:
   lucide-react:
