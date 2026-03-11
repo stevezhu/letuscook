@@ -217,7 +217,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
@@ -293,7 +293,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       tailwindcss:
         specifier: 'catalog:'
         version: 4.2.1
@@ -486,7 +486,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       expo-dev-client:
         specifier: ^55.0.11
         version: 55.0.16(expo@55.0.6)(typescript@5.9.3)
@@ -538,7 +538,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       shx:
         specifier: ^0.4.0
         version: 0.4.0
@@ -611,7 +611,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       tailwindcss:
         specifier: 'catalog:'
         version: 4.2.1
@@ -693,7 +693,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       storybook:
         specifier: 'catalog:'
         version: 10.2.17(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -858,7 +858,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -940,7 +940,7 @@ importers:
         version: 9.39.4(jiti@2.6.1)
       eslint-plugin-oxlint:
         specifier: ^1.50.0
-        version: 1.51.0
+        version: 1.53.0
       tailwindcss:
         specifier: 'catalog:'
         version: 4.2.1
@@ -1530,8 +1530,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@borewit/text-codec@0.2.1':
-    resolution: {integrity: sha512-k7vvKPbf7J2fZ5klGRD9AeKfUvojuZIQ3BT5u7Jfv+puwXkUBUT5PVyMDfJZpy30CBDXGMgw7fguK/lpOMBvgw==}
+  '@borewit/text-codec@0.2.2':
+    resolution: {integrity: sha512-DDaRehssg1aNrH4+2hnj1B7vnUGEjU6OIlyRdkMd0aUdIUvKXrJfXsy8LVtXAy7DRvYVluWbMspsRhz2lcW0mQ==}
 
   '@chromatic-com/storybook@5.0.1':
     resolution: {integrity: sha512-v80QBwVd8W6acH5NtDgFlUevIBaMZAh1pYpBiB40tuNzS242NTHeQHBDGYwIAbWKDnt1qfjJpcpL6pj5kAr4LA==}
@@ -7193,8 +7193,8 @@ packages:
     peerDependencies:
       eslint: '>=8.23.0'
 
-  eslint-plugin-oxlint@1.51.0:
-    resolution: {integrity: sha512-lct8LD1AxfHF1PcsuK6mFYals+zX0mx/WP2G4i16h0iR8jpT3xCfGTmTNwXiImcevzGIiJ/VDBgQ7t0B9z2Jeg==}
+  eslint-plugin-oxlint@1.53.0:
+    resolution: {integrity: sha512-rRsxP+11XyYynihsKBosP5/KNgCxNMLxVV4xSypsoCmHXaXnMMe+gscwugFvR4DZI/HCeg7+qR1Ru/aSv1hvSQ==}
 
   eslint-plugin-prettier@5.5.5:
     resolution: {integrity: sha512-hscXkbqUZ2sPithAuLm5MXL+Wph+U7wHngPBv9OMWwlP8iaflyxpjTYZkmdgB4/vPIhemRlBEoLrH7UC1n7aUw==}
@@ -13213,7 +13213,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@borewit/text-codec@0.2.1': {}
+  '@borewit/text-codec@0.2.2': {}
 
   '@chromatic-com/storybook@5.0.1(storybook@10.2.17(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
     dependencies:
@@ -19546,7 +19546,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  eslint-plugin-oxlint@1.51.0:
+  eslint-plugin-oxlint@1.53.0:
     dependencies:
       jsonc-parser: 3.3.1
 
@@ -24830,7 +24830,7 @@ snapshots:
 
   token-types@6.1.2:
     dependencies:
-      '@borewit/text-codec': 0.2.1
+      '@borewit/text-codec': 0.2.2
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
 

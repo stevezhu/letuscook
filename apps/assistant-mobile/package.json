@@ -16,7 +16,7 @@
     "lint:fix": "eslint . --fix",
     "start": "expo start",
     "test": "jest",
-    "typecheck": "pnpm run '/^(typecheck:app|typecheck:metro)$/'",
+    "typecheck": "pnpm run --reporter=append-only '/^(typecheck:app|typecheck:metro)$/'",
     "typecheck:app": "tsc --noEmit",
     "typecheck:metro": "tsc --noEmit -p tsconfig.metro.json --composite false",
     "web": "expo start --web"

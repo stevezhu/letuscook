@@ -20,7 +20,7 @@
     "lint": "eslint .",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron-vite preview",
-    "typecheck": "pnpm run '/^(typecheck:node|typecheck:web)$/'",
+    "typecheck": "pnpm run --reporter=append-only '/^(typecheck:node|typecheck:web)$/'",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false"
   },
