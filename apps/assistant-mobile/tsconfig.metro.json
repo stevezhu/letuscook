@@ -1,11 +1,10 @@
 {
   "extends": "@stzhu/tsconfig/tsconfig.node.json",
-  "include": ["metro.config.ts"],
+  "include": ["metro.config.ts", "rnx-kit.d.ts"],
   "compilerOptions": {
     "strict": false,
     "noEmit": false,
     "allowJs": true,
-    "maxNodeModuleJsDepth": 1,
     "verbatimModuleSyntax": true,
     "composite": true
   }

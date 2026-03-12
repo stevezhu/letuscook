@@ -17,6 +17,7 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@convex-dev/workos-authkit": "^0.1.6",
     "convex": "^1.32.0"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@
   "exclude": ["convex/_generated"],
   "compilerOptions": {
     "strict": true,
+    "allowImportingTsExtensions": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "noEmit": true,
