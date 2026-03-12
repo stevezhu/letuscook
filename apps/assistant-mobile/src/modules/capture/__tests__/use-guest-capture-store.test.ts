@@ -132,12 +132,20 @@ describe('guest capture store logic', () => {
   });
 
   test('allows adding up to exactly the limit', async () => {
-    /* eslint-disable no-await-in-loop */
+    // Sequential adds are required (AsyncStorage writes race if concurrent).
+    // Chain promises in the loop so `await` stays outside the loop body.
+    type R = Awaited<ReturnType<typeof addCapture>>;
+    let chain = Promise.resolve<R[]>([]);
     for (let i = 0; i < GUEST_CAPTURE_LIMIT; i++) {
-      const result = await addCapture(`capture ${String(i)}`, 'text');
+      const idx = i;
+      chain = chain.then((acc) =>
+        addCapture(`capture ${String(idx)}`, 'text').then((r) => [...acc, r]),
+      );
+    }
+    const results = await chain;
+    for (const result of results) {
       expect(result.status).toBe('ok');
     }
-    /* eslint-enable no-await-in-loop */
 
     const captures = await loadCaptures();
     expect(captures).toHaveLength(GUEST_CAPTURE_LIMIT);

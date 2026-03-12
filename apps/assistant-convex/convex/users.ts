@@ -1,4 +1,4 @@
-import { query } from './_generated/server.js';
+import { internalQuery, query } from './_generated/server.js';
 
 export const getCurrentUser = query({
   handler: async (ctx) => {
@@ -11,5 +11,15 @@ export const getCurrentUser = query({
         q.eq('workosUserId', identity.subject),
       )
       .unique();
+  },
+});
+
+export const getAgentUserInternal = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return ctx.db
+      .query('users')
+      .withIndex('by_user_type', (q) => q.eq('userType', 'agent'))
+      .first();
   },
 });
