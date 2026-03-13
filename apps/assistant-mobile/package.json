@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@react-native/metro-config": "~0.83.4",
+    "@react-native/metro-config": "~0.84.0",
     "@rnx-kit/metro-config": "^2.2.4",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/metro-ts-resolver": "^0.1.2",
