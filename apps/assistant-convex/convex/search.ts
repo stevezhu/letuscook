@@ -1,25 +1,23 @@
 import { v } from 'convex/values';
 
-import { authQuery } from './functions.ts';
+import { authQuery } from './auth.ts';
 
 export const searchGlobal = authQuery({
   args: { query: v.string() },
   handler: async (ctx, args) => {
-    if (!ctx.user) return [];
-
     if (!args.query.trim()) return [];
 
     const [captureResults, nodeResults] = await Promise.all([
       ctx.db
         .query('captures')
         .withSearchIndex('search_raw', (q) =>
-          q.search('rawContent', args.query).eq('ownerUserId', ctx.user!._id),
+          q.search('rawContent', args.query).eq('ownerUserId', ctx.userId),
         )
         .take(20),
       ctx.db
         .query('nodes')
         .withSearchIndex('search_nodes', (q) =>
-          q.search('searchText', args.query).eq('ownerUserId', ctx.user!._id),
+          q.search('searchText', args.query).eq('ownerUserId', ctx.userId),
         )
         .take(20),
     ]);
@@ -46,14 +44,12 @@ export const searchGlobal = authQuery({
 export const searchNodesForLinking = authQuery({
   args: { query: v.string() },
   handler: async (ctx, args) => {
-    if (!ctx.user) return [];
-
     if (!args.query.trim()) return [];
 
     const results = await ctx.db
       .query('nodes')
       .withSearchIndex('search_nodes', (q) =>
-        q.search('searchText', args.query).eq('ownerUserId', ctx.user!._id),
+        q.search('searchText', args.query).eq('ownerUserId', ctx.userId),
       )
       .take(10);
 

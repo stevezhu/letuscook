@@ -1,6 +1,24 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
+export const edgeFields = {
+  fromNodeId: v.id('nodes'),
+  toNodeId: v.id('nodes'),
+  publishedAt: v.optional(v.number()),
+  archivedAt: v.optional(v.number()),
+  edgeType: v.union(
+    v.literal('explicit'),
+    v.literal('suggested'),
+    v.literal('reference'),
+    v.literal('related'),
+  ),
+  source: v.union(v.literal('user'), v.literal('processor')),
+  verified: v.boolean(),
+  confidence: v.optional(v.number()),
+  createdAt: v.number(),
+  label: v.optional(v.string()),
+};
+
 export default defineSchema({
   users: defineTable({
     displayName: v.string(),
@@ -72,23 +90,7 @@ export default defineSchema({
       filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],
     }),
 
-  edges: defineTable({
-    fromNodeId: v.id('nodes'),
-    toNodeId: v.id('nodes'),
-    publishedAt: v.optional(v.number()),
-    archivedAt: v.optional(v.number()),
-    edgeType: v.union(
-      v.literal('explicit'),
-      v.literal('suggested'),
-      v.literal('reference'),
-      v.literal('related'),
-    ),
-    source: v.union(v.literal('user'), v.literal('processor')),
-    verified: v.boolean(),
-    confidence: v.optional(v.number()),
-    createdAt: v.number(),
-    label: v.optional(v.string()),
-  })
+  edges: defineTable(edgeFields)
     .index('by_edge_pair', ['fromNodeId', 'toNodeId'])
     .index('by_archivedAt_from_node', ['archivedAt', 'fromNodeId'])
     .index('by_archivedAt_to_node', ['archivedAt', 'toNodeId'])

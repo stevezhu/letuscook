@@ -3,12 +3,12 @@ import { ConvexError, v } from 'convex/values';
 import { internal } from './_generated/api.js';
 import { Id } from './_generated/dataModel.js';
 import {
-  internalAction,
   internalMutation,
   internalQuery,
-  authMutation,
-  authQuery,
-} from './functions.ts';
+  internalAction,
+} from './_generated/server.js';
+import { authMutation, authQuery } from './auth.ts';
+import { EntityNotFoundError } from './errors.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ export const setCaptureFailed = internalMutation({
 export const saveDraftSuggestion = internalMutation({
   args: {
     captureId: v.id('captures'),
-    agentUserId: v.id('users'),
+    agentWorkosUserId: v.string(), // Changed from agentUserId: v.id('users')
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -81,7 +81,7 @@ export const saveDraftSuggestion = internalMutation({
 
     await ctx.db.insert('suggestions', {
       captureId: args.captureId,
-      suggestorUserId: args.agentUserId,
+      suggestorUserId: args.agentWorkosUserId,
       suggestedNodeId: draftNodeId,
       status: 'pending',
       createdAt: now,
@@ -131,7 +131,7 @@ export const migrateGuestCaptures = authMutation({
           captureType: capture.captureType,
           capturedAt: capture.capturedAt,
           updatedAt: now,
-          ownerUserId: ctx.user._id,
+          ownerUserId: ctx.userId,
           // Set initial state to processing since it hasn't been handled by AI yet
           captureState: 'processing',
           explicitMentionNodeIds: [],
@@ -173,7 +173,7 @@ export const createCapture = authMutation({
       captureType: args.captureType,
       capturedAt: now,
       updatedAt: now,
-      ownerUserId: ctx.user._id,
+      ownerUserId: ctx.userId,
       captureState: 'processing',
       explicitMentionNodeIds,
     });
@@ -197,7 +197,7 @@ export const updateCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -244,9 +244,17 @@ export const acceptSuggestion = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
-      throw new ConvexError('Unauthorized');
+    const [user, capture] = await Promise.all([
+      ctx.getUser(),
+      ctx.db.get(args.captureId),
+    ]);
+    if (!capture || capture.ownerUserId !== user?._id) {
+      throw new EntityNotFoundError({
+        entityName: 'capture',
+        argName: 'captureId',
+        argValue: args.captureId,
+      });
+    }
 
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion) throw new ConvexError('Suggestion not found');
@@ -329,7 +337,7 @@ export const rejectSuggestion = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     const suggestion = await ctx.db.get(args.suggestionId);
@@ -405,7 +413,7 @@ export const organizeCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -450,7 +458,7 @@ export const archiveCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -467,7 +475,7 @@ export const unarchiveCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     await ctx.db.patch('captures', args.captureId, {
@@ -483,7 +491,7 @@ export const retryProcessing = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
     if (capture.captureState !== 'failed')
       throw new ConvexError('Capture is not in failed state');
@@ -525,8 +533,10 @@ export const processCapture = internalAction({
       internal.users.getAgentUserInternal,
       {},
     );
-    if (!agentUser) {
-      console.error('[processCapture] no agent user, marking failed');
+    if (!agentUser || !agentUser.workosUserId) {
+      console.error(
+        '[processCapture] no agent user or workosUserId, marking failed',
+      );
       await ctx.runMutation(internal.captures.setCaptureFailed, {
         captureId: args.captureId,
       });
@@ -535,7 +545,7 @@ export const processCapture = internalAction({
 
     await ctx.runMutation(internal.captures.saveDraftSuggestion, {
       captureId: args.captureId,
-      agentUserId: agentUser._id,
+      agentWorkosUserId: agentUser.workosUserId,
     });
   },
 });
@@ -545,10 +555,8 @@ export const processCapture = internalAction({
 export const getCapture = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    if (!ctx.user) return null;
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id) return null;
+    if (!capture || capture.ownerUserId !== ctx.userId) return null;
     return capture;
   },
 });
@@ -556,16 +564,12 @@ export const getCapture = authQuery({
 export const getInboxCaptures = authQuery({
   args: {},
   handler: async (ctx) => {
-    if (!ctx.user) return [];
-
-    const userId = ctx.user._id;
-
     const [processing, ready, failed, needsManual] = await Promise.all([
       ctx.db
         .query('captures')
         .withIndex('by_owner_archivedAt_capture_state', (q) =>
           q
-            .eq('ownerUserId', userId)
+            .eq('ownerUserId', ctx.userId)
             .eq('archivedAt', undefined)
             .eq('captureState', 'processing'),
         )
@@ -574,7 +578,7 @@ export const getInboxCaptures = authQuery({
         .query('captures')
         .withIndex('by_owner_archivedAt_capture_state', (q) =>
           q
-            .eq('ownerUserId', userId)
+            .eq('ownerUserId', ctx.userId)
             .eq('archivedAt', undefined)
             .eq('captureState', 'ready'),
         )
@@ -583,7 +587,7 @@ export const getInboxCaptures = authQuery({
         .query('captures')
         .withIndex('by_owner_archivedAt_capture_state', (q) =>
           q
-            .eq('ownerUserId', userId)
+            .eq('ownerUserId', ctx.userId)
             .eq('archivedAt', undefined)
             .eq('captureState', 'failed'),
         )
@@ -592,7 +596,7 @@ export const getInboxCaptures = authQuery({
         .query('captures')
         .withIndex('by_owner_archivedAt_capture_state', (q) =>
           q
-            .eq('ownerUserId', userId)
+            .eq('ownerUserId', ctx.userId)
             .eq('archivedAt', undefined)
             .eq('captureState', 'needs_manual'),
         )
@@ -609,7 +613,12 @@ export const getInboxCaptures = authQuery({
           )
           .first();
         if (!suggestion) return { capture, suggestion: null, suggestor: null };
-        const suggestor = await ctx.db.get(suggestion.suggestorUserId);
+        const suggestor = await ctx.db
+          .query('users')
+          .withIndex('by_workos_user_id', (q) =>
+            q.eq('workosUserId', suggestion.suggestorUserId),
+          )
+          .unique();
         return {
           capture,
           suggestion,
@@ -641,15 +650,13 @@ export const getInboxCaptures = authQuery({
 export const getRecentCaptures = authQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    if (!ctx.user) return [];
-
     const limit = args.limit ?? 20;
 
     // Collect a larger batch and sort by capturedAt desc in-memory
     const captures = await ctx.db
       .query('captures')
       .withIndex('by_owner_archivedAt', (q) =>
-        q.eq('ownerUserId', ctx.user!._id).eq('archivedAt', undefined),
+        q.eq('ownerUserId', ctx.userId).eq('archivedAt', undefined),
       )
       .order('desc')
       .take(50);
@@ -662,20 +669,18 @@ export const getRecentCaptures = authQuery({
 export const getArchivedItems = authQuery({
   args: {},
   handler: async (ctx) => {
-    if (!ctx.user) return { captures: [], nodes: [] };
-
     const [captures, nodes] = await Promise.all([
       ctx.db
         .query('captures')
         .withIndex('by_owner_archivedAt', (q) =>
-          q.eq('ownerUserId', ctx.user!._id).gt('archivedAt', 0),
+          q.eq('ownerUserId', ctx.userId).gt('archivedAt', 0),
         )
         .order('desc')
         .collect(),
       ctx.db
         .query('nodes')
         .withIndex('by_owner_archivedAt', (q) =>
-          q.eq('ownerUserId', ctx.user!._id).gt('archivedAt', 0),
+          q.eq('ownerUserId', ctx.userId).gt('archivedAt', 0),
         )
         .order('desc')
         .collect(),

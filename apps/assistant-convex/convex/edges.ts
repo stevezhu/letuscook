@@ -1,31 +1,32 @@
+import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { authMutation } from './functions.ts';
+import { authMutation } from './auth.ts';
+import { EntityNotFoundError } from './errors.ts';
+import { edgeFields } from './schema.ts';
 
 export const createEdge = authMutation({
-  args: {
-    fromNodeId: v.id('nodes'),
-    toNodeId: v.id('nodes'),
-    edgeType: v.optional(
-      v.union(
-        v.literal('explicit'),
-        v.literal('suggested'),
-        v.literal('reference'),
-        v.literal('related'),
-      ),
-    ),
-  },
+  args: pick(edgeFields, ['fromNodeId', 'toNodeId', 'edgeType']),
   returns: v.id('edges'),
   handler: async (ctx, args) => {
     // Verify caller owns both nodes
-    const [fromNode, toNode] = await Promise.all([
-      ctx.db.get(args.fromNodeId),
-      ctx.db.get(args.toNodeId),
+    const [user, fromNode, toNode] = await Promise.all([
+      ctx.getUser(),
+      ctx.db.get('nodes', args.fromNodeId),
+      ctx.db.get('nodes', args.toNodeId),
     ]);
-    if (!fromNode || fromNode.ownerUserId !== ctx.user._id)
-      throw new ConvexError('Unauthorized: fromNode');
-    if (!toNode || toNode.ownerUserId !== ctx.user._id)
-      throw new ConvexError('Unauthorized: toNode');
+    if (!fromNode || fromNode.ownerUserId !== user?._id) {
+      throw new EntityNotFoundError({
+        argName: 'fromNodeId',
+        argValue: args.fromNodeId,
+      });
+    }
+    if (!toNode || toNode.ownerUserId !== user?._id) {
+      throw new EntityNotFoundError({
+        argName: 'toNodeId',
+        argValue: args.toNodeId,
+      });
+    }
 
     // Check for duplicates
     const existing = await ctx.db

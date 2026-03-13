@@ -1,14 +1,12 @@
 import { ConvexError, v } from 'convex/values';
 
-import { authQuery } from './functions.ts';
+import { authQuery } from './auth.ts';
 
 export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    if (!ctx.user) return null;
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== ctx.user._id)
+    if (!capture || capture.ownerUserId !== ctx.userId)
       throw new ConvexError('Unauthorized');
 
     const suggestion = await ctx.db
@@ -19,7 +17,12 @@ export const getSuggestion = authQuery({
       .first();
     if (!suggestion) return null;
 
-    const suggestor = await ctx.db.get(suggestion.suggestorUserId);
+    const suggestor = await ctx.db
+      .query('users')
+      .withIndex('by_workos_user_id', (q) =>
+        q.eq('workosUserId', suggestion.suggestorUserId),
+      )
+      .unique();
 
     return {
       suggestion,
