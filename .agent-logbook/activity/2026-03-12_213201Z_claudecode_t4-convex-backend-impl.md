@@ -33,6 +33,7 @@ Implemented the full Convex data layer per the T4 plan.
 **`users.ts`**: Added `getAgentUserInternal` internalQuery (queries by `by_user_type` index).
 
 **`captures.ts`**: Full expansion from 87 to ~800 lines:
+
 - Internal helpers: `getCaptureInternal`, `setCaptureFailed`, `saveDraftSuggestion`
 - Updated `processCapture` internalAction: now creates deterministic draft node + edges + suggestion
 - New mutations: `createCapture`, `updateCapture`, `acceptSuggestion`, `rejectSuggestion`, `organizeCapture`, `archiveCapture`, `unarchiveCapture`, `retryProcessing`

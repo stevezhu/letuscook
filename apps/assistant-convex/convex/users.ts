@@ -1,16 +1,8 @@
-import { internalQuery, query } from './_generated/server.js';
+import { internalQuery, userQuery } from './functions.ts';
 
-export const getCurrentUser = query({
+export const getCurrentUser = userQuery({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    return ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
+    return ctx.user;
   },
 });
 

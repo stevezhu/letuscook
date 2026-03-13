@@ -1,24 +1,13 @@
 import { ConvexError, v } from 'convex/values';
 
-import { mutation, query } from './_generated/server.js';
+import { userMutation, userQuery } from './functions.ts';
 
-export const archiveNode = mutation({
+export const archiveNode = userMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const node = await ctx.db.get(args.nodeId);
-    if (!node || node.ownerUserId !== user._id)
+    if (!node || node.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -49,23 +38,12 @@ export const archiveNode = mutation({
   },
 });
 
-export const unarchiveNode = mutation({
+export const unarchiveNode = userMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const node = await ctx.db.get(args.nodeId);
-    if (!node || node.ownerUserId !== user._id)
+    if (!node || node.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     await ctx.db.patch('nodes', args.nodeId, { archivedAt: undefined });
@@ -97,25 +75,16 @@ export const unarchiveNode = mutation({
   },
 });
 
-export const getKnowledgeBasePages = query({
+export const getKnowledgeBasePages = userQuery({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return [];
+    if (!ctx.user) return [];
 
     const nodes = await ctx.db
       .query('nodes')
       .withIndex('by_owner_archivedAt_publishedAt_updatedAt', (q) =>
         q
-          .eq('ownerUserId', user._id)
+          .eq('ownerUserId', ctx.user!._id)
           .eq('archivedAt', undefined)
           .gt('publishedAt', 0),
       )
@@ -149,22 +118,13 @@ export const getKnowledgeBasePages = query({
   },
 });
 
-export const getNodeWithEdges = query({
+export const getNodeWithEdges = userQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return null;
+    if (!ctx.user) return null;
 
     const node = await ctx.db.get(args.nodeId);
-    if (!node || node.ownerUserId !== user._id) return null;
+    if (!node || node.ownerUserId !== ctx.user._id) return null;
 
     const [outgoingEdges, incomingEdges] = await Promise.all([
       ctx.db
@@ -186,7 +146,7 @@ export const getNodeWithEdges = query({
     const resolveLinkedNode = async (linkedNodeId: string) => {
       const linked = await ctx.db.get(linkedNodeId as typeof args.nodeId);
       if (!linked) return null;
-      if (linked.ownerUserId !== user._id) {
+      if (linked.ownerUserId !== ctx.user!._id) {
         return { type: 'private' as const };
       }
       return {

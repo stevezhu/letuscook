@@ -6,9 +6,9 @@ import {
   internalAction,
   internalMutation,
   internalQuery,
-  mutation,
-  query,
-} from './_generated/server.js';
+  userMutation,
+  userQuery,
+} from './functions.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -105,7 +105,7 @@ export const saveDraftSuggestion = internalMutation({
  * It performs a bulk insert of all guest captures and schedules them
  * for asynchronous processing (e.g. AI analysis) in the background.
  */
-export const migrateGuestCaptures = mutation({
+export const migrateGuestCaptures = userMutation({
   args: {
     captures: v.array(
       v.object({
@@ -121,22 +121,9 @@ export const migrateGuestCaptures = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    // 1. Verify the user is authenticated
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error('Not authenticated');
-
-    // 2. Look up the internal user record using the WorkOS subject ID
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new Error('User not found');
-
     const now = Date.now();
 
-    // 3. Insert all guest captures into the database sequentially via Promise.all
+    // 1. Insert all guest captures into the database sequentially via Promise.all
     const captureIds = await Promise.all(
       args.captures.map((capture) =>
         ctx.db.insert('captures', {
@@ -144,7 +131,7 @@ export const migrateGuestCaptures = mutation({
           captureType: capture.captureType,
           capturedAt: capture.capturedAt,
           updatedAt: now,
-          ownerUserId: user._id,
+          ownerUserId: ctx.user._id,
           // Set initial state to processing since it hasn't been handled by AI yet
           captureState: 'processing',
           explicitMentionNodeIds: [],
@@ -152,7 +139,7 @@ export const migrateGuestCaptures = mutation({
       ),
     );
 
-    // 4. Schedule background jobs to process each newly inserted capture
+    // 2. Schedule background jobs to process each newly inserted capture
     await Promise.all(
       captureIds.map((captureId) =>
         ctx.scheduler.runAfter(0, internal.captures.processCapture, {
@@ -167,7 +154,7 @@ export const migrateGuestCaptures = mutation({
 
 // ─── Mutations ────────────────────────────────────────────────────────────────
 
-export const createCapture = mutation({
+export const createCapture = userMutation({
   args: {
     rawContent: v.string(),
     captureType: v.union(
@@ -178,17 +165,6 @@ export const createCapture = mutation({
   },
   returns: v.id('captures'),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const now = Date.now();
     const explicitMentionNodeIds = parseMentionedNodeIds(args.rawContent);
 
@@ -197,7 +173,7 @@ export const createCapture = mutation({
       captureType: args.captureType,
       capturedAt: now,
       updatedAt: now,
-      ownerUserId: user._id,
+      ownerUserId: ctx.user._id,
       captureState: 'processing',
       explicitMentionNodeIds,
     });
@@ -210,7 +186,7 @@ export const createCapture = mutation({
   },
 });
 
-export const updateCapture = mutation({
+export const updateCapture = userMutation({
   args: {
     captureId: v.id('captures'),
     rawContent: v.optional(v.string()),
@@ -220,19 +196,8 @@ export const updateCapture = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -272,26 +237,15 @@ export const updateCapture = mutation({
   },
 });
 
-export const acceptSuggestion = mutation({
+export const acceptSuggestion = userMutation({
   args: {
     captureId: v.id('captures'),
     suggestionId: v.id('suggestions'),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const suggestion = await ctx.db.get(args.suggestionId);
@@ -367,26 +321,15 @@ export const acceptSuggestion = mutation({
   },
 });
 
-export const rejectSuggestion = mutation({
+export const rejectSuggestion = userMutation({
   args: {
     captureId: v.id('captures'),
     suggestionId: v.id('suggestions'),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const suggestion = await ctx.db.get(args.suggestionId);
@@ -454,26 +397,15 @@ export const rejectSuggestion = mutation({
   },
 });
 
-export const organizeCapture = mutation({
+export const organizeCapture = userMutation({
   args: {
     captureId: v.id('captures'),
     nodeTitle: v.string(),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -513,23 +445,12 @@ export const organizeCapture = mutation({
   },
 });
 
-export const archiveCapture = mutation({
+export const archiveCapture = userMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     const now = Date.now();
@@ -541,23 +462,12 @@ export const archiveCapture = mutation({
   },
 });
 
-export const unarchiveCapture = mutation({
+export const unarchiveCapture = userMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
 
     await ctx.db.patch('captures', args.captureId, {
@@ -568,23 +478,12 @@ export const unarchiveCapture = mutation({
   },
 });
 
-export const retryProcessing = mutation({
+export const retryProcessing = userMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new ConvexError('Not authenticated');
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) throw new ConvexError('User not found');
-
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id)
+    if (!capture || capture.ownerUserId !== ctx.user._id)
       throw new ConvexError('Unauthorized');
     if (capture.captureState !== 'failed')
       throw new ConvexError('Capture is not in failed state');
@@ -643,41 +542,23 @@ export const processCapture = internalAction({
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
-export const getCapture = query({
+export const getCapture = userQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return null;
+    if (!ctx.user) return null;
 
     const capture = await ctx.db.get(args.captureId);
-    if (!capture || capture.ownerUserId !== user._id) return null;
+    if (!capture || capture.ownerUserId !== ctx.user._id) return null;
     return capture;
   },
 });
 
-export const getInboxCaptures = query({
+export const getInboxCaptures = userQuery({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    if (!ctx.user) return [];
 
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return [];
-
-    const userId = user._id;
+    const userId = ctx.user._id;
 
     const [processing, ready, failed, needsManual] = await Promise.all([
       ctx.db
@@ -757,19 +638,10 @@ export const getInboxCaptures = query({
   },
 });
 
-export const getRecentCaptures = query({
+export const getRecentCaptures = userQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return [];
+    if (!ctx.user) return [];
 
     const limit = args.limit ?? 20;
 
@@ -777,7 +649,7 @@ export const getRecentCaptures = query({
     const captures = await ctx.db
       .query('captures')
       .withIndex('by_owner_archivedAt', (q) =>
-        q.eq('ownerUserId', user._id).eq('archivedAt', undefined),
+        q.eq('ownerUserId', ctx.user!._id).eq('archivedAt', undefined),
       )
       .order('desc')
       .take(50);
@@ -787,32 +659,23 @@ export const getRecentCaptures = query({
   },
 });
 
-export const getArchivedItems = query({
+export const getArchivedItems = userQuery({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return { captures: [], nodes: [] };
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', identity.subject),
-      )
-      .unique();
-    if (!user) return { captures: [], nodes: [] };
+    if (!ctx.user) return { captures: [], nodes: [] };
 
     const [captures, nodes] = await Promise.all([
       ctx.db
         .query('captures')
         .withIndex('by_owner_archivedAt', (q) =>
-          q.eq('ownerUserId', user._id).gt('archivedAt', 0),
+          q.eq('ownerUserId', ctx.user!._id).gt('archivedAt', 0),
         )
         .order('desc')
         .collect(),
       ctx.db
         .query('nodes')
         .withIndex('by_owner_archivedAt', (q) =>
-          q.eq('ownerUserId', user._id).gt('archivedAt', 0),
+          q.eq('ownerUserId', ctx.user!._id).gt('archivedAt', 0),
         )
         .order('desc')
         .collect(),
