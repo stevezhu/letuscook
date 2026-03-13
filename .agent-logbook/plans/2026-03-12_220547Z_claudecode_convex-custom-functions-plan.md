@@ -4,7 +4,7 @@ type: plan
 status: in-progress
 agent: claudecode
 models: [claude-opus-4-6, claude-haiku-4-5-20251001]
-branch: main
+branch: t4
 sessionId: fa4deec3-d466-4aa0-9662-4f17e02a7815
 tags: [convex, auth, custom-functions, refactor]
 ---

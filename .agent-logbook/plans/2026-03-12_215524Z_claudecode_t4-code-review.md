@@ -4,7 +4,7 @@ type: plan
 status: in-progress
 agent: claudecode
 models: [claude-opus-4-6]
-branch: main
+branch: t4
 sessionId: dd9e5df2-64b5-406c-97a5-33f39578b70c
 tags: [convex, code-review, t4]
 relatedPlan: plans/2026-03-12_194547Z_claudecode_t4-convex-backend.md

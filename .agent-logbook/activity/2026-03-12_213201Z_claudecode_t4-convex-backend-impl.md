@@ -5,7 +5,7 @@ status: complete
 agent: claudecode
 models: [claude-sonnet-4-6]
 sessionId: d29e04fe-486c-45cc-9f9a-311e8b823108
-branch: main
+branch: t4
 tags: [convex, mutations, queries, actions, tanstack-query, t4]
 relatedPlan: plans/2026-03-12_194547Z_claudecode_t4-convex-backend.md
 filesModified:
