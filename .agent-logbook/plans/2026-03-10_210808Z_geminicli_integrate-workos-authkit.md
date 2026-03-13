@@ -4,7 +4,7 @@ type: plan
 status: complete
 agent: geminicli
 models: [gemini-3.1-pro-preview]
-branch: main
+branch: workos-authkit
 sessionId: 09befba9-3569-4fdc-8b87-29d0939eb639
 tags: [auth, workos, convex]
 ---
