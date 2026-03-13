@@ -1,8 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 
-import { userQuery } from './functions.ts';
+import { authQuery } from './functions.ts';
 
-export const getSuggestion = userQuery({
+export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
     if (!ctx.user) return null;

@@ -1,8 +1,8 @@
 import { v } from 'convex/values';
 
-import { userQuery } from './functions.ts';
+import { authQuery } from './functions.ts';
 
-export const searchGlobal = userQuery({
+export const searchGlobal = authQuery({
   args: { query: v.string() },
   handler: async (ctx, args) => {
     if (!ctx.user) return [];
@@ -43,7 +43,7 @@ export const searchGlobal = userQuery({
   },
 });
 
-export const searchNodesForLinking = userQuery({
+export const searchNodesForLinking = authQuery({
   args: { query: v.string() },
   handler: async (ctx, args) => {
     if (!ctx.user) return [];

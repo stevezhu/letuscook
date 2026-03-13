@@ -1,8 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 
-import { userMutation, userQuery } from './functions.ts';
+import { authMutation, authQuery } from './functions.ts';
 
-export const archiveNode = userMutation({
+export const archiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -38,7 +38,7 @@ export const archiveNode = userMutation({
   },
 });
 
-export const unarchiveNode = userMutation({
+export const unarchiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -75,7 +75,7 @@ export const unarchiveNode = userMutation({
   },
 });
 
-export const getKnowledgeBasePages = userQuery({
+export const getKnowledgeBasePages = authQuery({
   args: {},
   handler: async (ctx) => {
     if (!ctx.user) return [];
@@ -118,7 +118,7 @@ export const getKnowledgeBasePages = userQuery({
   },
 });
 
-export const getNodeWithEdges = userQuery({
+export const getNodeWithEdges = authQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
     if (!ctx.user) return null;

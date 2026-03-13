@@ -17,7 +17,7 @@ import {
 
 /**
  * Resolves the authenticated user from WorkOS identity.
- * Shared by both userQuery and userMutation.
+ * Shared by both authQuery and authMutation.
  */
 async function getAuthenticatedUser(ctx: {
   auth: { getUserIdentity: () => Promise<{ subject: string } | null> };
@@ -39,7 +39,7 @@ async function getAuthenticatedUser(ctx: {
  * Returns `null` for unauthenticated/unknown users — callers must
  * handle the null case by returning their own fallback.
  */
-export const userQuery = customQuery(
+export const authQuery = customQuery(
   query,
   customCtx(async (ctx) => {
     const user = await getAuthenticatedUser(ctx);
@@ -51,7 +51,7 @@ export const userQuery = customQuery(
  * Mutation builder that adds `ctx.user` (authenticated user doc).
  * Throws ConvexError if not authenticated or user not found.
  */
-export const userMutation = customMutation(
+export const authMutation = customMutation(
   mutation,
   customCtx(async (ctx) => {
     const user = await getAuthenticatedUser(ctx);

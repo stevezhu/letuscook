@@ -1,8 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 
-import { userMutation } from './functions.ts';
+import { authMutation } from './functions.ts';
 
-export const createEdge = userMutation({
+export const createEdge = authMutation({
   args: {
     fromNodeId: v.id('nodes'),
     toNodeId: v.id('nodes'),

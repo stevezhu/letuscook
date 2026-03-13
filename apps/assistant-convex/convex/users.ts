@@ -1,6 +1,6 @@
-import { internalQuery, userQuery } from './functions.ts';
+import { internalQuery, authQuery } from './functions.ts';
 
-export const getCurrentUser = userQuery({
+export const getCurrentUser = authQuery({
   handler: async (ctx) => {
     return ctx.user;
   },

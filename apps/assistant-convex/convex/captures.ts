@@ -6,8 +6,8 @@ import {
   internalAction,
   internalMutation,
   internalQuery,
-  userMutation,
-  userQuery,
+  authMutation,
+  authQuery,
 } from './functions.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ export const saveDraftSuggestion = internalMutation({
  * It performs a bulk insert of all guest captures and schedules them
  * for asynchronous processing (e.g. AI analysis) in the background.
  */
-export const migrateGuestCaptures = userMutation({
+export const migrateGuestCaptures = authMutation({
   args: {
     captures: v.array(
       v.object({
@@ -154,7 +154,7 @@ export const migrateGuestCaptures = userMutation({
 
 // ─── Mutations ────────────────────────────────────────────────────────────────
 
-export const createCapture = userMutation({
+export const createCapture = authMutation({
   args: {
     rawContent: v.string(),
     captureType: v.union(
@@ -186,7 +186,7 @@ export const createCapture = userMutation({
   },
 });
 
-export const updateCapture = userMutation({
+export const updateCapture = authMutation({
   args: {
     captureId: v.id('captures'),
     rawContent: v.optional(v.string()),
@@ -237,7 +237,7 @@ export const updateCapture = userMutation({
   },
 });
 
-export const acceptSuggestion = userMutation({
+export const acceptSuggestion = authMutation({
   args: {
     captureId: v.id('captures'),
     suggestionId: v.id('suggestions'),
@@ -321,7 +321,7 @@ export const acceptSuggestion = userMutation({
   },
 });
 
-export const rejectSuggestion = userMutation({
+export const rejectSuggestion = authMutation({
   args: {
     captureId: v.id('captures'),
     suggestionId: v.id('suggestions'),
@@ -397,7 +397,7 @@ export const rejectSuggestion = userMutation({
   },
 });
 
-export const organizeCapture = userMutation({
+export const organizeCapture = authMutation({
   args: {
     captureId: v.id('captures'),
     nodeTitle: v.string(),
@@ -445,7 +445,7 @@ export const organizeCapture = userMutation({
   },
 });
 
-export const archiveCapture = userMutation({
+export const archiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -462,7 +462,7 @@ export const archiveCapture = userMutation({
   },
 });
 
-export const unarchiveCapture = userMutation({
+export const unarchiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -478,7 +478,7 @@ export const unarchiveCapture = userMutation({
   },
 });
 
-export const retryProcessing = userMutation({
+export const retryProcessing = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -542,7 +542,7 @@ export const processCapture = internalAction({
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
-export const getCapture = userQuery({
+export const getCapture = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
     if (!ctx.user) return null;
@@ -553,7 +553,7 @@ export const getCapture = userQuery({
   },
 });
 
-export const getInboxCaptures = userQuery({
+export const getInboxCaptures = authQuery({
   args: {},
   handler: async (ctx) => {
     if (!ctx.user) return [];
@@ -638,7 +638,7 @@ export const getInboxCaptures = userQuery({
   },
 });
 
-export const getRecentCaptures = userQuery({
+export const getRecentCaptures = authQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
     if (!ctx.user) return [];
@@ -659,7 +659,7 @@ export const getRecentCaptures = userQuery({
   },
 });
 
-export const getArchivedItems = userQuery({
+export const getArchivedItems = authQuery({
   args: {},
   handler: async (ctx) => {
     if (!ctx.user) return { captures: [], nodes: [] };
