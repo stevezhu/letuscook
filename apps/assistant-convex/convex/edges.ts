@@ -2,34 +2,20 @@ import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
 import { authMutation } from './auth.ts';
-import { EntityNotFoundError } from './errors.ts';
 import { edgeFields } from './schema.ts';
 
 /**
- * ✅🤔 Soft Reviewed by [@stevezhu](https://github.com/stevezhu)
+ * 👀 Needs Verification
  */
 export const createEdge = authMutation({
   args: pick(edgeFields, ['fromNodeId', 'toNodeId', 'edgeType']),
   returns: v.id('edges'),
   handler: async (ctx, args) => {
     // Verify caller owns both nodes
-    const [user, fromNode, toNode] = await Promise.all([
-      ctx.getUser(),
-      ctx.db.get('nodes', args.fromNodeId),
-      ctx.db.get('nodes', args.toNodeId),
+    await Promise.all([
+      ctx.getDocOwnedByCurrentUser('nodes', args.fromNodeId),
+      ctx.getDocOwnedByCurrentUser('nodes', args.toNodeId),
     ]);
-    if (!fromNode || fromNode.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'fromNodeId',
-        argValue: args.fromNodeId,
-      });
-    }
-    if (!toNode || toNode.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'toNodeId',
-        argValue: args.toNodeId,
-      });
-    }
 
     // Check for duplicates
     const existing = await ctx.db

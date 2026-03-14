@@ -121,7 +121,7 @@ export const migrateGuestCaptures = authMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return { migrated: 0 };
     const now = Date.now();
 
@@ -167,7 +167,7 @@ export const createCapture = authMutation({
   },
   returns: v.id('captures'),
   handler: async (ctx, args) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) throw new EntityNotFoundError({ argName: 'user', argValue: '' });
     const now = Date.now();
     const explicitMentionNodeIds = parseMentionedNodeIds(args.rawContent);
@@ -201,7 +201,7 @@ export const updateCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -256,7 +256,7 @@ export const acceptSuggestion = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -355,7 +355,7 @@ export const rejectSuggestion = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -446,7 +446,7 @@ export const organizeCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -498,7 +498,7 @@ export const archiveCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -522,7 +522,7 @@ export const unarchiveCapture = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -545,7 +545,7 @@ export const retryProcessing = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {
@@ -621,7 +621,7 @@ export const getCapture = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) return null;
@@ -632,7 +632,7 @@ export const getCapture = authQuery({
 export const getInboxCaptures = authQuery({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return [];
     const [processing, ready, failed, needsManual] = await Promise.all([
       ctx.db
@@ -720,7 +720,7 @@ export const getInboxCaptures = authQuery({
 export const getRecentCaptures = authQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return [];
     const limit = args.limit ?? 20;
 
@@ -741,7 +741,7 @@ export const getRecentCaptures = authQuery({
 export const getArchivedItems = authQuery({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return { captures: [], nodes: [] };
     const [captures, nodes] = await Promise.all([
       ctx.db

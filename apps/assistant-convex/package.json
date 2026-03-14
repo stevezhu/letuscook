@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "is-ci": "^4.1.0",
+    "type-fest": "^5.4.4",
     "typescript": "catalog:"
   }
 }

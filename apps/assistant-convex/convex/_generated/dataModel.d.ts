@@ -32,6 +32,7 @@ export type Doc<TableName extends TableNames> = DocumentByName<
   TableName
 >;
 
+
 /**
  * An identifier for a document in Convex.
  *

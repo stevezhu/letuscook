@@ -7,7 +7,7 @@ export const searchGlobal = authQuery({
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return [];
     const [captureResults, nodeResults] = await Promise.all([
       ctx.db
@@ -48,7 +48,7 @@ export const searchNodesForLinking = authQuery({
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return [];
     const results = await ctx.db
       .query('nodes')

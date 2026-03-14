@@ -24,7 +24,8 @@
     "import/extensions": ["error", "ignorePackages"],
     "import/namespace": "off",
     "import/no-duplicates": "error",
-    "react/jsx-no-constructed-context-values": "off"
+    "react/jsx-no-constructed-context-values": "off",
+    "typescript/no-explicit-any": "error"
   },
   "settings": {
     "jsdoc": {

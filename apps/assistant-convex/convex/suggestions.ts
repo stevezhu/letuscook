@@ -7,7 +7,7 @@ export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) {

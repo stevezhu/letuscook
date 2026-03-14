@@ -8,7 +8,7 @@ export const archiveNode = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, node] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.nodeId),
     ]);
     if (!node || node.ownerUserId !== user?._id) {
@@ -51,7 +51,7 @@ export const unarchiveNode = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     const [user, node] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.nodeId),
     ]);
     if (!node || node.ownerUserId !== user?._id) {
@@ -93,7 +93,7 @@ export const unarchiveNode = authMutation({
 export const getKnowledgeBasePages = authQuery({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.getUser();
+    const user = await ctx.getCurrentUser();
     if (!user) return [];
     const nodes = await ctx.db
       .query('nodes')
@@ -137,7 +137,7 @@ export const getNodeWithEdges = authQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
     const [user, node] = await Promise.all([
-      ctx.getUser(),
+      ctx.getCurrentUser(),
       ctx.db.get(args.nodeId),
     ]);
     if (!node || node.ownerUserId !== user?._id) return null;

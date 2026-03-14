@@ -4,12 +4,18 @@ import {
   customMutation,
   customQuery,
 } from 'convex-helpers/server/customFunctions';
-import { UserIdentity } from 'convex/server';
+import {
+  DocumentByName,
+  TableNamesInDataModel,
+  UserIdentity,
+} from 'convex/server';
 import { ConvexError } from 'convex/values';
+import { ConditionalPick } from 'type-fest';
 
 import { components, internal } from './_generated/api.js';
-import type { DataModel, Doc } from './_generated/dataModel.js';
+import type { DataModel, Doc, Id } from './_generated/dataModel.js';
 import { mutation, query, QueryCtx, MutationCtx } from './_generated/server.js';
+import { EntityNotFoundError } from './errors.ts';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
@@ -90,23 +96,39 @@ async function getUser(
     .unique();
 }
 
+type OwnedDataModel = ConditionalPick<
+  DataModel,
+  { document: { ownerUserId: Id<'users'> } }
+>;
+
+type OwnedTableNames = TableNamesInDataModel<OwnedDataModel>;
+
+type OwnedDocument<TableName extends OwnedTableNames> = DocumentByName<
+  OwnedDataModel,
+  TableName
+>;
+
 /**
- * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
+ * 👀 Needs Verification
  *
  * TODO: this can be exported when we need to use it elsewhere
  */
 type AuthCtx = {
   identity: UserIdentity;
   // TODO: need to think over this more, but the current idea is that we use `getAuthKitUser()`
-  // for basic user information and we use `getUser()` for extra information other than what
+  // for basic user information and we use `getCurrentUser()` for extra information other than what
   // authkit stores. we could eventually create a function that merges the two and abstracts away
   // the difference.
   getAuthKitUser: () => ReturnType<typeof authKit.getAuthUser>;
-  getUser: () => ReturnType<typeof getUser>;
+  getCurrentUser: () => Promise<Doc<'users'> | null>;
+  getDocOwnedByCurrentUser<TableName extends OwnedTableNames>(
+    table: TableName,
+    id: Id<TableName>,
+  ): Promise<DocumentByName<OwnedDataModel, TableName> | null>;
 };
 
 /**
- * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
+ * 👀 Needs Verification
  */
 const authCustomCtx = customCtx<QueryCtx | MutationCtx, AuthCtx>(
   async (ctx) => {
@@ -115,7 +137,23 @@ const authCustomCtx = customCtx<QueryCtx | MutationCtx, AuthCtx>(
     return {
       identity,
       getAuthKitUser: () => authKit.getAuthUser(ctx),
-      getUser: () => getUser(ctx),
+      getCurrentUser: () => getUser(ctx),
+      getDocOwnedByCurrentUser: async (table, id) => {
+        const [user, doc] = await Promise.all([
+          getUser(ctx),
+          ctx.db.get(table, id),
+        ]);
+        // TODO: fix access of `ownerUserId`, check this later
+        const typedDoc = doc as OwnedDocument<OwnedTableNames>;
+        if (!doc || typedDoc.ownerUserId !== user?._id) {
+          throw new EntityNotFoundError({
+            entityName: table,
+            argName: 'placeholder',
+            argValue: id,
+          });
+        }
+        return doc;
+      },
     };
   },
 );
