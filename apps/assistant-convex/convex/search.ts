@@ -7,17 +7,19 @@ export const searchGlobal = authQuery({
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
+    const user = await ctx.getUser();
+    if (!user) return [];
     const [captureResults, nodeResults] = await Promise.all([
       ctx.db
         .query('captures')
         .withSearchIndex('search_raw', (q) =>
-          q.search('rawContent', args.query).eq('ownerUserId', ctx.userId),
+          q.search('rawContent', args.query).eq('ownerUserId', user._id),
         )
         .take(20),
       ctx.db
         .query('nodes')
         .withSearchIndex('search_nodes', (q) =>
-          q.search('searchText', args.query).eq('ownerUserId', ctx.userId),
+          q.search('searchText', args.query).eq('ownerUserId', user._id),
         )
         .take(20),
     ]);
@@ -46,10 +48,12 @@ export const searchNodesForLinking = authQuery({
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
+    const user = await ctx.getUser();
+    if (!user) return [];
     const results = await ctx.db
       .query('nodes')
       .withSearchIndex('search_nodes', (q) =>
-        q.search('searchText', args.query).eq('ownerUserId', ctx.userId),
+        q.search('searchText', args.query).eq('ownerUserId', user._id),
       )
       .take(10);
 

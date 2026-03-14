@@ -1,6 +1,7 @@
-import { ConvexError, v } from 'convex/values';
+import { v } from 'convex/values';
 
 import { authMutation, authQuery } from './auth.ts';
+import { EntityNotFoundError } from './errors.ts';
 
 export const archiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
@@ -11,7 +12,10 @@ export const archiveNode = authMutation({
       ctx.db.get(args.nodeId),
     ]);
     if (!node || node.ownerUserId !== user?._id) {
-      throw new ConvexError(`Not found: node ${args.nodeId}`);
+      throw new EntityNotFoundError({
+        argName: 'nodeId',
+        argValue: args.nodeId,
+      });
     }
 
     const now = Date.now();
@@ -46,9 +50,16 @@ export const unarchiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const node = await ctx.db.get(args.nodeId);
-    if (!node || node.ownerUserId !== ctx.userId)
-      throw new ConvexError('Unauthorized');
+    const [user, node] = await Promise.all([
+      ctx.getUser(),
+      ctx.db.get(args.nodeId),
+    ]);
+    if (!node || node.ownerUserId !== user?._id) {
+      throw new EntityNotFoundError({
+        argName: 'nodeId',
+        argValue: args.nodeId,
+      });
+    }
 
     await ctx.db.patch('nodes', args.nodeId, { archivedAt: undefined });
 
@@ -82,11 +93,13 @@ export const unarchiveNode = authMutation({
 export const getKnowledgeBasePages = authQuery({
   args: {},
   handler: async (ctx) => {
+    const user = await ctx.getUser();
+    if (!user) return [];
     const nodes = await ctx.db
       .query('nodes')
       .withIndex('by_owner_archivedAt_publishedAt_updatedAt', (q) =>
         q
-          .eq('ownerUserId', ctx.userId)
+          .eq('ownerUserId', user._id)
           .eq('archivedAt', undefined)
           .gt('publishedAt', 0),
       )
@@ -123,8 +136,11 @@ export const getKnowledgeBasePages = authQuery({
 export const getNodeWithEdges = authQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
-    const node = await ctx.db.get(args.nodeId);
-    if (!node || node.ownerUserId !== ctx.userId) return null;
+    const [user, node] = await Promise.all([
+      ctx.getUser(),
+      ctx.db.get(args.nodeId),
+    ]);
+    if (!node || node.ownerUserId !== user?._id) return null;
 
     const [outgoingEdges, incomingEdges] = await Promise.all([
       ctx.db
@@ -146,7 +162,7 @@ export const getNodeWithEdges = authQuery({
     const resolveLinkedNode = async (linkedNodeId: string) => {
       const linked = await ctx.db.get(linkedNodeId as typeof args.nodeId);
       if (!linked) return null;
-      if (linked.ownerUserId !== ctx.userId) {
+      if (linked.ownerUserId !== user?._id) {
         return { type: 'private' as const };
       }
       return {

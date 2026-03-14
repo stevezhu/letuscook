@@ -1,5 +1,8 @@
 import { ConvexError } from 'convex/values';
 
+/**
+ * ✅🤔 Soft Reviewed by [@stevezhu](https://github.com/stevezhu)
+ */
 export class EntityNotFoundError extends ConvexError<{
   message: string;
   entityName?: string;

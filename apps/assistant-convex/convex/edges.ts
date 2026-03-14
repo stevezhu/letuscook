@@ -5,6 +5,9 @@ import { authMutation } from './auth.ts';
 import { EntityNotFoundError } from './errors.ts';
 import { edgeFields } from './schema.ts';
 
+/**
+ * ✅🤔 Soft Reviewed by [@stevezhu](https://github.com/stevezhu)
+ */
 export const createEdge = authMutation({
   args: pick(edgeFields, ['fromNodeId', 'toNodeId', 'edgeType']),
   returns: v.id('edges'),
@@ -37,6 +40,7 @@ export const createEdge = authMutation({
       .first();
     if (existing) throw new ConvexError('Edge already exists');
 
+    // Create edge
     const now = Date.now();
     return ctx.db.insert('edges', {
       fromNodeId: args.fromNodeId,
