@@ -18,11 +18,13 @@
   },
   "dependencies": {
     "@convex-dev/workos-authkit": "^0.1.6",
-    "convex": "^1.32.0"
+    "convex": "^1.32.0",
+    "convex-helpers": "^0.1.114"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "is-ci": "^4.1.0",
+    "type-fest": "^5.4.4",
     "typescript": "catalog:"
   }
 }

@@ -1,8 +1,7 @@
+import { useConvexMutation } from '@convex-dev/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
-import { useConvex } from 'convex/react';
 
-import { type GuestCapture } from './guest-capture-types.ts';
 import { useGuestCaptureStore } from './use-guest-capture-store.ts';
 
 /**
@@ -13,14 +12,10 @@ import { useGuestCaptureStore } from './use-guest-capture-store.ts';
  * confirms the captures are saved, it clears the local AsyncStorage.
  */
 export function useMigrateGuestCaptures() {
-  const convex = useConvex();
   const { clearGuestCaptures } = useGuestCaptureStore();
 
   return useMutation({
-    mutationFn: async (captures: GuestCapture[]) => {
-      // Send the batch of guest captures to Convex
-      return convex.mutation(api.captures.migrateGuestCaptures, { captures });
-    },
+    mutationFn: useConvexMutation(api.captures.migrateGuestCaptures),
     onSuccess: () => {
       // Wipe the local storage only after successful migration
       void clearGuestCaptures.mutateAsync();

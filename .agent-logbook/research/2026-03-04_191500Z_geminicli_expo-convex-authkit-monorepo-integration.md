@@ -5,7 +5,7 @@ status: complete
 agent: geminicli
 models: [gemini-2.5-flash-lite, gemini-3-flash-preview]
 session_id: 5ca14ae8-bcfa-4154-b9eb-c7a5c43ec41b
-branch: main
+branch: workos-authkit
 tags: [expo, convex, workos, authkit, monorepo]
 ---
 
