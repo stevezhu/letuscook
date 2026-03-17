@@ -19,8 +19,7 @@
   "dependencies": {
     "@convex-dev/workos-authkit": "^0.1.6",
     "convex": "^1.32.0",
-    "convex-helpers": "^0.1.114",
-    "es-toolkit": "^1.45.1"
+    "convex-helpers": "^0.1.114"
   },
   "devDependencies": {
     "@types/node": "catalog:",
