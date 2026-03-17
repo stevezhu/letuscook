@@ -4,6 +4,8 @@ import { TableNames } from './_generated/dataModel.js';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
+ *
+ * TODO: add error code so errors can be distinguised easily
  */
 export class EntityNotFoundError extends ConvexError<{
   message: string;

@@ -1,13 +1,14 @@
 import { v } from 'convex/values';
 
-import { authQuery } from './auth.ts';
+import { authQuery } from './functions.ts';
+import { getCurrentUser } from './model/users.ts';
 
 export const searchGlobal = authQuery({
   args: { query: v.string() },
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
     const [captureResults, nodeResults] = await Promise.all([
       ctx.db
@@ -48,7 +49,7 @@ export const searchNodesForLinking = authQuery({
   handler: async (ctx, args) => {
     if (!args.query.trim()) return [];
 
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
     const results = await ctx.db
       .query('nodes')

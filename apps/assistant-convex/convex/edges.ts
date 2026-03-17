@@ -1,8 +1,9 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { authMutation } from './auth.ts';
 import { EntityNotFoundError } from './errors.ts';
+import { authMutation } from './functions.ts';
+import { getDocOwnedByCurrentUser } from './model/users.ts';
 import { edgeFields } from './schema.ts';
 
 /**
@@ -14,8 +15,8 @@ export const createEdge = authMutation({
   handler: async (ctx, { fromNodeId, toNodeId, edgeType }) => {
     // Verify caller owns both nodes
     const [fromNode, toNode] = await Promise.all([
-      ctx.getDocOwnedByCurrentUser('nodes', fromNodeId),
-      ctx.getDocOwnedByCurrentUser('nodes', toNodeId),
+      getDocOwnedByCurrentUser(ctx, 'nodes', fromNodeId),
+      getDocOwnedByCurrentUser(ctx, 'nodes', toNodeId),
     ]);
     if (!fromNode) {
       throw new EntityNotFoundError({

@@ -1,6 +1,47 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
+export const userFields = {
+  displayName: v.string(),
+  email: v.optional(v.string()),
+  workosUserId: v.optional(v.string()),
+  userType: v.union(v.literal('human'), v.literal('agent')),
+  agentProvider: v.optional(v.string()),
+  agentModel: v.optional(v.string()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+};
+
+export const captureFields = {
+  rawContent: v.string(),
+  captureType: v.union(v.literal('text'), v.literal('link'), v.literal('task')),
+  capturedAt: v.number(),
+  updatedAt: v.number(),
+  archivedAt: v.optional(v.number()),
+  ownerUserId: v.id('users'),
+  captureState: v.union(
+    v.literal('processing'),
+    v.literal('ready'),
+    v.literal('failed'),
+    v.literal('needs_manual'),
+    v.literal('processed'),
+  ),
+  nodeId: v.optional(v.id('nodes')),
+  explicitMentionNodeIds: v.array(v.id('nodes')),
+};
+
+export const nodeFields = {
+  title: v.string(),
+  content: v.string(),
+  searchText: v.string(),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+  ownerUserId: v.id('users'),
+  publishedAt: v.optional(v.number()),
+  archivedAt: v.optional(v.number()),
+  sourceCaptureId: v.optional(v.id('captures')),
+};
+
 export const edgeFields = {
   fromNodeId: v.id('nodes'),
   toNodeId: v.id('nodes'),
@@ -20,41 +61,26 @@ export const edgeFields = {
   label: v.optional(v.string()),
 };
 
+export const suggestionFields = {
+  captureId: v.id('captures'),
+  suggestorUserId: v.id('users'),
+  suggestedNodeId: v.id('nodes'),
+  status: v.union(
+    v.literal('pending'),
+    v.literal('accepted'),
+    v.literal('rejected'),
+    v.literal('stale'),
+  ),
+  createdAt: v.number(),
+  processedAt: v.optional(v.number()),
+};
+
 export default defineSchema({
-  users: defineTable({
-    displayName: v.string(),
-    email: v.optional(v.string()),
-    workosUserId: v.optional(v.string()),
-    userType: v.union(v.literal('human'), v.literal('agent')),
-    agentProvider: v.optional(v.string()),
-    agentModel: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
+  users: defineTable(userFields)
     .index('by_workos_user_id', ['workosUserId'])
     .index('by_user_type', ['userType']),
 
-  captures: defineTable({
-    rawContent: v.string(),
-    captureType: v.union(
-      v.literal('text'),
-      v.literal('link'),
-      v.literal('task'),
-    ),
-    capturedAt: v.number(),
-    updatedAt: v.number(),
-    archivedAt: v.optional(v.number()),
-    ownerUserId: v.id('users'),
-    captureState: v.union(
-      v.literal('processing'),
-      v.literal('ready'),
-      v.literal('failed'),
-      v.literal('needs_manual'),
-      v.literal('processed'),
-    ),
-    nodeId: v.optional(v.id('nodes')),
-    explicitMentionNodeIds: v.array(v.id('nodes')),
-  })
+  captures: defineTable(captureFields)
     .index('by_owner_capture_state', ['ownerUserId', 'captureState'])
     .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
     .index('by_owner_archivedAt_capture_state', [
@@ -68,17 +94,7 @@ export default defineSchema({
       filterFields: ['ownerUserId', 'captureState', 'archivedAt'],
     }),
 
-  nodes: defineTable({
-    title: v.string(),
-    content: v.string(),
-    searchText: v.string(),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-    ownerUserId: v.id('users'),
-    publishedAt: v.optional(v.number()),
-    archivedAt: v.optional(v.number()),
-    sourceCaptureId: v.optional(v.id('captures')),
-  })
+  nodes: defineTable(nodeFields)
     .index('by_owner_archivedAt_publishedAt_updatedAt', [
       'ownerUserId',
       'archivedAt',
@@ -106,19 +122,7 @@ export default defineSchema({
       'toNodeId',
     ]),
 
-  suggestions: defineTable({
-    captureId: v.id('captures'),
-    suggestorUserId: v.id('users'),
-    suggestedNodeId: v.id('nodes'),
-    status: v.union(
-      v.literal('pending'),
-      v.literal('accepted'),
-      v.literal('rejected'),
-      v.literal('stale'),
-    ),
-    createdAt: v.number(),
-    processedAt: v.optional(v.number()),
-  })
+  suggestions: defineTable(suggestionFields)
     .index('by_capture', ['captureId'])
     .index('by_suggestor', ['suggestorUserId'])
     .index('by_capture_status', ['captureId', 'status']),

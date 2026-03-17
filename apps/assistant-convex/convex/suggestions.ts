@@ -1,11 +1,13 @@
 import { v } from 'convex/values';
 
-import { authQuery } from './auth.ts';
+import { authQuery } from './functions.ts';
+import { getDocOwnedByCurrentUser } from './model/users.ts';
 
 export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );

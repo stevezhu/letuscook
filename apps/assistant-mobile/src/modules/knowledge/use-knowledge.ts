@@ -26,7 +26,7 @@ export function useArchiveNode() {
   const convex = useConvex();
   return useMutation({
     mutationFn: (args: { nodeId: Id<'nodes'> }) =>
-      convex.mutation(api.nodes.archiveNode, args),
+      convex.mutation(api.nodes.setNodeArchived, { ...args, archived: true }),
   });
 }
 
@@ -34,6 +34,6 @@ export function useUnarchiveNode() {
   const convex = useConvex();
   return useMutation({
     mutationFn: (args: { nodeId: Id<'nodes'> }) =>
-      convex.mutation(api.nodes.unarchiveNode, args),
+      convex.mutation(api.nodes.setNodeArchived, { ...args, archived: false }),
   });
 }

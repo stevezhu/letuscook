@@ -1,14 +1,18 @@
+import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api.js';
 import { Id } from './_generated/dataModel.js';
-import {
-  internalMutation,
-  internalQuery,
-  internalAction,
-} from './_generated/server.js';
-import { authMutation, authQuery } from './auth.ts';
+import { internalMutation, internalQuery } from './_generated/server.js';
 import { EntityNotFoundError } from './errors.ts';
+import { authMutation, authQuery } from './functions.ts';
+import { pickOptional } from './helpers.ts';
+import {
+  getAgentUser,
+  getCurrentUser,
+  getDocOwnedByCurrentUser,
+} from './model/users.ts';
+import { captureFields } from './schema.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -121,7 +125,7 @@ export const migrateGuestCaptures = authMutation({
     ),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return { migrated: 0 };
     const now = Date.now();
 
@@ -157,20 +161,13 @@ export const migrateGuestCaptures = authMutation({
 // ─── Mutations ────────────────────────────────────────────────────────────────
 
 export const createCapture = authMutation({
-  args: {
-    rawContent: v.string(),
-    captureType: v.union(
-      v.literal('text'),
-      v.literal('link'),
-      v.literal('task'),
-    ),
-  },
+  args: pick(captureFields, ['rawContent', 'captureType']),
   returns: v.id('captures'),
   handler: async (ctx, args) => {
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user)
       throw new EntityNotFoundError({
-        tableName: 'user',
+        tableName: 'users',
         argName: 'user',
         argValue: '',
       });
@@ -198,14 +195,12 @@ export const createCapture = authMutation({
 export const updateCapture = authMutation({
   args: {
     captureId: v.id('captures'),
-    rawContent: v.optional(v.string()),
-    captureType: v.optional(
-      v.union(v.literal('text'), v.literal('link'), v.literal('task')),
-    ),
+    ...pickOptional(captureFields, ['rawContent', 'captureType']),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -257,7 +252,8 @@ export const acceptSuggestion = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -268,14 +264,14 @@ export const acceptSuggestion = authMutation({
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion || suggestion.captureId !== args.captureId) {
       throw new EntityNotFoundError({
-        tableName: 'suggestion',
+        tableName: 'suggestions',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
     }
     if (suggestion.status !== 'pending') {
       throw new EntityNotFoundError({
-        tableName: 'suggestion',
+        tableName: 'suggestions',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
@@ -354,7 +350,8 @@ export const rejectSuggestion = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -365,14 +362,14 @@ export const rejectSuggestion = authMutation({
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion || suggestion.captureId !== args.captureId) {
       throw new EntityNotFoundError({
-        tableName: 'suggestion',
+        tableName: 'suggestions',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
     }
     if (suggestion.status !== 'pending') {
       throw new EntityNotFoundError({
-        tableName: 'suggestion',
+        tableName: 'suggestions',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
@@ -444,7 +441,8 @@ export const organizeCapture = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -493,7 +491,8 @@ export const archiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -514,7 +513,8 @@ export const unarchiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -534,7 +534,8 @@ export const retryProcessing = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const capture = await ctx.getDocOwnedByCurrentUser(
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
       'captures',
       args.captureId,
     );
@@ -543,7 +544,7 @@ export const retryProcessing = authMutation({
     }
     if (capture.captureState !== 'failed') {
       throw new EntityNotFoundError({
-        tableName: 'capture',
+        tableName: 'captures',
         argName: 'captureId',
         argValue: args.captureId,
       });
@@ -569,36 +570,32 @@ export const retryProcessing = authMutation({
  * Internal action to process a single capture.
  * Stub: creates deterministic draft artifacts (no real AI).
  */
-export const processCapture = internalAction({
+export const processCapture = internalMutation({
   args: {
     captureId: v.id('captures'),
   },
   handler: async (ctx, args) => {
-    const capture = await ctx.runQuery(internal.captures.getCaptureInternal, {
-      captureId: args.captureId,
-    });
+    const capture = await ctx.db.get(args.captureId);
     if (!capture) {
-      console.error('[processCapture] capture not found:', args.captureId);
-      return;
-    }
-
-    const agentUser = await ctx.runQuery(
-      internal.users.getAgentUserInternal,
-      {},
-    );
-    if (!agentUser || !agentUser.workosUserId) {
-      console.error(
-        '[processCapture] no agent user or workosUserId, marking failed',
-      );
-      await ctx.runMutation(internal.captures.setCaptureFailed, {
-        captureId: args.captureId,
+      throw new EntityNotFoundError({
+        tableName: 'captures',
+        argName: 'captureId',
+        argValue: args.captureId,
       });
-      return;
     }
 
+    const agentUser = await getAgentUser(ctx);
+    if (!agentUser?._id) {
+      // TODO: improve this error
+      throw new EntityNotFoundError({
+        tableName: 'users',
+        argName: 'agentUser',
+        argValue: agentUser?._id ?? '',
+      });
+    }
     await ctx.runMutation(internal.captures.saveDraftSuggestion, {
       captureId: args.captureId,
-      agentWorkosUserId: agentUser.workosUserId,
+      agentUserId: agentUser._id,
     });
   },
 });
@@ -609,7 +606,7 @@ export const getCapture = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
     const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
+      getCurrentUser(ctx),
       ctx.db.get(args.captureId),
     ]);
     if (!capture || capture.ownerUserId !== user?._id) return null;
@@ -620,7 +617,7 @@ export const getCapture = authQuery({
 export const getInboxCaptures = authQuery({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
     const [processing, ready, failed, needsManual] = await Promise.all([
       ctx.db
@@ -708,7 +705,7 @@ export const getInboxCaptures = authQuery({
 export const getRecentCaptures = authQuery({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return [];
     const limit = args.limit ?? 20;
 
@@ -729,7 +726,7 @@ export const getRecentCaptures = authQuery({
 export const getArchivedItems = authQuery({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.getCurrentUser();
+    const user = await getCurrentUser(ctx);
     if (!user) return { captures: [], nodes: [] };
     const [captures, nodes] = await Promise.all([
       ctx.db
