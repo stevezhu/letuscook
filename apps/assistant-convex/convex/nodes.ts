@@ -7,12 +7,10 @@ export const archiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, node] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.nodeId),
-    ]);
-    if (!node || node.ownerUserId !== user?._id) {
+    const node = await ctx.getDocOwnedByCurrentUser('nodes', args.nodeId);
+    if (!node) {
       throw new EntityNotFoundError({
+        tableName: 'nodes',
         argName: 'nodeId',
         argValue: args.nodeId,
       });
@@ -50,12 +48,10 @@ export const unarchiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, node] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.nodeId),
-    ]);
-    if (!node || node.ownerUserId !== user?._id) {
+    const node = await ctx.getDocOwnedByCurrentUser('nodes', args.nodeId);
+    if (!node) {
       throw new EntityNotFoundError({
+        tableName: 'nodes',
         argName: 'nodeId',
         argValue: args.nodeId,
       });

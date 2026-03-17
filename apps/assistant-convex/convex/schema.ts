@@ -6,6 +6,7 @@ export const edgeFields = {
   toNodeId: v.id('nodes'),
   publishedAt: v.optional(v.number()),
   archivedAt: v.optional(v.number()),
+  // TODO: is this required?
   edgeType: v.union(
     v.literal('explicit'),
     v.literal('suggested'),

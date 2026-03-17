@@ -1,21 +1,15 @@
 import { v } from 'convex/values';
 
 import { authQuery } from './auth.ts';
-import { EntityNotFoundError } from './errors.ts';
 
 export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
-    }
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) return null;
 
     const suggestion = await ctx.db
       .query('suggestions')

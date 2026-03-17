@@ -1,4 +1,4 @@
-import { v } from 'convex/values';
+import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api.js';
 import { Id } from './_generated/dataModel.js';
@@ -168,7 +168,12 @@ export const createCapture = authMutation({
   returns: v.id('captures'),
   handler: async (ctx, args) => {
     const user = await ctx.getCurrentUser();
-    if (!user) throw new EntityNotFoundError({ argName: 'user', argValue: '' });
+    if (!user)
+      throw new EntityNotFoundError({
+        tableName: 'user',
+        argName: 'user',
+        argValue: '',
+      });
     const now = Date.now();
     const explicitMentionNodeIds = parseMentionedNodeIds(args.rawContent);
 
@@ -200,15 +205,12 @@ export const updateCapture = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     const now = Date.now();
@@ -255,27 +257,25 @@ export const acceptSuggestion = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        entityName: 'capture',
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion || suggestion.captureId !== args.captureId) {
       throw new EntityNotFoundError({
+        tableName: 'suggestion',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
     }
     if (suggestion.status !== 'pending') {
       throw new EntityNotFoundError({
+        tableName: 'suggestion',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
@@ -354,26 +354,25 @@ export const rejectSuggestion = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion || suggestion.captureId !== args.captureId) {
       throw new EntityNotFoundError({
+        tableName: 'suggestion',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
     }
     if (suggestion.status !== 'pending') {
       throw new EntityNotFoundError({
+        tableName: 'suggestion',
         argName: 'suggestionId',
         argValue: args.suggestionId,
       });
@@ -445,15 +444,12 @@ export const organizeCapture = authMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     const now = Date.now();
@@ -497,15 +493,12 @@ export const archiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     const now = Date.now();
@@ -521,15 +514,12 @@ export const unarchiveCapture = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
 
     await ctx.db.patch('captures', args.captureId, {
@@ -544,18 +534,16 @@ export const retryProcessing = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const [user, capture] = await Promise.all([
-      ctx.getCurrentUser(),
-      ctx.db.get(args.captureId),
-    ]);
-    if (!capture || capture.ownerUserId !== user?._id) {
-      throw new EntityNotFoundError({
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+    const capture = await ctx.getDocOwnedByCurrentUser(
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
     }
     if (capture.captureState !== 'failed') {
       throw new EntityNotFoundError({
+        tableName: 'capture',
         argName: 'captureId',
         argValue: args.captureId,
       });
