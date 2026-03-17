@@ -3,10 +3,11 @@ import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api.js';
 import { Id } from './_generated/dataModel.js';
-import { internalMutation, internalQuery } from './_generated/server.js';
+import { internalMutation } from './_generated/server.js';
 import { EntityNotFoundError } from './errors.ts';
 import { authMutation, authQuery } from './functions.ts';
 import { pickOptional } from './helpers.ts';
+import { saveDraftSuggestion } from './model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
@@ -25,80 +26,6 @@ function parseMentionedNodeIds(rawContent: string): Id<'nodes'>[] {
   }
   return ids;
 }
-
-// ─── Internal helpers ─────────────────────────────────────────────────────────
-
-export const getCaptureInternal = internalQuery({
-  args: { captureId: v.id('captures') },
-  handler: async (ctx, args) => {
-    return ctx.db.get(args.captureId);
-  },
-});
-
-export const setCaptureFailed = internalMutation({
-  args: { captureId: v.id('captures') },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    await ctx.db.patch('captures', args.captureId, {
-      captureState: 'failed',
-      updatedAt: Date.now(),
-    });
-    return null;
-  },
-});
-
-export const saveDraftSuggestion = internalMutation({
-  args: {
-    captureId: v.id('captures'),
-    agentUserId: v.id('users'),
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const capture = await ctx.db.get(args.captureId);
-    if (!capture) return null;
-
-    const now = Date.now();
-    const title = `[Draft] ${capture.rawContent.slice(0, 60)}`;
-
-    const draftNodeId = await ctx.db.insert('nodes', {
-      title,
-      content: capture.rawContent,
-      searchText: `${title}\n\n${capture.rawContent}`,
-      ownerUserId: capture.ownerUserId,
-      sourceCaptureId: args.captureId,
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    await Promise.all(
-      capture.explicitMentionNodeIds.map((mentionedNodeId) =>
-        ctx.db.insert('edges', {
-          fromNodeId: draftNodeId,
-          toNodeId: mentionedNodeId,
-          edgeType: 'suggested',
-          source: 'processor',
-          verified: false,
-          createdAt: now,
-        }),
-      ),
-    );
-
-    await ctx.db.insert('suggestions', {
-      captureId: args.captureId,
-      suggestorUserId: args.agentUserId,
-      suggestedNodeId: draftNodeId,
-      status: 'pending',
-      createdAt: now,
-    });
-
-    await ctx.db.patch('captures', args.captureId, {
-      captureState: 'ready',
-      updatedAt: now,
-    });
-
-    return null;
-  },
-});
 
 // ─── Existing mutation ────────────────────────────────────────────────────────
 
@@ -564,10 +491,10 @@ export const retryProcessing = authMutation({
   },
 });
 
-// ─── Internal action (process pipeline) ──────────────────────────────────────
+// ─── Internal mutation (process pipeline) ──────────────────────────────────────
 
 /**
- * Internal action to process a single capture.
+ * Internal mutation to process a single capture.
  * Stub: creates deterministic draft artifacts (no real AI).
  */
 export const processCapture = internalMutation({
@@ -593,7 +520,7 @@ export const processCapture = internalMutation({
         argValue: agentUser?._id ?? '',
       });
     }
-    await ctx.runMutation(internal.captures.saveDraftSuggestion, {
+    await saveDraftSuggestion(ctx, {
       captureId: args.captureId,
       agentUserId: agentUser._id,
     });
