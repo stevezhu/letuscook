@@ -15,7 +15,6 @@ import { ConditionalPick } from 'type-fest';
 import { components, internal } from './_generated/api.js';
 import type { DataModel, Doc, Id } from './_generated/dataModel.js';
 import { mutation, query, QueryCtx, MutationCtx } from './_generated/server.js';
-import { EntityNotFoundError } from './errors.ts';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
@@ -101,15 +100,12 @@ type OwnedDataModel = ConditionalPick<
   { document: { ownerUserId: Id<'users'> } }
 >;
 
-type OwnedTableNames = TableNamesInDataModel<OwnedDataModel>;
-
-type OwnedDocument<TableName extends OwnedTableNames> = DocumentByName<
-  OwnedDataModel,
-  TableName
->;
+type GetDocOwnedByCurrentUserParameters = {
+  [K in keyof OwnedDataModel]: [K, OwnedDataModel[K]['document']['_id']];
+}[keyof OwnedDataModel];
 
 /**
- * 👀 Needs Verification
+ * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
  *
  * TODO: this can be exported when we need to use it elsewhere
  */
@@ -121,36 +117,32 @@ type AuthCtx = {
   // the difference.
   getAuthKitUser: () => ReturnType<typeof authKit.getAuthUser>;
   getCurrentUser: () => Promise<Doc<'users'> | null>;
-  getDocOwnedByCurrentUser<TableName extends OwnedTableNames>(
-    table: TableName,
-    id: Id<TableName>,
-  ): Promise<DocumentByName<OwnedDataModel, TableName> | null>;
+  getDocOwnedByCurrentUser<T extends GetDocOwnedByCurrentUserParameters>(
+    ...args: T
+  ): Promise<DocumentByName<OwnedDataModel, T[0]> | null>;
 };
 
 /**
- * 👀 Needs Verification
+ * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
  */
 const authCustomCtx = customCtx<QueryCtx | MutationCtx, AuthCtx>(
   async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new ConvexError('Not authenticated');
+
     return {
       identity,
       getAuthKitUser: () => authKit.getAuthUser(ctx),
       getCurrentUser: () => getUser(ctx),
-      getDocOwnedByCurrentUser: async (table, id) => {
+      getDocOwnedByCurrentUser: async (...args) => {
         const [user, doc] = await Promise.all([
           getUser(ctx),
-          ctx.db.get(table, id),
+          ctx.db.get(args[0], args[1]),
         ]);
-        // TODO: fix access of `ownerUserId`, check this later
-        const typedDoc = doc as OwnedDocument<OwnedTableNames>;
-        if (!doc || typedDoc.ownerUserId !== user?._id) {
-          throw new EntityNotFoundError({
-            entityName: table,
-            argName: 'placeholder',
-            argValue: id,
-          });
+
+        if (!doc || doc.ownerUserId !== user?._id) {
+          // TODO: null might be better than throwing an error? since null is the equivalent
+          return null;
         }
         return doc;
       },
