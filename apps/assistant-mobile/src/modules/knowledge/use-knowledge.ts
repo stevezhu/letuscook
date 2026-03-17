@@ -1,8 +1,7 @@
-import { convexQuery } from '@convex-dev/react-query';
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import { Id } from 'assistant-convex/convex/_generated/dataModel';
-import { useConvex } from 'convex/react';
 
 export function useKnowledgeBasePages() {
   return useQuery(convexQuery(api.nodes.getKnowledgeBasePages, {}));
@@ -23,17 +22,13 @@ export function useNodeAutocomplete(query: string) {
 }
 
 export function useArchiveNode() {
-  const convex = useConvex();
   return useMutation({
-    mutationFn: (args: { nodeId: Id<'nodes'> }) =>
-      convex.mutation(api.nodes.setNodeArchived, { ...args, archived: true }),
+    mutationFn: useConvexMutation(api.nodes.archiveNode),
   });
 }
 
 export function useUnarchiveNode() {
-  const convex = useConvex();
   return useMutation({
-    mutationFn: (args: { nodeId: Id<'nodes'> }) =>
-      convex.mutation(api.nodes.setNodeArchived, { ...args, archived: false }),
+    mutationFn: useConvexMutation(api.nodes.unarchiveNode),
   });
 }
