@@ -48,7 +48,7 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
       // Strip `captureState: 'offline'` before sending to Convex
       // since the Convex schema expects standard objects.
       const guestCaptures = captures.map(({ captureState: _, ...c }) => c);
-      migration.mutate(guestCaptures);
+      migration.mutate({ captures: guestCaptures });
     }
   }, [user, isAuthenticated, captures, migration]);
 

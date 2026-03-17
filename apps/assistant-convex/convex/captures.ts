@@ -39,16 +39,9 @@ function parseMentionedNodeIds(rawContent: string): Id<'nodes'>[] {
 export const migrateGuestCaptures = authMutation({
   args: {
     captures: v.array(
-      v.object({
-        id: v.string(),
-        rawContent: v.string(),
-        captureType: v.union(
-          v.literal('text'),
-          v.literal('link'),
-          v.literal('task'),
-        ),
-        capturedAt: v.number(),
-      }),
+      v.object(
+        pick(captureFields, ['rawContent', 'captureType', 'capturedAt']),
+      ),
     ),
   },
   handler: async (ctx, args) => {
