@@ -26,7 +26,7 @@
     "lucide-react": "^0.577.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "wxt": "^0.20.18"
+    "wxt": "^0.20.20"
   },
   "devDependencies": {
     "@stzhu/eslint-config": "catalog:",
@@ -35,11 +35,11 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "^5.1.4",
+    "@vitejs/plugin-react": "^5.2.0",
     "@wxt-dev/auto-icons": "^1.1.1",
-    "@wxt-dev/module-react": "^1.2.1",
+    "@wxt-dev/module-react": "^1.2.2",
     "eslint": "catalog:",
-    "eslint-plugin-oxlint": "^1.50.0",
+    "eslint-plugin-oxlint": "^1.56.0",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
