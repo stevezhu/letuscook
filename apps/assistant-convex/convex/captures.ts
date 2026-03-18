@@ -588,12 +588,7 @@ export const getInboxCaptures = authQuery({
           )
           .first();
         if (!suggestion) return { capture, suggestion: null, suggestor: null };
-        const suggestor = await ctx.db
-          .query('users')
-          .withIndex('by_workos_user_id', (q) =>
-            q.eq('workosUserId', suggestion.suggestorUserId),
-          )
-          .unique();
+        const suggestor = await ctx.db.get(suggestion.suggestorUserId);
         return {
           capture,
           suggestion,
