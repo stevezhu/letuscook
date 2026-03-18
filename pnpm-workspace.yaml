@@ -14,7 +14,7 @@ catalog:
   '@types/node': ^25.5.0
   '@types/react': ^19.2.14
   '@types/react-dom': ^19.2.3
-  electron: ^40.8.3
+  electron: ^41.0.3
   eslint: ^9.39.4
   hono: ^4.12.8
   react: ^19.2.4
