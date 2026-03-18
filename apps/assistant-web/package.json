@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.21",
-    "@tanstack/react-router": "^1.166.6",
+    "@tanstack/react-router": "^1.167.4",
     "@workspace/assistant-app": "workspace:*",
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
@@ -29,11 +29,11 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "^5.1.4",
+    "@vitejs/plugin-react": "^5.2.0",
     "assistant-server": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "catalog:",
-    "eslint-plugin-oxlint": "^1.50.0",
+    "eslint-plugin-oxlint": "^1.56.0",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
