@@ -1,7 +1,7 @@
 ---
 date: 2026-03-18T08:00:00Z
 type: plan
-status: draft
+status: superseded
 agent: claudecode
 models: [claude-opus-4-6]
 branch: t5

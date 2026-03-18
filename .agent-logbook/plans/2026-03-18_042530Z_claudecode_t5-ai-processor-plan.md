@@ -1,7 +1,7 @@
 ---
 date: 2026-03-18T04:25:30Z
 type: plan
-status: in-progress
+status: superseded
 agent: claudecode
 models: [claude-opus-4-6, claude-haiku-4-5-20251001]
 branch: t5
