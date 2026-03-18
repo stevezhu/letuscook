@@ -1,6 +1,6 @@
 import { ConvexError } from 'convex/values';
 
-import { TableNames } from './_generated/dataModel.js';
+import { TableNames } from '#convex/_generated/dataModel.js';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)

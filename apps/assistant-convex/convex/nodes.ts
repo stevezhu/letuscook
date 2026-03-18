@@ -1,8 +1,11 @@
 import { v } from 'convex/values';
 
-import { EntityNotFoundError } from './errors.ts';
-import { authMutation, authQuery } from './functions.ts';
-import { getCurrentUser, getDocOwnedByCurrentUser } from './model/users.ts';
+import {
+  getCurrentUser,
+  getDocOwnedByCurrentUser,
+} from '#convex/model/users.ts';
+import { authMutation, authQuery } from '#convex/utils/customFunctions.ts';
+import { EntityNotFoundError } from '#convex/utils/errors.ts';
 
 /**
  * Soft-deletes a node and all its connected edges by setting `archivedAt`.

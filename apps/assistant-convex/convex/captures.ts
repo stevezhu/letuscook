@@ -1,19 +1,19 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { internal } from './_generated/api.js';
-import { Id } from './_generated/dataModel.js';
-import { internalMutation } from './_generated/server.js';
-import { EntityNotFoundError } from './errors.ts';
-import { authMutation, authQuery } from './functions.ts';
-import { pickOptional } from './helpers.ts';
-import { saveDraftSuggestion } from './model/captures.ts';
+import { internal } from '#convex/_generated/api.js';
+import { Id } from '#convex/_generated/dataModel.js';
+import { internalMutation } from '#convex/_generated/server.js';
+import { saveDraftSuggestion } from '#convex/model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
   getDocOwnedByCurrentUser,
-} from './model/users.ts';
-import { captureFields } from './schema.ts';
+} from '#convex/model/users.ts';
+import { captureFields } from '#convex/schema.ts';
+import { authMutation, authQuery } from '#convex/utils/customFunctions.ts';
+import { EntityNotFoundError } from '#convex/utils/errors.ts';
+import { pickOptional } from '#convex/utils/helpers.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

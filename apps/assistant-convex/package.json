@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#convex/*": "./convex/*"
+  },
   "exports": {
     "./convex/_generated/*": {
       "types": "./convex/_generated/*.d.ts",

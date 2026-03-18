@@ -1,10 +1,10 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { EntityNotFoundError } from './errors.ts';
-import { authMutation } from './functions.ts';
-import { getDocOwnedByCurrentUser } from './model/users.ts';
-import { edgeFields } from './schema.ts';
+import { getDocOwnedByCurrentUser } from '#convex/model/users.ts';
+import { edgeFields } from '#convex/schema.ts';
+import { authMutation } from '#convex/utils/customFunctions.ts';
+import { EntityNotFoundError } from '#convex/utils/errors.ts';
 
 /**
  * 👀 Needs Verification

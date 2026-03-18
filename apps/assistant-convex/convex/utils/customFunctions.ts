@@ -6,7 +6,12 @@ import {
 import { UserIdentity } from 'convex/server';
 import { ConvexError } from 'convex/values';
 
-import { mutation, query, QueryCtx, MutationCtx } from './_generated/server.js';
+import {
+  mutation,
+  query,
+  QueryCtx,
+  MutationCtx,
+} from '#convex/_generated/server.js';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)

@@ -1,5 +1,5 @@
-import { Id } from '../_generated/dataModel.js';
-import { MutationCtx } from '../_generated/server.js';
+import { Id } from '#convex/_generated/dataModel.js';
+import { MutationCtx } from '#convex/_generated/server.js';
 
 export async function setCaptureFailed(
   ctx: MutationCtx,
