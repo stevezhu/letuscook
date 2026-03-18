@@ -171,27 +171,26 @@ embedding: v.optional(v.array(v.float64())),  // Gemini Embedding 2 vector
 
 ```typescript
 topics: defineTable({
-  label: v.string(),               // Auto-derived or user-set label
-  ownerUserId: v.id("users"),
-  isUserDefined: v.boolean(),      // false = emergent, true = user-created
+  label: v.string(), // Auto-derived or user-set label
+  ownerUserId: v.id('users'),
+  isUserDefined: v.boolean(), // false = emergent, true = user-created
   createdAt: v.number(),
   updatedAt: v.number(),
-})
-  .index("by_owner", ["ownerUserId"])
+}).index('by_owner', ['ownerUserId']);
 ```
 
 ### New Table: Node Topics (Many-to-Many)
 
 ```typescript
 nodeTopics: defineTable({
-  nodeId: v.id("nodes"),
-  topicId: v.id("topics"),
-  confidence: v.optional(v.number()),  // For emergent assignments
-  source: v.union(v.literal("cluster"), v.literal("user")),
+  nodeId: v.id('nodes'),
+  topicId: v.id('topics'),
+  confidence: v.optional(v.number()), // For emergent assignments
+  source: v.union(v.literal('cluster'), v.literal('user')),
   createdAt: v.number(),
 })
-  .index("by_node", ["nodeId"])
-  .index("by_topic", ["topicId"])
+  .index('by_node', ['nodeId'])
+  .index('by_topic', ['topicId']);
 ```
 
 ## Steps
@@ -282,24 +281,24 @@ nodeTopics: defineTable({
 
 ## File Changes Summary
 
-| File | Action | Description |
-| --- | --- | --- |
-| `apps/assistant-convex/package.json` | Modify | Add `ai`, `@ai-sdk/google`, `zod` |
-| `apps/assistant-convex/convex/schema.ts` | Modify | Add embedding field, vector index, topics + nodeTopics tables |
-| `apps/assistant-convex/convex/ai/embedding.ts` | Create | Gemini Embedding 2 + Gemini Flash title generation |
-| `apps/assistant-convex/convex/ai/clustering.ts` | Create | K-means clustering for emergent topics |
-| `apps/assistant-convex/convex/captures.ts` | Modify | Refactor processCapture, add embedAndClassify action + saveEmbeddingResult mutation |
-| `apps/assistant-convex/convex/topics.ts` | Create | Topic CRUD, clustering trigger, queries |
-| `apps/assistant-convex/convex/model/captures.ts` | Keep | Keep existing `saveDraftSuggestion` stub (not removed) |
+| File                                             | Action | Description                                                                         |
+| ------------------------------------------------ | ------ | ----------------------------------------------------------------------------------- |
+| `apps/assistant-convex/package.json`             | Modify | Add `ai`, `@ai-sdk/google`, `zod`                                                   |
+| `apps/assistant-convex/convex/schema.ts`         | Modify | Add embedding field, vector index, topics + nodeTopics tables                       |
+| `apps/assistant-convex/convex/ai/embedding.ts`   | Create | Gemini Embedding 2 + Gemini Flash title generation                                  |
+| `apps/assistant-convex/convex/ai/clustering.ts`  | Create | K-means clustering for emergent topics                                              |
+| `apps/assistant-convex/convex/captures.ts`       | Modify | Refactor processCapture, add embedAndClassify action + saveEmbeddingResult mutation |
+| `apps/assistant-convex/convex/topics.ts`         | Create | Topic CRUD, clustering trigger, queries                                             |
+| `apps/assistant-convex/convex/model/captures.ts` | Keep   | Keep existing `saveDraftSuggestion` stub (not removed)                              |
 
 ## Cost Estimate (per capture)
 
-| Component | Cost |
-| --- | --- |
-| Gemini Embedding 2 | ~$0.000004 |
-| Gemini Flash (title) | ~$0.0001 |
+| Component            | Cost            |
+| -------------------- | --------------- |
+| Gemini Embedding 2   | ~$0.000004      |
+| Gemini Flash (title) | ~$0.0001        |
 | Convex vector search | Free (included) |
-| **Total** | **~$0.0001** |
+| **Total**            | **~$0.0001**    |
 
 Compare to T5 original plan (GPT-4o `generateObject`): ~$0.01 per capture — **~100x cheaper**.
 

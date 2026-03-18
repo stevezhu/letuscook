@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as ai_clustering from "../ai/clustering.js";
+import type * as ai_embedding from "../ai/embedding.js";
 import type * as auth from "../auth.js";
 import type * as captures from "../captures.js";
 import type * as edges from "../edges.js";
@@ -18,6 +20,7 @@ import type * as nodes from "../nodes.js";
 import type * as scripts_seedAgentUser from "../scripts/seedAgentUser.js";
 import type * as search from "../search.js";
 import type * as suggestions from "../suggestions.js";
+import type * as topics from "../topics.js";
 import type * as utils_customFunctions from "../utils/customFunctions.js";
 import type * as utils_errors from "../utils/errors.js";
 import type * as utils_helpers from "../utils/helpers.js";
@@ -29,6 +32,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "ai/clustering": typeof ai_clustering;
+  "ai/embedding": typeof ai_embedding;
   auth: typeof auth;
   captures: typeof captures;
   edges: typeof edges;
@@ -39,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   "scripts/seedAgentUser": typeof scripts_seedAgentUser;
   search: typeof search;
   suggestions: typeof suggestions;
+  topics: typeof topics;
   "utils/customFunctions": typeof utils_customFunctions;
   "utils/errors": typeof utils_errors;
   "utils/helpers": typeof utils_helpers;

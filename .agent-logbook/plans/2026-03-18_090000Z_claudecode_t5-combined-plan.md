@@ -1,7 +1,7 @@
 ---
 date: 2026-03-18T09:00:00Z
 type: plan
-status: draft
+status: in-progress
 agent: claudecode
 models: [claude-opus-4-6]
 branch: t5
@@ -103,26 +103,25 @@ embedding: v.optional(v.array(v.float64())),
 ```typescript
 topics: defineTable({
   label: v.string(),
-  ownerUserId: v.id("users"),
-  isUserDefined: v.boolean(),    // false = emergent, true = user-created
+  ownerUserId: v.id('users'),
+  isUserDefined: v.boolean(), // false = emergent, true = user-created
   createdAt: v.number(),
   updatedAt: v.number(),
-})
-  .index("by_owner", ["ownerUserId"])
+}).index('by_owner', ['ownerUserId']);
 ```
 
 ### New Table: Node Topics (Many-to-Many)
 
 ```typescript
 nodeTopics: defineTable({
-  nodeId: v.id("nodes"),
-  topicId: v.id("topics"),
+  nodeId: v.id('nodes'),
+  topicId: v.id('topics'),
   confidence: v.optional(v.number()),
-  source: v.union(v.literal("cluster"), v.literal("user")),
+  source: v.union(v.literal('cluster'), v.literal('user')),
   createdAt: v.number(),
 })
-  .index("by_node", ["nodeId"])
-  .index("by_topic", ["topicId"])
+  .index('by_node', ['nodeId'])
+  .index('by_topic', ['topicId']);
 ```
 
 ## Steps
@@ -132,6 +131,8 @@ nodeTopics: defineTable({
 - Add to `apps/assistant-convex/package.json`:
   - `ai` (core Vercel AI SDK)
   - `@ai-sdk/google` (Gemini provider — embeddings + Flash)
+  - `@ai-sdk/openai` (OpenAI fallback for title generation)
+  - `@ai-sdk/anthropic` (Anthropic fallback for title generation)
   - `zod` (required by Vercel AI SDK)
 - Run `pnpm install`
 
@@ -148,7 +149,8 @@ nodeTopics: defineTable({
   - `embedText(text: string)` — calls Gemini Embedding 2 via `@ai-sdk/google`
     - Uses task type `RETRIEVAL_DOCUMENT` for nodes, `RETRIEVAL_QUERY` for search queries
     - Returns 768-dimensional vector
-  - `generateTitle(rawContent: string, captureType: string, similarNodes: {title: string, content: string}[])` — calls Gemini Flash via `generateText`
+  - `generateTitle(rawContent: string, captureType: string, similarNodes: {title: string, content: string}[])` — calls LLM with provider fallback chain via `generateText`
+    - Fallback chain: Gemini Flash → GPT-4o-mini → Claude 3.5 Haiku
     - Prompt includes captureType context + similar nodes for better naming
     - Returns string
 
@@ -164,7 +166,7 @@ nodeTopics: defineTable({
   5. Generate title via Gemini Flash with similar node titles/content as context
   6. On success: `ctx.runMutation(internal.captures.saveEmbeddingResult, { ... })`
   7. On failure: `ctx.runMutation(internal.captures.setCaptureFailed, { captureId })`
-- **Retry**: 3 attempts with exponential backoff (1s, 2s, 4s) — single provider (Google), no fallback chain needed
+- **Retry**: 3 attempts with exponential backoff (1s, 2s, 4s) per provider. Embedding uses Google only. Title generation falls back: Gemini Flash → GPT-4o-mini → Claude 3.5 Haiku
 
 ### Step 5: Implement `saveEmbeddingResult` Internal Mutation
 
@@ -213,24 +215,24 @@ nodeTopics: defineTable({
 
 ## File Changes Summary
 
-| File | Action | Description |
-| --- | --- | --- |
-| `apps/assistant-convex/package.json` | Modify | Add `ai`, `@ai-sdk/google`, `zod` |
-| `apps/assistant-convex/convex/schema.ts` | Modify | Add embedding field, vector index, topics + nodeTopics tables |
-| `apps/assistant-convex/convex/ai/embedding.ts` | Create | Gemini Embedding 2 + Gemini Flash title generation |
-| `apps/assistant-convex/convex/ai/clustering.ts` | Create | K-means clustering for emergent topics |
-| `apps/assistant-convex/convex/captures.ts` | Modify | Refactor processCapture, add embedAndClassify action + saveEmbeddingResult mutation |
-| `apps/assistant-convex/convex/topics.ts` | Create | Topic CRUD, clustering trigger, queries |
-| `apps/assistant-convex/convex/model/captures.ts` | Keep | Existing `saveDraftSuggestion` stub remains (not removed) |
+| File                                             | Action | Description                                                                         |
+| ------------------------------------------------ | ------ | ----------------------------------------------------------------------------------- |
+| `apps/assistant-convex/package.json`             | Modify | Add `ai`, `@ai-sdk/google`, `@ai-sdk/openai`, `@ai-sdk/anthropic`, `zod`            |
+| `apps/assistant-convex/convex/schema.ts`         | Modify | Add embedding field, vector index, topics + nodeTopics tables                       |
+| `apps/assistant-convex/convex/ai/embedding.ts`   | Create | Gemini Embedding 2 + Gemini Flash title generation                                  |
+| `apps/assistant-convex/convex/ai/clustering.ts`  | Create | K-means clustering for emergent topics                                              |
+| `apps/assistant-convex/convex/captures.ts`       | Modify | Refactor processCapture, add embedAndClassify action + saveEmbeddingResult mutation |
+| `apps/assistant-convex/convex/topics.ts`         | Create | Topic CRUD, clustering trigger, queries                                             |
+| `apps/assistant-convex/convex/model/captures.ts` | Keep   | Existing `saveDraftSuggestion` stub remains (not removed)                           |
 
 ## Cost Estimate (per capture)
 
-| Component | Cost |
-| --- | --- |
-| Gemini Embedding 2 | ~$0.000004 |
-| Gemini Flash (title) | ~$0.0001 |
+| Component            | Cost            |
+| -------------------- | --------------- |
+| Gemini Embedding 2   | ~$0.000004      |
+| Gemini Flash (title) | ~$0.0001        |
 | Convex vector search | Free (included) |
-| **Total** | **~$0.0001** |
+| **Total**            | **~$0.0001**    |
 
 ## Out of Scope (Future TODOs)
 
@@ -249,7 +251,7 @@ nodeTopics: defineTable({
 2. **LLM usage**: Minimal — title generation only (Gemini Flash). Body is raw content as-is.
 3. **Vector storage**: Native Convex vector search — no external vector DB needed.
 4. **Embedding dimensions**: 768 (Matryoshka recommended balance of quality/storage).
-5. **Provider fallback**: Not needed — single provider (Google) for both embeddings and title gen. Simple retry with backoff.
+5. **Provider fallback**: Embeddings use Google only. Title generation has fallback chain: Gemini Flash → GPT-4o-mini → Claude 3.5 Haiku. Each provider retried 3x with exponential backoff.
 6. **Topic clusters**: Emergent by default, user-overridable with custom categories.
 7. **Concurrency throttling**: No throttling for Phase 1. Convex scheduler handles concurrency natively.
 8. **Node context for AI**: Provided via vector search results (similar nodes), not by passing all nodes.
