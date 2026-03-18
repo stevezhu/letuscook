@@ -28,7 +28,6 @@ Replace the deterministic stub in `processCapture` with real AI processing using
 - Exponential backoff retry: 1s → 2s → 4s (3 attempts per provider)
 - Zod schema for structured output contract
 - Post-validation of `linksToExisting` node IDs
-- Batch throttling (max 10 concurrent)
 - `captureState="failed"` when all providers fail
 
 ### Out of Scope
@@ -66,7 +65,7 @@ Convex mutations cannot make external HTTP calls. The AI call **must** happen in
   - `@ai-sdk/openai`
   - `@ai-sdk/anthropic`
   - `@ai-sdk/google`
-  - `zod` (for `generateObject` schema — check if already available via convex)
+  - `zod` (required explicitly by Vercel AI SDK's `generateObject`)
 - Run `pnpm install`
 
 ### Step 2: Create AI Processing Schema & Prompts
@@ -99,14 +98,14 @@ Convex mutations cannot make external HTTP calls. The AI call **must** happen in
 ### Step 4: Implement `runAiProcessing` Internal Action
 
 - **File**: `convex/captures.ts` (add new internal action)
-- **Signature**: `internalAction({ args: { captureId, rawContent, captureType, ownerUserId, existingNodeTitles? }, handler })`
+- **Signature**: `internalAction({ args: { captureId, rawContent, captureType, ownerUserId }, handler })`
 - **Logic**:
-  1. Build prompt from `rawContent` + `captureType`
+  1. Build prompt from `rawContent` + `captureType` (no existing node context passed — deferred)
   2. Call `callWithFallback(...)` with Zod schema
-  3. Post-validate `linksToExisting`: each nodeId must exist, be owned by `ownerUserId`, and not archived
-     - Note: internal actions can read DB via `ctx.runQuery` but we want to minimize DB calls in actions. Pass owner context from mutation, validate node IDs by calling a lightweight internal query.
+  3. Post-validate `linksToExisting`: each nodeId must exist, be owned by `ownerUserId`, and not archived (via `ctx.runQuery`)
   4. Validate constraints (title lengths, max links, dedup)
   5. Return validated payload or throw on failure
+- **Note**: Passing existing node titles for `linksToExisting` context is deferred. For now the AI will only produce `suggestedNode` + `newConcepts`. `linksToExisting` will be empty until we add node context in a follow-up.
 - **On success**: schedule `saveAiResult` internal mutation with validated payload
 - **On failure**: schedule `setCaptureFailed` or use `ctx.runMutation`
 
@@ -143,16 +142,7 @@ Convex mutations cannot make external HTTP calls. The AI call **must** happen in
   - Check node exists, `ownerUserId` matches, `archivedAt` is not set
   - Used by `runAiProcessing` action via `ctx.runQuery`
 
-### Step 8: Batch Throttling (Concurrency Limit)
-
-- Implement concurrency limiting for capture processing
-- Options:
-  - Use a simple counter in a Convex system table or config
-  - Or implement in the action layer with a semaphore pattern
-- Configurable max: 10 concurrent captures
-- When limit reached, re-schedule with delay
-
-### Step 9: Lint & Type-Check
+### Step 8: Lint & Type-Check
 
 - Run `pnpm run lint:fix` then `pnpm -w run lint`
 - Run `pnpm -w run test` (type-check)
@@ -204,11 +194,11 @@ Convex mutations cannot make external HTTP calls. The AI call **must** happen in
 | `apps/assistant-convex/convex/captures.ts`       | Modify | Refactor processCapture, add runAiProcessing action + saveAiResult mutation |
 | `apps/assistant-convex/convex/model/captures.ts` | Modify | Add saveAiSuggestion (keep saveDraftSuggestion)                             |
 
-## Open Questions
+## Resolved Questions
 
-1. **Concurrency throttling strategy**: Should we use a Convex table-based counter or a simpler re-schedule-with-delay approach? Table-based is more robust but adds schema complexity.
-2. **Node context for AI**: Should we pass existing node titles to the AI so it can suggest `linksToExisting` more accurately? This requires fetching user's published nodes in the mutation before calling the action. Could be expensive for large KBs — consider limiting to recent N nodes.
-3. **`zod` dependency**: Convex already bundles `zod` internally — need to check if we can import it directly or if we need to add it as an explicit dep for the AI SDK's `generateObject`.
+1. **Concurrency throttling**: No throttling for Phase 1. The Convex scheduler handles concurrency natively. Add throttling only if needed later.
+2. **Node context for AI**: Deferred. Don't pass existing node titles yet — `linksToExisting` will be empty for now. Add node context in a follow-up.
+3. **`zod` dependency**: Install explicitly. Convex bundles it internally but doesn't export it; Vercel AI SDK needs it as a direct dependency.
 
 ## References
 
@@ -226,10 +216,10 @@ Models Used:  Main: claude-opus-4-6
               Subagents: claude-haiku-4-5-20251001
 ----------------------------------------
 MAIN SESSION:
-  Input Tokens         36
-  Output Tokens        2,026
-  Cache Creation Input 151,775
-  Cache Read Input     746,014
+  Input Tokens         63
+  Output Tokens        8,776
+  Cache Creation Input 169,178
+  Cache Read Input     1,820,525
 ----------------------------------------
 SUBAGENTS (1 total):
   Input Tokens         127
@@ -238,11 +228,11 @@ SUBAGENTS (1 total):
   Cache Read Input     543,277
 ----------------------------------------
 TOTAL USAGE:
-  Total Input Tokens   163
-  Total Output Tokens  5,348
-  Total Cache Creation 273,010
-  Total Cache Read     1,289,291
+  Total Input Tokens   190
+  Total Output Tokens  12,098
+  Total Cache Creation 290,413
+  Total Cache Read     2,363,802
 ----------------------------------------
-GRAND TOTAL TOKENS:  1,567,812
+GRAND TOTAL TOKENS:  2,666,503
 ========================================
 ```
