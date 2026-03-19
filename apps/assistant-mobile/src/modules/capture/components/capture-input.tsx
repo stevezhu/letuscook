@@ -4,7 +4,7 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { ArrowUp, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TextInput, type TextInputProps, View } from 'react-native';
+import { TextInput, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.tsx';
 
@@ -22,60 +22,19 @@ export function CaptureInput() {
   const { signIn } = useAuth();
 
   const canSend = text.trim().length > 0 && !isPending;
-  const shiftHeld = useRef(false);
-  const pendingSubmit = useRef(false);
 
-  const handleSendText = useCallback(
-    async (value: string) => {
-      const trimmed = value.trim();
-      if (!trimmed || isPending) return;
+  const handleSend = useCallback(async () => {
+    const trimmed = text.trim();
+    if (!trimmed || isPending) return;
 
-      try {
-        await submit(trimmed, captureType);
-        setText('');
-        setShowSuccess(true);
-      } catch {
-        // Error handling — limit reached is handled by limitReached state
-      }
-    },
-    [captureType, isPending, submit],
-  );
-
-  const handleSend = useCallback(
-    () => handleSendText(text),
-    [text, handleSendText],
-  );
-
-  const handleKeyPress = useCallback<NonNullable<TextInputProps['onKeyPress']>>(
-    (e) => {
-      const { key } = e.nativeEvent;
-      console.log('key', key, e);
-      if (key === 'Shift') {
-        shiftHeld.current = true;
-        return;
-      }
-      if (key === 'Enter' && shiftHeld.current) {
-        pendingSubmit.current = true;
-      }
-      shiftHeld.current = false;
-    },
-    [],
-  );
-
-  const handleChangeText = useCallback(
-    (newText: string) => {
-      if (pendingSubmit.current) {
-        pendingSubmit.current = false;
-        // Strip the newline that Enter just inserted, then submit
-        const cleaned = newText.replace(/\n$/, '');
-        setText(cleaned);
-        void handleSendText(cleaned);
-        return;
-      }
-      setText(newText);
-    },
-    [handleSendText],
-  );
+    try {
+      await submit(trimmed, captureType);
+      setText('');
+      setShowSuccess(true);
+    } catch {
+      // Error handling — limit reached is handled by limitReached state
+    }
+  }, [text, captureType, isPending, submit]);
 
   useEffect(() => {
     if (!showSuccess) return;
@@ -106,8 +65,7 @@ export function CaptureInput() {
           placeholder="What's on your mind?"
           placeholderTextColor="#9ca3af"
           value={text}
-          onChangeText={handleChangeText}
-          onKeyPress={handleKeyPress}
+          onChangeText={setText}
           multiline
           submitBehavior="submit"
           textAlignVertical="top"
