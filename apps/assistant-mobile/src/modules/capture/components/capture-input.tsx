@@ -1,9 +1,10 @@
 import { Button } from '@workspace/rn-reusables/components/button';
+import { Icon } from '@workspace/rn-reusables/components/icon';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { ArrowUp, Check } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { TextInput, type TextInputProps, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.tsx';
 
@@ -21,19 +22,60 @@ export function CaptureInput() {
   const { signIn } = useAuth();
 
   const canSend = text.trim().length > 0 && !isPending;
+  const shiftHeld = useRef(false);
+  const pendingSubmit = useRef(false);
 
-  const handleSend = useCallback(async () => {
-    const trimmed = text.trim();
-    if (!trimmed || isPending) return;
+  const handleSendText = useCallback(
+    async (value: string) => {
+      const trimmed = value.trim();
+      if (!trimmed || isPending) return;
 
-    try {
-      await submit(trimmed, captureType);
-      setText('');
-      setShowSuccess(true);
-    } catch {
-      // Error handling — limit reached is handled by limitReached state
-    }
-  }, [text, captureType, isPending, submit]);
+      try {
+        await submit(trimmed, captureType);
+        setText('');
+        setShowSuccess(true);
+      } catch {
+        // Error handling — limit reached is handled by limitReached state
+      }
+    },
+    [captureType, isPending, submit],
+  );
+
+  const handleSend = useCallback(
+    () => handleSendText(text),
+    [text, handleSendText],
+  );
+
+  const handleKeyPress = useCallback<NonNullable<TextInputProps['onKeyPress']>>(
+    (e) => {
+      const { key } = e.nativeEvent;
+      console.log('key', key, e);
+      if (key === 'Shift') {
+        shiftHeld.current = true;
+        return;
+      }
+      if (key === 'Enter' && shiftHeld.current) {
+        pendingSubmit.current = true;
+      }
+      shiftHeld.current = false;
+    },
+    [],
+  );
+
+  const handleChangeText = useCallback(
+    (newText: string) => {
+      if (pendingSubmit.current) {
+        pendingSubmit.current = false;
+        // Strip the newline that Enter just inserted, then submit
+        const cleaned = newText.replace(/\n$/, '');
+        setText(cleaned);
+        void handleSendText(cleaned);
+        return;
+      }
+      setText(newText);
+    },
+    [handleSendText],
+  );
 
   useEffect(() => {
     if (!showSuccess) return;
@@ -64,26 +106,32 @@ export function CaptureInput() {
           placeholder="What's on your mind?"
           placeholderTextColor="#9ca3af"
           value={text}
-          onChangeText={setText}
+          onChangeText={handleChangeText}
+          onKeyPress={handleKeyPress}
           multiline
-          blurOnSubmit={false}
+          submitBehavior="submit"
           textAlignVertical="top"
         />
         <Button
-          variant="default"
           size="icon"
           className={cn(
-            'mb-0.5 h-9 w-9 rounded-full',
-            !canSend && 'opacity-40',
+            'bg-primary mb-0.5 h-9 w-9 rounded-full shadow-sm',
+            canSend ? 'bg-primary' : 'bg-muted',
           )}
           disabled={!canSend}
           onPress={handleSend}
           accessibilityLabel="Send capture"
         >
           {showSuccess ? (
-            <Check size={18} className="text-primary-foreground" />
+            <Icon as={Check} className="text-primary-foreground size-[18px]" />
           ) : (
-            <ArrowUp size={18} className="text-primary-foreground" />
+            <Icon
+              as={ArrowUp}
+              className={cn(
+                'size-[18px]',
+                canSend ? 'text-primary-foreground' : 'text-muted-foreground',
+              )}
+            />
           )}
         </Button>
       </View>
