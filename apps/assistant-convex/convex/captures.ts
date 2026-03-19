@@ -1,19 +1,23 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { internal } from './_generated/api.js';
-import { Id } from './_generated/dataModel.js';
-import { internalMutation } from './_generated/server.js';
-import { EntityNotFoundError } from './errors.ts';
-import { authMutation, authQuery } from './functions.ts';
-import { pickOptional } from './helpers.ts';
-import { saveDraftSuggestion } from './model/captures.ts';
+import { internal } from '#convex/_generated/api.js';
+import { Id } from '#convex/_generated/dataModel.js';
+import {
+  internalAction,
+  internalMutation,
+  internalQuery,
+} from '#convex/_generated/server.js';
+import { setCaptureFailed as setCaptureFailed_ } from '#convex/model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
   getDocOwnedByCurrentUser,
-} from './model/users.ts';
-import { captureFields } from './schema.ts';
+} from '#convex/model/users.ts';
+import { captureFields } from '#convex/schema.ts';
+import { authMutation, authQuery } from '#convex/utils/customFunctions.ts';
+import { EntityNotFoundError } from '#convex/utils/errors.ts';
+import { pickOptional } from '#convex/utils/helpers.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -486,10 +490,7 @@ export const retryProcessing = authMutation({
 
 // ─── Internal mutation (process pipeline) ──────────────────────────────────────
 
-/**
- * Internal mutation to process a single capture.
- * Stub: creates deterministic draft artifacts (no real AI).
- */
+// 👀 Needs Verification
 export const processCapture = internalMutation({
   args: {
     captureId: v.id('captures'),
@@ -503,20 +504,199 @@ export const processCapture = internalMutation({
         argValue: args.captureId,
       });
     }
+    // TODO: verify this, why was it processing? it should be ready right?
+    if (capture.captureState !== 'ready') return;
 
     const agentUser = await getAgentUser(ctx);
     if (!agentUser?._id) {
-      // TODO: improve this error
-      throw new EntityNotFoundError({
-        tableName: 'users',
-        argName: 'agentUser',
-        argValue: agentUser?._id ?? '',
+      await setCaptureFailed_(ctx, { captureId: args.captureId });
+      return;
+    }
+
+    await ctx.scheduler.runAfter(0, internal.captures.embedAndClassify, {
+      captureId: args.captureId,
+      rawContent: capture.rawContent,
+      captureType: capture.captureType,
+      ownerUserId: capture.ownerUserId,
+      agentUserId: agentUser._id,
+      explicitMentionNodeIds: capture.explicitMentionNodeIds,
+    });
+  },
+});
+
+// 👀 Needs Verification
+// TODO: action needs to only have the embedText portion, move the rest to a mutation
+export const embedAndClassify = internalAction({
+  args: {
+    captureId: v.id('captures'),
+    rawContent: v.string(),
+    captureType: v.union(
+      v.literal('text'),
+      v.literal('link'),
+      v.literal('task'),
+    ),
+    ownerUserId: v.id('users'),
+    agentUserId: v.id('users'),
+    explicitMentionNodeIds: v.array(v.id('nodes')),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const { embedText, generateTitle } =
+        await import('#convex/ai/embedding.ts');
+
+      // 1. Embed the raw content
+      const embedding = await embedText(args.rawContent);
+
+      // 2. Vector search for similar published nodes
+      const searchResults = await ctx.vectorSearch('nodes', 'by_embedding', {
+        vector: embedding,
+        limit: 5,
+        filter: (q) => q.eq('ownerUserId', args.ownerUserId),
+      });
+
+      // 3. Fetch full docs and filter by similarity threshold
+      const aboveThreshold = searchResults.filter((r) => r._score >= 0.7);
+      const nodeResults = await Promise.all(
+        aboveThreshold.map(async (result) => {
+          const node = await ctx.runQuery(
+            internal.captures.getNodeForEmbedding,
+            { nodeId: result._id },
+          );
+          if (node && !node.archivedAt && node.publishedAt) {
+            return {
+              id: result._id,
+              title: node.title,
+              content: node.content,
+              score: result._score,
+            };
+          }
+          return null;
+        }),
+      );
+      const similarNodes = nodeResults.filter(
+        (n): n is NonNullable<typeof n> => n !== null,
+      );
+
+      // 4. Generate title with LLM fallback chain
+      const title = await generateTitle(
+        args.rawContent,
+        args.captureType,
+        similarNodes,
+      );
+
+      // 5. Save results
+      await ctx.runMutation(internal.captures.saveEmbeddingResult, {
+        captureId: args.captureId,
+        agentUserId: args.agentUserId,
+        title,
+        rawContent: args.rawContent,
+        embedding,
+        ownerUserId: args.ownerUserId,
+        similarNodeIds: similarNodes.map((n) => n.id),
+        similarNodeScores: similarNodes.map((n) => n.score),
+        explicitMentionNodeIds: args.explicitMentionNodeIds,
+      });
+    } catch (error) {
+      console.error('embedAndClassify failed:', error);
+      await ctx.runMutation(internal.captures.setCaptureFailed, {
+        captureId: args.captureId,
       });
     }
-    await saveDraftSuggestion(ctx, {
-      captureId: args.captureId,
-      agentUserId: agentUser._id,
+  },
+});
+
+export const getNodeForEmbedding = internalQuery({
+  args: { nodeId: v.id('nodes') },
+  handler: async (ctx, args) => {
+    const node = await ctx.db.get(args.nodeId);
+    if (!node) return null;
+    return {
+      title: node.title,
+      content: node.content,
+      archivedAt: node.archivedAt,
+      publishedAt: node.publishedAt,
+    };
+  },
+});
+
+// 👀 Needs Verification
+export const saveEmbeddingResult = internalMutation({
+  args: {
+    captureId: v.id('captures'),
+    agentUserId: v.id('users'),
+    title: v.string(),
+    rawContent: v.string(),
+    embedding: v.array(v.float64()),
+    ownerUserId: v.id('users'),
+    similarNodeIds: v.array(v.id('nodes')),
+    similarNodeScores: v.array(v.number()),
+    explicitMentionNodeIds: v.array(v.id('nodes')),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+
+    // 1. Create draft node with embedding
+    const draftNodeId = await ctx.db.insert('nodes', {
+      title: args.title,
+      content: args.rawContent,
+      searchText: `${args.title}\n\n${args.rawContent}`,
+      ownerUserId: args.ownerUserId,
+      sourceCaptureId: args.captureId,
+      embedding: args.embedding,
+      createdAt: now,
+      updatedAt: now,
     });
+
+    // 2. Create edges to similar nodes with confidence scores
+    await Promise.all(
+      args.similarNodeIds.map((nodeId, i) =>
+        ctx.db.insert('edges', {
+          fromNodeId: draftNodeId,
+          toNodeId: nodeId,
+          edgeType: 'suggested',
+          source: 'processor',
+          verified: false,
+          confidence: args.similarNodeScores[i],
+          createdAt: now,
+        }),
+      ),
+    );
+
+    // 3. Create edges from explicit mentions
+    await Promise.all(
+      args.explicitMentionNodeIds.map((nodeId) =>
+        ctx.db.insert('edges', {
+          fromNodeId: draftNodeId,
+          toNodeId: nodeId,
+          edgeType: 'suggested',
+          source: 'processor',
+          verified: false,
+          createdAt: now,
+        }),
+      ),
+    );
+
+    // 4. Create suggestion row
+    await ctx.db.insert('suggestions', {
+      captureId: args.captureId,
+      suggestorUserId: args.agentUserId,
+      suggestedNodeId: draftNodeId,
+      status: 'pending',
+      createdAt: now,
+    });
+
+    // 5. Set capture state to ready
+    await ctx.db.patch('captures', args.captureId, {
+      captureState: 'ready',
+      updatedAt: now,
+    });
+  },
+});
+
+export const setCaptureFailed = internalMutation({
+  args: { captureId: v.id('captures') },
+  handler: async (ctx, args) => {
+    await setCaptureFailed_(ctx, args);
   },
 });
 
@@ -588,12 +768,7 @@ export const getInboxCaptures = authQuery({
           )
           .first();
         if (!suggestion) return { capture, suggestion: null, suggestor: null };
-        const suggestor = await ctx.db
-          .query('users')
-          .withIndex('by_workos_user_id', (q) =>
-            q.eq('workosUserId', suggestion.suggestorUserId),
-          )
-          .unique();
+        const suggestor = await ctx.db.get(suggestion.suggestorUserId);
         return {
           capture,
           suggestion,

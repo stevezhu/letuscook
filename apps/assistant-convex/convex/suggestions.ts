@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 
-import { authQuery } from './functions.ts';
-import { getDocOwnedByCurrentUser } from './model/users.ts';
+import { getDocOwnedByCurrentUser } from '#convex/model/users.ts';
+import { authQuery } from '#convex/utils/customFunctions.ts';
 
 export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },
@@ -21,12 +21,7 @@ export const getSuggestion = authQuery({
       .first();
     if (!suggestion) return null;
 
-    const suggestor = await ctx.db
-      .query('users')
-      .withIndex('by_workos_user_id', (q) =>
-        q.eq('workosUserId', suggestion.suggestorUserId),
-      )
-      .unique();
+    const suggestor = await ctx.db.get(suggestion.suggestorUserId);
 
     return {
       suggestion,

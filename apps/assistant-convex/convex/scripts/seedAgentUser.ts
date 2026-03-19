@@ -1,4 +1,4 @@
-import { internalMutation } from '../_generated/server.js';
+import { internalMutation } from '#convex/_generated/server.js';
 
 export const seedAgentUser = internalMutation({
   handler: async (ctx) => {

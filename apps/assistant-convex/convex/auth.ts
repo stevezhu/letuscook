@@ -1,7 +1,7 @@
 import { AuthKit, type AuthFunctions } from '@convex-dev/workos-authkit';
 
-import { components, internal } from './_generated/api.js';
-import type { DataModel } from './_generated/dataModel.js';
+import { components, internal } from '#convex/_generated/api.js';
+import type { DataModel } from '#convex/_generated/dataModel.js';
 
 /**
  * Internal auth function reference used by AuthKit for token verification

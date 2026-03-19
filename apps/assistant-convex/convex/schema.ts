@@ -40,6 +40,7 @@ export const nodeFields = {
   publishedAt: v.optional(v.number()),
   archivedAt: v.optional(v.number()),
   sourceCaptureId: v.optional(v.id('captures')),
+  embedding: v.optional(v.array(v.float64())),
 };
 
 export const edgeFields = {
@@ -105,6 +106,11 @@ export default defineSchema({
     .searchIndex('search_nodes', {
       searchField: 'searchText',
       filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],
+    })
+    .vectorIndex('by_embedding', {
+      vectorField: 'embedding',
+      dimensions: 768,
+      filterFields: ['ownerUserId'],
     }),
 
   edges: defineTable(edgeFields)
@@ -126,4 +132,22 @@ export default defineSchema({
     .index('by_capture', ['captureId'])
     .index('by_suggestor', ['suggestorUserId'])
     .index('by_capture_status', ['captureId', 'status']),
+
+  topics: defineTable({
+    label: v.string(),
+    ownerUserId: v.id('users'),
+    isUserDefined: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index('by_owner', ['ownerUserId']),
+
+  nodeTopics: defineTable({
+    nodeId: v.id('nodes'),
+    topicId: v.id('topics'),
+    confidence: v.optional(v.number()),
+    source: v.union(v.literal('cluster'), v.literal('user')),
+    createdAt: v.number(),
+  })
+    .index('by_node', ['nodeId'])
+    .index('by_topic', ['topicId']),
 });

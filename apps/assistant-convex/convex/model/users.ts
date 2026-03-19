@@ -2,9 +2,9 @@ import { CustomCtx } from 'convex-helpers/server/customFunctions';
 import { DocumentByName } from 'convex/server';
 import { ConditionalPick } from 'type-fest';
 
-import { DataModel, Doc, Id } from '../_generated/dataModel.js';
-import { QueryCtx } from '../_generated/server.js';
-import { type authQuery } from '../functions.ts';
+import { DataModel, Doc, Id } from '#convex/_generated/dataModel.js';
+import { QueryCtx } from '#convex/_generated/server.js';
+import { type authQuery } from '#convex/utils/customFunctions.ts';
 
 /**
  * Resolves the user document using the user id from the JWT claims.
