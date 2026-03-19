@@ -1,5 +1,6 @@
 ---
-date: 2026-03-19T22:13:59Z
+
+## date: 2026-03-19T22:13:59Z
 type: plan
 status: in-progress
 agent: claudecode
@@ -8,7 +9,6 @@ branch: main
 sessionId: 3d175654-b3f2-4ba9-8cd4-c1764b5277b8
 taskId: T6
 tags: [capture, bottom-sheet, mobile-ui, offline]
----
 
 # T6: Capture Drawer — Flow 1
 
@@ -45,25 +45,28 @@ Build the capture screen as a chat-like interface with a bottom input that adds 
 
 ## Prerequisites / What Already Exists
 
-| Component | Status | Location |
-|-----------|--------|----------|
-| Guest capture store (AsyncStorage) | Done (T3) | `src/modules/capture/use-guest-capture-store.ts` |
-| Guest capture types | Done (T3) | `src/modules/capture/guest-capture-types.ts` |
-| Capture migration provider | Done (T3) | `src/modules/capture/capture-migration-provider.tsx` |
-| `createCapture` mutation | Done (T4) | `convex/captures.ts` |
-| `getRecentCaptures` query | Done (T4) | `convex/captures.ts` |
-| Auth context | Done (T2) | `src/modules/auth/auth-context.tsx` |
-| Tab layout with capture tab | Done (T1) | `src/app/(tabs)/_layout.tsx` |
-| Placeholder capture screen | Done (T1) | `src/app/(tabs)/capture.tsx` |
-| react-native-gesture-handler | Installed | `package.json` |
-| react-native-reanimated | Installed | `package.json` |
-| Bottom sheet library | Not needed (deferred) | See Future Enhancements |
+
+| Component                          | Status                | Location                                             |
+| ---------------------------------- | --------------------- | ---------------------------------------------------- |
+| Guest capture store (AsyncStorage) | Done (T3)             | `src/modules/capture/use-guest-capture-store.ts`     |
+| Guest capture types                | Done (T3)             | `src/modules/capture/guest-capture-types.ts`         |
+| Capture migration provider         | Done (T3)             | `src/modules/capture/capture-migration-provider.tsx` |
+| `createCapture` mutation           | Done (T4)             | `convex/captures.ts`                                 |
+| `getRecentCaptures` query          | Done (T4)             | `convex/captures.ts`                                 |
+| Auth context                       | Done (T2)             | `src/modules/auth/auth-context.tsx`                  |
+| Tab layout with capture tab        | Done (T1)             | `src/app/(tabs)/_layout.tsx`                         |
+| Placeholder capture screen         | Done (T1)             | `src/app/(tabs)/capture.tsx`                         |
+| react-native-gesture-handler       | Installed             | `package.json`                                       |
+| react-native-reanimated            | Installed             | `package.json`                                       |
+| Bottom sheet library               | Not needed (deferred) | See Future Enhancements                              |
+
 
 ## Architecture Decision: Capture Screen Approach
 
 **Choice:** Keep the capture tab, implement the screen as a full-screen chat-like interface — no bottom sheet.
 
 The capture screen is a regular Expo Router tab screen styled like a messaging app:
+
 - Capture log (FlatList, inverted) fills the screen above the input
 - Input area pinned to the bottom (above keyboard when open)
 - No new native dependencies required
@@ -72,18 +75,21 @@ This is the simplest possible implementation. The bottom sheet presentation is d
 
 ## Steps
 
-### Step 1: Create capture module hooks
-**Location:** `src/modules/capture/`
+### Step 1: Create the unified capture submit hook
 
-- **`use-create-capture.ts`** — Hook wrapping Convex `createCapture` mutation via `useConvexMutation`. Returns `{ mutate, isPending }`.
-- **`use-recent-captures.ts`** — Hook wrapping Convex `getRecentCaptures` query. Uses `useQuery` from convex/react for real-time subscription. Returns captures array.
-- **`use-capture-submit.ts`** — Unified submit hook that checks auth state:
-  - If authenticated → calls `createCapture` mutation
-  - If guest → calls `addGuestCapture` from guest store
-  - If guest at limit → returns `{ limitReached: true }` instead of submitting
-  - Clears input on success, returns success status for indicator
+**Location:** `src/modules/capture/use-capture-submit.ts`
+
+No wrapper hooks for `createCapture` or `getRecentCaptures` — call `useConvexMutation(api.captures.createCapture)` and `useQuery(api.captures.getRecentCaptures)` directly in components.
+
+The only custom hook needed is `useCaptureSubmit` — it unifies the auth vs guest submit logic:
+
+- If authenticated → calls `useMutation({ mutationFn: useConvexMutation(api.captures.createCapture) })`
+- If guest → calls `addGuestCapture` from guest store
+- If guest at limit → returns `{ limitReached: true }` instead of submitting
+- Clears input on success, returns success status for indicator
 
 ### Step 2: Create the CaptureTypeSelector component
+
 **Location:** `src/modules/capture/components/capture-type-selector.tsx`
 
 - Segmented control with Text / Link / Task options
@@ -92,6 +98,7 @@ This is the simplest possible implementation. The bottom sheet presentation is d
 - Active segment highlighted with background + shadow
 
 ### Step 3: Create the RecentCapturesList component
+
 **Location:** `src/modules/capture/components/recent-captures-list.tsx`
 
 - Chat-like stream of recent captures using `FlatList` with `inverted`
@@ -103,6 +110,7 @@ This is the simplest possible implementation. The bottom sheet presentation is d
 - Empty state when no captures yet
 
 ### Step 4: Create the CaptureInput component
+
 **Location:** `src/modules/capture/components/capture-input.tsx`
 
 - `captureType` selector (Step 2) positioned above the text input row
@@ -115,6 +123,7 @@ This is the simplest possible implementation. The bottom sheet presentation is d
 - When guest limit reached: replaces input with "Sign in to continue capturing" + Sign In button
 
 ### Step 5: Build the Capture screen
+
 **Location:** `src/app/(tabs)/capture.tsx` (replace placeholder)
 
 - Full chat-like interface:
@@ -126,44 +135,46 @@ This is the simplest possible implementation. The bottom sheet presentation is d
 - Wrapped in `Suspense` for AsyncStorage load (keep existing pattern)
 
 ### Step 6: Lint, test, verify
+
 - Run `pnpm run lint:fix` and `pnpm -w run lint`
 - Run `pnpm -w run test`
 - Manual verification checklist:
-  - [ ] Capture tab shows the chat-like capture screen
-  - [ ] Recent captures log shows correctly (auth vs guest)
-  - [ ] captureType selector visible above input; selected type highlighted
-  - [ ] Enter/Return adds newline, does not submit
-  - [ ] Send button submits capture
-  - [ ] New capture appears in the log immediately after submit
-  - [ ] Guest captures saved locally (AsyncStorage)
-  - [ ] Authenticated captures go to Convex (real-time update in log)
-  - [ ] 101st guest capture shows sign-in prompt instead of input
-  - [ ] Input clears after submit
-  - [ ] Keyboard avoidance works (input stays visible above keyboard)
-  - [ ] `pnpm run lint` passes
+  - Capture tab shows the chat-like capture screen
+  - Recent captures log shows correctly (auth vs guest)
+  - captureType selector visible above input; selected type highlighted
+  - Enter/Return adds newline, does not submit
+  - Send button submits capture
+  - New capture appears in the log immediately after submit
+  - Guest captures saved locally (AsyncStorage)
+  - Authenticated captures go to Convex (real-time update in log)
+  - 101st guest capture shows sign-in prompt instead of input
+  - Input clears after submit
+  - Keyboard avoidance works (input stays visible above keyboard)
+  - `pnpm run lint` passes
 
 ## Open Questions
 
 None — all resolved:
+
 - **Bottom sheet:** Deferred to future iteration (see Future Enhancements)
 - **Tab integration:** Keeping the capture tab as a regular full-screen chat interface
-- **`@` autocomplete:** Stubbed, deferred to T7+
+- `**@` autocomplete:** Stubbed, deferred to T7+
 
 ## Future Enhancements
 
-- **Bottom sheet presentation:** Convert the capture UI to an iOS-style bottom sheet using `@lodev09/react-native-true-sheet` (https://sheet.lodev09.com/). This would allow capture to be triggered from any screen via a floating button, with the sheet sliding up over the current view. Deferred because it requires a native dependency and the tab-based screen is sufficient for the MVP.
+- **Bottom sheet presentation:** Convert the capture UI to an iOS-style bottom sheet using `@lodev09/react-native-true-sheet` ([https://sheet.lodev09.com/](https://sheet.lodev09.com/)). This would allow capture to be triggered from any screen via a floating button, with the sheet sliding up over the current view. Deferred because it requires a native dependency and the tab-based screen is sufficient for the MVP.
 
 ## File Summary
 
-| File | Action | Description |
-|------|--------|-------------|
-| `src/app/(tabs)/capture.tsx` | Rewrite | Chat-like capture screen replacing placeholder |
-| `src/modules/capture/use-create-capture.ts` | Create | Hook for Convex createCapture |
-| `src/modules/capture/use-recent-captures.ts` | Create | Hook for Convex getRecentCaptures |
-| `src/modules/capture/use-capture-submit.ts` | Create | Unified submit hook (auth/guest) |
-| `src/modules/capture/components/capture-type-selector.tsx` | Create | Segmented control component |
-| `src/modules/capture/components/recent-captures-list.tsx` | Create | Chat-like capture log |
-| `src/modules/capture/components/capture-input.tsx` | Create | Input area with send button |
+
+| File                                                       | Action  | Description                                    |
+| ---------------------------------------------------------- | ------- | ---------------------------------------------- |
+| `src/app/(tabs)/capture.tsx`                               | Rewrite | Chat-like capture screen replacing placeholder |
+| `src/modules/capture/use-capture-submit.ts`                | Create  | Unified submit hook (auth/guest)               |
+| `src/modules/capture/components/capture-type-selector.tsx` | Create  | Segmented control component                    |
+| `src/modules/capture/components/recent-captures-list.tsx`  | Create  | Chat-like capture log                          |
+| `src/modules/capture/components/capture-input.tsx`         | Create  | Input area with send button                    |
+
 
 ## Session Stats
 
@@ -201,3 +212,4 @@ GRAND TOTAL TOKENS:  7,280,272
 - [Core Flows Spec — Flow 1](spec:63a17a79-84f1-47b6-9644-2f822ace8c50/2682931f-9865-4dc8-ab60-7b66cb7e8beb)
 - [Technical Plan](spec:63a17a79-84f1-47b6-9644-2f822ace8c50/44be7e7f-9362-4608-8f89-1633275f0edd)
 - [@lodev09/react-native-true-sheet](https://sheet.lodev09.com/)
+
