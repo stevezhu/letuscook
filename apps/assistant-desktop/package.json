@@ -44,7 +44,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "@workspace/assistant-app": "workspace:*",
     "assistant-server": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",
