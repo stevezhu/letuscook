@@ -504,7 +504,8 @@ export const processCapture = internalMutation({
         argValue: args.captureId,
       });
     }
-    if (capture.captureState !== 'processing') return;
+    // TODO: verify this, why was it processing? it should be ready right?
+    if (capture.captureState !== 'ready') return;
 
     const agentUser = await getAgentUser(ctx);
     if (!agentUser?._id) {
@@ -524,6 +525,7 @@ export const processCapture = internalMutation({
 });
 
 // 👀 Needs Verification
+// TODO: action needs to only have the embedText portion, move the rest to a mutation
 export const embedAndClassify = internalAction({
   args: {
     captureId: v.id('captures'),

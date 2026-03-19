@@ -1,12 +1,12 @@
-import { anthropic } from '@ai-sdk/anthropic';
 import { google } from '@ai-sdk/google';
-import { openai } from '@ai-sdk/openai';
 import { embed, generateText } from 'ai';
 
-const EMBEDDING_MODEL = google.textEmbeddingModel('gemini-embedding-001');
+const EMBEDDING_MODEL = google.embeddingModel('gemini-embedding-2-preview');
 
 // 👀 Needs Verification
 export async function embedText(text: string): Promise<number[]> {
+  // TODO: normalize embeddings
+  // https://ai.google.dev/gemini-api/docs/embeddings#quality-for-smaller-dimensions
   const { embedding } = await embed({
     model: EMBEDDING_MODEL,
     value: text,
@@ -24,6 +24,7 @@ interface SimilarNode {
 
 const TITLE_PROMPT = `Generate a concise, descriptive title (max 80 chars) for the following content. Return ONLY the title text, nothing else.`;
 
+// 👀 Needs Verification
 function buildTitleUserPrompt(
   rawContent: string,
   captureType: string,
@@ -39,15 +40,12 @@ function buildTitleUserPrompt(
   return prompt;
 }
 
-interface LlmProvider {
-  name: string;
-  model: Parameters<typeof generateText>[0]['model'];
-}
-
-const TITLE_PROVIDERS: LlmProvider[] = [
-  { name: 'google', model: google('gemini-2.0-flash') },
-  { name: 'openai', model: openai('gpt-4o-mini') },
-  { name: 'anthropic', model: anthropic('claude-3-5-haiku-latest') },
+// TODO: you need to run your own benchmarks
+const TITLE_MODELS = [
+  google('gemini-3-flash-preview'),
+  // TODO: add more backup models here
+  // minimax m2.7
+  // kimi 2.5
 ];
 
 const MAX_RETRIES = 3;
@@ -69,12 +67,12 @@ export async function generateTitle(
     similarNodes,
   );
 
-  for (const provider of TITLE_PROVIDERS) {
+  for (const provider of TITLE_MODELS) {
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
         // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
         const { text } = await generateText({
-          model: provider.model,
+          model: provider,
           system: TITLE_PROMPT,
           prompt: userPrompt,
           maxOutputTokens: 100,
@@ -83,7 +81,7 @@ export async function generateTitle(
         if (title.length > 0) return title;
       } catch (error) {
         console.error(
-          `Title generation failed (${provider.name}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
+          `Title generation failed (${provider.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
           error,
         );
         if (attempt < MAX_RETRIES - 1) {
@@ -93,7 +91,7 @@ export async function generateTitle(
       }
     }
     console.warn(
-      `All retries exhausted for ${provider.name}, trying next provider`,
+      `All retries exhausted for ${provider.modelId}, trying next provider`,
     );
   }
 

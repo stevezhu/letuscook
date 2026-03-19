@@ -26,8 +26,7 @@
     "@convex-dev/workos-authkit": "^0.1.7",
     "ai": "^6.0.116",
     "convex": "^1.33.1",
-    "convex-helpers": "^0.1.114",
-    "zod": "^4.3.6"
+    "convex-helpers": "^0.1.114"
   },
   "devDependencies": {
     "@types/node": "catalog:",
