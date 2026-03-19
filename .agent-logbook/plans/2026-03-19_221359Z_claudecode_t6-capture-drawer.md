@@ -183,27 +183,36 @@ claudecode Session Stats: 3d175654-b3f2-4ba9-8cd4-c1764b5277b8
 ========================================
 Models Used:  Main: claude-opus-4-6, claude-sonnet-4-6
               Subagents: claude-haiku-4-5-20251001
-----------------------------------------
+---
+
+---
+
 MAIN SESSION:
-  Input Tokens         84
-  Output Tokens        12,791
-  Cache Creation Input 534,305
-  Cache Read Input     3,504,761
-----------------------------------------
+Input Tokens 84
+Output Tokens 12,791
+Cache Creation Input 534,305
+Cache Read Input 3,504,761
+
+---
+
 SUBAGENTS (1 total):
-  Input Tokens         2,206
-  Output Tokens        8,505
-  Cache Creation Input 197,470
-  Cache Read Input     3,020,150
-----------------------------------------
+Input Tokens 2,206
+Output Tokens 8,505
+Cache Creation Input 197,470
+Cache Read Input 3,020,150
+
+---
+
 TOTAL USAGE:
-  Total Input Tokens   2,290
-  Total Output Tokens  21,296
-  Total Cache Creation 731,775
-  Total Cache Read     6,524,911
-----------------------------------------
-GRAND TOTAL TOKENS:  7,280,272
-========================================
+Total Input Tokens 2,290
+Total Output Tokens 21,296
+Total Cache Creation 731,775
+Total Cache Read 6,524,911
+
+---
+
+# GRAND TOTAL TOKENS: 7,280,272
+
 ```
 
 ## References
@@ -213,3 +222,4 @@ GRAND TOTAL TOKENS:  7,280,272
 - [Technical Plan](spec:63a17a79-84f1-47b6-9644-2f822ace8c50/44be7e7f-9362-4608-8f89-1633275f0edd)
 - [@lodev09/react-native-true-sheet](https://sheet.lodev09.com/)
 
+```
