@@ -4,7 +4,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   View,
 } from 'react-native';
 
@@ -38,9 +37,9 @@ function CaptureScreenInner() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={0}
     >
-      <Pressable className="flex-1 pt-safe" onPress={Keyboard.dismiss}>
+      <View className="flex-1 pt-safe">
         <RecentCapturesList />
-      </Pressable>
+      </View>
       <View className={keyboardVisible ? undefined : 'pb-20'}>
         <CaptureInput />
       </View>

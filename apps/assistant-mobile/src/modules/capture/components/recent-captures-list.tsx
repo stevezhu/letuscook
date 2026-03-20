@@ -113,6 +113,8 @@ function CaptureList({ items }: { items: CaptureItem[] }) {
       renderItem={({ item }) => <CaptureItemRow item={item} />}
       inverted
       contentContainerClassName="flex-grow justify-end"
+      keyboardDismissMode="interactive"
+      keyboardShouldPersistTaps="handled"
       ItemSeparatorComponent={() => <View className="bg-border mx-4 h-px" />}
     />
   );
