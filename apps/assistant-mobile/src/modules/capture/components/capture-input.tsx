@@ -54,7 +54,7 @@ export function CaptureInput() {
           value={text}
           onChangeText={setText}
           multiline
-          blurOnSubmit={false}
+          submitBehavior="submit"
           textAlignVertical="top"
         />
         <Button
