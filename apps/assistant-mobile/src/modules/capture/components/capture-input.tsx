@@ -3,7 +3,7 @@ import { Icon } from '@workspace/rn-reusables/components/icon';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { ArrowUp, Check } from 'lucide-react-native';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/auth-context.tsx';
@@ -22,19 +22,6 @@ export function CaptureInput() {
   const { signIn } = useAuth();
 
   const canSend = text.trim().length > 0 && !isPending;
-
-  const handleSend = useCallback(async () => {
-    const trimmed = text.trim();
-    if (!trimmed || isPending) return;
-
-    try {
-      await submit(trimmed, captureType);
-      setText('');
-      setShowSuccess(true);
-    } catch {
-      // Error handling — limit reached is handled by limitReached state
-    }
-  }, [text, captureType, isPending, submit]);
 
   useEffect(() => {
     if (!showSuccess) return;
@@ -67,7 +54,7 @@ export function CaptureInput() {
           value={text}
           onChangeText={setText}
           multiline
-          submitBehavior="submit"
+          blurOnSubmit={false}
           textAlignVertical="top"
         />
         <Button
@@ -77,7 +64,18 @@ export function CaptureInput() {
             canSend ? 'bg-primary' : 'bg-muted',
           )}
           disabled={!canSend}
-          onPress={handleSend}
+          onPress={async () => {
+            const trimmed = text.trim();
+            if (!trimmed || isPending) return;
+
+            try {
+              await submit(trimmed, captureType);
+              setText('');
+              setShowSuccess(true);
+            } catch {
+              // limit reached is handled by limitReached state
+            }
+          }}
           accessibilityLabel="Send capture"
         >
           {showSuccess ? (
