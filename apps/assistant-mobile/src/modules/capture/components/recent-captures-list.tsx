@@ -4,7 +4,7 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
 import { FlatList, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 import type { GuestCaptureWithState } from '../guest-capture-types.ts';
 import { useGuestCaptureStore } from '../use-guest-capture-store.ts';

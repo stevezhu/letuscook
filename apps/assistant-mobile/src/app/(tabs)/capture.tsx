@@ -1,34 +1,20 @@
-import { Suspense, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  View,
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, View } from 'react-native';
 
+import { DefaultSuspense } from '#components/default-suspense.tsx';
 import { CaptureInput } from '#modules/capture/components/capture-input.tsx';
 import { RecentCapturesList } from '#modules/capture/components/recent-captures-list.tsx';
 
-function useKeyboardVisible() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardWillShow', () =>
-      setVisible(true),
-    );
-    const hideSub = Keyboard.addListener('keyboardWillHide', () =>
-      setVisible(false),
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-  return visible;
+export default function CaptureTab() {
+  return (
+    <DefaultSuspense>
+      <CaptureScreen />
+    </DefaultSuspense>
+  );
 }
 
 // 👀 Needs Verification
-function CaptureScreenInner() {
+function CaptureScreen() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
@@ -47,16 +33,19 @@ function CaptureScreenInner() {
   );
 }
 
-export default function CaptureScreen() {
-  return (
-    <Suspense
-      fallback={
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
-      }
-    >
-      <CaptureScreenInner />
-    </Suspense>
-  );
+function useKeyboardVisible() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardWillShow', () =>
+      setVisible(true),
+    );
+    const hideSub = Keyboard.addListener('keyboardWillHide', () =>
+      setVisible(false),
+    );
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+  return visible;
 }

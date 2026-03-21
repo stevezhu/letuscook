@@ -8,9 +8,18 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
-export default function AccountIndex() {
+export default function AccountTab() {
+  return (
+    <DefaultSuspense>
+      <AccountScreen />
+    </DefaultSuspense>
+  );
+}
+
+function AccountScreen() {
   const { user, signOut } = useAuth();
   if (!user) {
     return <Redirect href="/" />;

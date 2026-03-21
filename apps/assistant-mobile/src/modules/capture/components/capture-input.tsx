@@ -6,7 +6,7 @@ import { ArrowUp, Check } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 import type { CaptureType } from '../guest-capture-types.ts';
 import { useCaptureSubmit } from '../use-capture-submit.ts';

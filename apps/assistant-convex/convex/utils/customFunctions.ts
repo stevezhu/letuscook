@@ -12,6 +12,7 @@ import {
   QueryCtx,
   MutationCtx,
 } from '#convex/_generated/server.js';
+import { authKit } from '#convex/auth.ts';
 
 /**
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
@@ -30,6 +31,7 @@ export type AuthCtx = {
 const authCustomCtx = customCtx<QueryCtx | MutationCtx, AuthCtx>(
   async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
+    console.log('identity', identity, await authKit.getAuthUser(ctx));
     if (!identity) throw new ConvexError('Unauthenticated');
     return {
       identity,
