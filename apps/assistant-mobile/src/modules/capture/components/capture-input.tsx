@@ -44,19 +44,19 @@ export function CaptureInput() {
 
   return (
     <View className="border-border border-t px-4 pb-2 pt-3">
+      <TextInput
+        ref={inputRef}
+        className="border-input bg-background text-foreground min-h-[40px] flex-1 rounded-2xl border px-4 py-2.5 text-base"
+        placeholder="What's on your mind?"
+        placeholderTextColor="#9ca3af"
+        value={text}
+        onChangeText={setText}
+        multiline
+        // submitBehavior="newline"
+        textAlignVertical="top"
+      />
       <CaptureTypeSelector value={captureType} onChange={setCaptureType} />
       <View className="mt-2 flex-row items-end gap-2">
-        <TextInput
-          ref={inputRef}
-          className="border-input bg-background text-foreground min-h-[40px] flex-1 rounded-2xl border px-4 py-2.5 text-base"
-          placeholder="What's on your mind?"
-          placeholderTextColor="#9ca3af"
-          value={text}
-          onChangeText={setText}
-          multiline
-          submitBehavior="submit"
-          textAlignVertical="top"
-        />
         <Button
           size="icon"
           className={cn(

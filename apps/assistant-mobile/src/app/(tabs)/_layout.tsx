@@ -3,6 +3,11 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
+export const unstable_settings = {
+  // Ensure any route can link back to `/`
+  initialRouteName: 'capture',
+};
+
 export default function TabsLayout() {
   const { isLoading, user } = useAuth();
   if (isLoading) {
@@ -19,7 +24,7 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="capture">
+      <NativeTabs.Trigger name="capture" disableAutomaticContentInsets>
         <NativeTabs.Trigger.Label>Capture</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="square.and.pencil" md="edit_square" />
       </NativeTabs.Trigger>

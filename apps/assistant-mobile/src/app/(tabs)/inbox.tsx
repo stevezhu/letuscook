@@ -22,7 +22,7 @@ export default function InboxTab() {
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <View className="bg-muted/50 px-4 py-2">
+    <View className="bg-muted px-4 py-2">
       <Text className="text-muted-foreground text-xs font-semibold uppercase">
         {title}
       </Text>
@@ -127,7 +127,6 @@ export function InboxScreen() {
             />
           )}
           stickySectionHeadersEnabled
-          contentContainerClassName="pb-safe"
         />
       )}
     </View>
