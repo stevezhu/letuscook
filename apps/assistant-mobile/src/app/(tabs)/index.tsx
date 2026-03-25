@@ -7,27 +7,35 @@ import {
   CardTitle,
 } from '@workspace/rn-reusables/components/card';
 import { Text } from '@workspace/rn-reusables/components/text';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { DefaultActivityView } from '#components/default-activity-view.tsx';
+import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
-export default function HomeScreen() {
-  const { loading, user, signIn } = useAuth();
+export default function HomeTab() {
+  return (
+    <DefaultSuspense>
+      <HomeScreen />
+    </DefaultSuspense>
+  );
+}
 
-  if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+function HomeScreen() {
+  const { isLoading, user, signIn } = useAuth();
+
+  if (isLoading) {
+    return <DefaultActivityView />;
   }
 
   return (
     <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      automaticallyAdjustsScrollIndicatorInsets={true}
       className="flex-1 bg-background"
       contentContainerClassName="p-6"
     >
-      <View className="p-safe-t flex-col gap-8">
+      <View className="flex-col gap-8">
         <View className="flex-col gap-2">
           <Text className="text-muted-foreground text-lg font-medium">
             Welcome back,

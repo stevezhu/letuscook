@@ -10,7 +10,8 @@
     "_generated/",
     "*.gen.ts",
     "*.gen.d.ts",
-    "uniwind-types.d.ts"
+    "uniwind-types.d.ts",
+    "storybook.requires.ts"
   ],
   "overrides": [
     {

@@ -6,7 +6,7 @@ import { ArrowUp, Check } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { TextInput, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 import type { CaptureType } from '../guest-capture-types.ts';
 import { useCaptureSubmit } from '../use-capture-submit.ts';
@@ -31,7 +31,7 @@ export function CaptureInput() {
 
   if (limitReached) {
     return (
-      <View className="border-border items-center gap-3 border-t px-4 py-4">
+      <View className="border-border items-center gap-3 border-t px-4 py-4 rounded-2xl">
         <Text className="text-muted-foreground text-center text-sm">
           Sign in to continue capturing
         </Text>
@@ -43,20 +43,20 @@ export function CaptureInput() {
   }
 
   return (
-    <View className="border-border border-t px-4 pb-2 pt-3">
+    <View className="border-border border-t px-4 pb-2 pt-3 bg-red-500 radius">
+      <TextInput
+        ref={inputRef}
+        className="border-input bg-background text-foreground min-h-[40px] flex-1 rounded-2xl border px-4 py-2.5 text-base"
+        placeholder="What's on your mind?"
+        placeholderTextColor="#9ca3af"
+        value={text}
+        onChangeText={setText}
+        multiline
+        // submitBehavior="newline"
+        textAlignVertical="top"
+      />
       <CaptureTypeSelector value={captureType} onChange={setCaptureType} />
       <View className="mt-2 flex-row items-end gap-2">
-        <TextInput
-          ref={inputRef}
-          className="border-input bg-background text-foreground min-h-[40px] flex-1 rounded-2xl border px-4 py-2.5 text-base"
-          placeholder="What's on your mind?"
-          placeholderTextColor="#9ca3af"
-          value={text}
-          onChangeText={setText}
-          multiline
-          submitBehavior="submit"
-          textAlignVertical="top"
-        />
         <Button
           size="icon"
           className={cn(

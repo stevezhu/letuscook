@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import { useCallback } from 'react';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 import type { CaptureType } from './guest-capture-types.ts';
 import { GUEST_CAPTURE_LIMIT } from './guest-capture-types.ts';

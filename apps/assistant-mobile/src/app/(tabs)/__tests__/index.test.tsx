@@ -1,7 +1,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { render } from '@testing-library/react-native';
 
-import * as authContext from '#modules/auth/auth-context.tsx';
+import * as authContext from '#modules/auth/react/auth-provider.tsx';
 
 import HomeScreen from '../index.tsx';
 
@@ -19,7 +19,10 @@ jest.mock<typeof authContext>('#modules/auth/auth-context.tsx', () => {
         lastName: 'User',
         profilePictureUrl: 'https://test.com/profile.png',
       },
-      loading: false,
+      isLoading: false,
+      getAccessToken: jest
+        .fn<authContext.AuthContextValue['getAccessToken']>()
+        .mockImplementation(async () => 'test-token'),
       signIn: jest
         .fn<authContext.AuthContextValue['signIn']>()
         .mockImplementation(async () => ({ success: true })),
