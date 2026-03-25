@@ -31,7 +31,7 @@ export function CaptureInput() {
 
   if (limitReached) {
     return (
-      <View className="border-border items-center gap-3 border-t px-4 py-4">
+      <View className="border-border items-center gap-3 border-t px-4 py-4 rounded-2xl">
         <Text className="text-muted-foreground text-center text-sm">
           Sign in to continue capturing
         </Text>
@@ -43,7 +43,7 @@ export function CaptureInput() {
   }
 
   return (
-    <View className="border-border border-t px-4 pb-2 pt-3">
+    <View className="border-border border-t px-4 pb-2 pt-3 bg-red-500 radius">
       <TextInput
         ref={inputRef}
         className="border-input bg-background text-foreground min-h-[40px] flex-1 rounded-2xl border px-4 py-2.5 text-base"

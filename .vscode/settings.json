@@ -11,6 +11,7 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "json.schemaDownload.enable": true,
+  "oxc.enable": true,
   "oxc.typeAware": true,
   "tailwindCSS.classAttributes": [
     "class",
