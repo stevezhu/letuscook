@@ -199,10 +199,7 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
               {links.map((link) => (
                 <View
                   key={link.id}
-                  className="
-                    flex-row items-center gap-1 rounded-full bg-purple-100 px-3
-                    py-1
-                  "
+                  className="flex-row items-center gap-1 rounded-full bg-purple-100 px-3 py-1"
                 >
                   <Text className="text-sm text-purple-800">@{link.title}</Text>
                   {link.suggested && (

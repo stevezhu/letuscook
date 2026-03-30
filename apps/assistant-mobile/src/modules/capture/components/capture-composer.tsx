@@ -87,7 +87,7 @@ export function CaptureComposerControls({
 
   const canSend = !isPending && trimmedText.length > 0;
   return (
-    <View className="flex-row align-end justify-between gap-2">
+    <View className="align-end flex-row justify-between gap-2">
       <CaptureTypeSegmentedControl
         value={captureType}
         onChange={setCaptureType}
@@ -142,7 +142,7 @@ function CaptureTypeSegmentedControl({
 }) {
   return (
     <StyledSegmentedControl
-      className="flex-1 h-full"
+      className="h-full flex-1"
       values={CAPTURE_TYPES.map((item) => item.label)}
       selectedIndex={CAPTURE_TYPES_ORDER[value]}
       onChange={(event) => {

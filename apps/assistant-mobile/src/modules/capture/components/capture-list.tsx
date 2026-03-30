@@ -36,11 +36,11 @@ function CaptureItemSpread({
     <View>
       <StyledGlassView
         isInteractive
-        className="px-4 py-3 rounded-lg rounded-bl-none flex-col gap-2"
+        className="flex-col gap-2 rounded-lg rounded-bl-none px-4 py-3"
       >
         <Text className="text-primary">{item.rawContent}</Text>
         <Text
-          className="text-xs text-muted-foreground capitalize bg-muted rounded-full px-2 py-0.5 self-start"
+          className="self-start rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground capitalize"
           variant="muted"
         >
           {item.captureType}
