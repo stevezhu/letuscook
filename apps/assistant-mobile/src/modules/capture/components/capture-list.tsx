@@ -57,7 +57,6 @@ const relativeTimeFormat = new Intl.RelativeTimeFormat('en', {
   numeric: 'auto',
 });
 function formatRelativeTime(timestamp: number): string {
-  console.log('timestamp', timestamp, new Date(timestamp).toISOString());
   const diff = Date.now() - timestamp;
   const seconds = Math.floor(diff / 1000);
   if (seconds < 60) {

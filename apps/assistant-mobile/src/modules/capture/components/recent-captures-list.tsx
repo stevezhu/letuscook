@@ -1,3 +1,5 @@
+// TODO: port the rest of this over to CaptureList
+
 import { convexQuery } from '@convex-dev/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { Text } from '@workspace/rn-reusables/components/text';

@@ -23,6 +23,9 @@ const config = flow(
     withUniwindConfig(config, {
       cssEntryFile: './src/main.css',
     }),
-  (config: MetroConfig) => withStorybook(config),
+  (config: MetroConfig) =>
+    withStorybook(config, {
+      enabled: process.env['EXPO_PUBLIC_STORYBOOK_ENABLED'] === 'true',
+    }),
 )(defaultConfig) as MetroConfig;
 export default config;

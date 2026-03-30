@@ -1,6 +1,7 @@
 import { defineConfig, type OxlintConfig } from 'oxlint';
 
 export default defineConfig<OxlintConfig>({
+  ignorePatterns: ['storybook.requires.ts'],
   categories: {
     correctness: 'error',
     perf: 'error',
