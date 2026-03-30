@@ -2,7 +2,6 @@ import '#main.css';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConvexReactClient } from 'convex/react';
-import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';

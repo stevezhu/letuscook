@@ -1,3 +1,4 @@
+import '@workspace/intl-polyfill';
 import { digest } from 'expo-crypto';
 import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 
@@ -10,5 +11,3 @@ if (!globalThis.crypto.subtle) {
     enumerable: true,
   });
 }
-
-import '@workspace/intl-polyfill';

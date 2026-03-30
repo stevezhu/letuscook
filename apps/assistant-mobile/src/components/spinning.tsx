@@ -1,9 +1,7 @@
-import React, { ComponentProps, ComponentType, useEffect } from 'react';
-import type { ViewProps } from 'react-native';
+import { useEffect } from 'react';
 import Animated, {
   cancelAnimation,
   Easing,
-  type AnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -11,63 +9,44 @@ import Animated, {
 } from 'react-native-reanimated';
 
 /**
- * A Higher-Order Component that adds an infinite spin animation to any component.
- * It triggers the animation when 'animate-spin' is present in the className.
+ * An Animated.View that spins infinitely when 'animate-spin' is in className.
  *
  * @example
- * const SpinningView = withSpin(View);
  * <SpinningView className="animate-spin">...</SpinningView>
  */
-export function withSpin<T extends { className?: string }>(
-  Component: ComponentType<T>,
+// 👀 Needs Verification
+export function SpinningView(
+  props: React.ComponentProps<typeof Animated.View>,
 ) {
-  const AnimatedComponent = Animated.createAnimatedComponent(Component);
+  const { className } = props;
+  const rotation = useSharedValue(0);
+  const isSpinning =
+    typeof className === 'string'
+      ? className.includes('animate-spin')
+      : className?.get()?.includes('animate-spin');
 
-  return function SpinningComponent(
-    props: ComponentProps<typeof AnimatedComponent>,
-  ) {
-    const { className } = props;
-    const rotation = useSharedValue(0);
-    const isSpinning = className?.includes('animate-spin');
+  useEffect(() => {
+    if (isSpinning) {
+      rotation.value = withRepeat(
+        withTiming(360, {
+          duration: 1000,
+          easing: Easing.linear,
+        }),
+        -1,
+      );
+    } else {
+      cancelAnimation(rotation);
+      rotation.value = 0;
+    }
 
-    useEffect(() => {
-      if (isSpinning) {
-        rotation.value = withRepeat(
-          withTiming(360, {
-            duration: 1000,
-            easing: Easing.linear,
-          }),
-          -1,
-        );
-      } else {
-        cancelAnimation(rotation);
-        rotation.value = 0;
-      }
+    return () => cancelAnimation(rotation);
+  }, [isSpinning, rotation]);
 
-      return () => cancelAnimation(rotation);
-    }, [isSpinning, rotation]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
 
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [{ rotate: `${rotation.value}deg` }],
-      };
-    });
-
-    return (
-      <AnimatedComponent
-        {...props}
-        // style={[props.style, animatedStyle]}
-      />
-    );
-  };
+  return <Animated.View {...props} style={[props.style, animatedStyle]} />;
 }
 
-/**
- * A pre-wrapped Animated.View that supports 'animate-spin' in className.
- */
-export const SpinningView = withSpin(Animated.View);
-
-/**
- * Alias for SpinningView to maintain compatibility.
- */
 export { SpinningView as Spinning };

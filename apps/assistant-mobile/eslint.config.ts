@@ -3,7 +3,7 @@ import oxlint from 'eslint-plugin-oxlint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist/', '.expo/']),
+  globalIgnores(['dist/', '.expo/', '.rnstorybook/storybook.requires.ts']),
   {
     languageOptions: {
       parserOptions: { tsconfigRootDir: import.meta.dirname },
