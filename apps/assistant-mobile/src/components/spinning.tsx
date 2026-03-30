@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { ComponentProps, ComponentType, useEffect } from 'react';
 import type { ViewProps } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
+  type AnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -17,15 +18,15 @@ import Animated, {
  * const SpinningView = withSpin(View);
  * <SpinningView className="animate-spin">...</SpinningView>
  */
-export function withSpin<T extends object>(Component: React.ComponentType<T>) {
-  const AnimatedComponent = Animated.createAnimatedComponent(
-    Component as React.ComponentType<any>,
-  );
+export function withSpin<T extends { className?: string }>(
+  Component: ComponentType<T>,
+) {
+  const AnimatedComponent = Animated.createAnimatedComponent(Component);
 
   return function SpinningComponent(
-    props: T & { className?: string } & ViewProps,
+    props: ComponentProps<typeof AnimatedComponent>,
   ) {
-    const { className, ...rest } = props;
+    const { className } = props;
     const rotation = useSharedValue(0);
     const isSpinning = className?.includes('animate-spin');
 
@@ -54,9 +55,8 @@ export function withSpin<T extends object>(Component: React.ComponentType<T>) {
 
     return (
       <AnimatedComponent
-        {...(rest as any)}
-        className={className}
-        style={[props.style, animatedStyle]}
+        {...props}
+        // style={[props.style, animatedStyle]}
       />
     );
   };
