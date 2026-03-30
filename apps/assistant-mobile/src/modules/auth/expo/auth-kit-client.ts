@@ -15,33 +15,11 @@ import { WorkOS } from '@workos-inc/node';
 import * as AuthSession from 'expo-auth-session';
 import * as SecureStore from 'expo-secure-store';
 
+import { User, toUser } from './user.ts';
+import { parseJwtPayload } from './utils.ts';
+
 // Environment variables (set in .env or app.config.js)
 const PKCE_TTL_MS = 10 * 60 * 1000; // 10 minutes
-
-export type User = {
-  id: string;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  profilePictureUrl: string | null;
-};
-
-/** Map WorkOS user response to our User type */
-function toUser(workosUser: {
-  id: string;
-  email: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  profilePictureUrl?: string | null;
-}): User {
-  return {
-    id: workosUser.id,
-    email: workosUser.email,
-    firstName: workosUser.firstName ?? null,
-    lastName: workosUser.lastName ?? null,
-    profilePictureUrl: workosUser.profilePictureUrl ?? null,
-  };
-}
 
 type StoredSession = {
   accessToken: string;
@@ -54,22 +32,18 @@ type PkceState = {
   expiresAt: number;
 };
 
-/**
- * Parse JWT payload without verification (for reading claims only).
- */
-function parseJwtPayload(token: string): Record<string, unknown> {
-  const base64 = token.split('.')[1];
-  if (!base64) {
-    throw new Error('Invalid JWT token');
-  }
-  // Handle URL-safe base64
-  const normalized = base64.replace(/-/g, '+').replace(/_/g, '/');
-  return JSON.parse(atob(normalized));
-}
-
-export class ExpoAuthClient {
+export class AuthKitClient {
+  /**
+   * Key for storing the session data in the secure store.
+   */
   private sessionKey: string;
+  /**
+   * Key for storing the PKCE state in the secure store.
+   */
   private pkceKey: string;
+  /**
+   * WorkOS client instance.
+   */
   private workos: WorkOS;
 
   constructor({
@@ -97,7 +71,7 @@ export class ExpoAuthClient {
     try {
       const session: StoredSession = JSON.parse(sessionData);
       const payload = parseJwtPayload(session.accessToken);
-      return (payload['sid'] as string) ?? null;
+      return typeof payload['sid'] === 'string' ? payload['sid'] : null;
     } catch {
       return null;
     }
@@ -124,10 +98,7 @@ export class ExpoAuthClient {
   }
 
   getRedirectUri({ path }: { path?: string } = {}): string {
-    return AuthSession.makeRedirectUri({
-      isTripleSlashed: true,
-      path,
-    });
+    return AuthSession.makeRedirectUri({ isTripleSlashed: true, path });
   }
 
   /**

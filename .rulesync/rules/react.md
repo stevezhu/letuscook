@@ -64,7 +64,63 @@ function UserProfile({ userId }: { userId: string }) {
 | `useSuspenseInfiniteQuery` | Paginated / infinite scroll data |
 | `useSuspenseQueries`       | Multiple parallel queries        |
 
-## Error Boundaries: Use TanStack Router's Built-in Error Handling
+## Convex: Use Inline Queries and Mutations
+
+Use `convexQuery` and `useConvexMutation` directly at the call site. Do not create dedicated hook files that just wrap a single Convex API call.
+
+### Why?
+
+- The TanStack Query + Convex integration already provides clean one-liners
+- Wrapper hooks that only call `useMutation({ mutationFn: useConvexMutation(api.x.y) })` add files without value
+- Only create a dedicated hook when there's meaningful extra logic (optimistic updates, chained calls, merging multiple data sources, etc.)
+
+### Examples
+
+```typescript
+// ✅ DO: Use inline at the call site
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
+import { api } from 'assistant-convex/convex/_generated/api';
+
+function InboxItem({ captureId, suggestionId }) {
+  const { mutate: accept, isPending } = useMutation({
+    mutationFn: useConvexMutation(api.captures.acceptSuggestion),
+  });
+
+  const { data } = useQuery(
+    convexQuery(api.search.searchNodesForLinking, { query }),
+  );
+
+  return <Button onPress={() => accept({ captureId, suggestionId })} />;
+}
+```
+
+```typescript
+// ❌ DON'T: Create a file just to wrap a single Convex call
+// use-accept-suggestion.ts
+export function useAcceptSuggestion() {
+  return useMutation({
+    mutationFn: useConvexMutation(api.captures.acceptSuggestion),
+  });
+}
+```
+
+```typescript
+// ✅ DO: Create a dedicated hook when there's real logic
+// use-inbox-captures.ts — merges server + guest data, groups by date
+export function useInboxCaptures() {
+  const { user } = useAuth();
+  const { data: serverCaptures } = useQuery(
+    convexQuery(api.captures.getInboxCaptures, user ? {} : 'skip'),
+  );
+  const { captures: guestCaptures } = useGuestCaptureStore();
+  // ... merge, group by date, return sections
+}
+```
+
+## Error Boundaries: Use TanStack Router's Built-in Error Handling (Web Only)
+
+> **Note:** This section applies to **web** (`assistant-web`) only. Mobile (`assistant-mobile`) uses Expo Router, not TanStack Router.
 
 TanStack Router provides route-level error and pending boundaries. Rely on these defaults instead of adding custom `ErrorBoundary` or `Suspense` wrappers around individual components.
 

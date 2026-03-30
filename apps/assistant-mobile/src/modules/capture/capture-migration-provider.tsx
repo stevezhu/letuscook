@@ -3,7 +3,7 @@ import { useConvexAuth } from 'convex/react';
 import React, { type ReactNode, Suspense, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 import { useGuestCaptureStore } from './use-guest-capture-store.ts';
 import { useMigrateGuestCaptures } from './use-migrate-guest-captures.ts';

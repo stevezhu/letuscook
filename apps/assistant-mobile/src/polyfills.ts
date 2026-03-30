@@ -1,3 +1,4 @@
+import '@workspace/intl-polyfill';
 import { digest } from 'expo-crypto';
 import { polyfillWebCrypto } from 'expo-standard-web-crypto';
 

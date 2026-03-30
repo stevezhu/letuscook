@@ -1,11 +1,11 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { ActivityIndicator, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function TabsLayout() {
-  const { user, loading } = useAuth();
-  if (loading) {
+  const { isLoading, user } = useAuth();
+  if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" />
@@ -14,14 +14,22 @@ export default function TabsLayout() {
   }
 
   return (
-    <NativeTabs>
+    <NativeTabs backgroundColor="red">
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="capture">
+      <NativeTabs.Trigger
+        name="capture"
+        disableAutomaticContentInsets
+        disableScrollToTop // disable scroll to top because we need the ui to scroll to the bottom
+      >
         <NativeTabs.Trigger.Label>Capture</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="square.and.pencil" md="edit_square" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="inbox">
+        <NativeTabs.Trigger.Label>Inbox</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="tray.fill" md="inbox" />
       </NativeTabs.Trigger>
       {user !== null && (
         <NativeTabs.Trigger name="account">

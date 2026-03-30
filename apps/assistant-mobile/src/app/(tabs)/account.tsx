@@ -8,9 +8,18 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import { useAuth } from '#modules/auth/auth-context.tsx';
+import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
-export default function AccountIndex() {
+export default function AccountTab() {
+  return (
+    <DefaultSuspense>
+      <AccountScreen />
+    </DefaultSuspense>
+  );
+}
+
+function AccountScreen() {
   const { user, signOut } = useAuth();
   if (!user) {
     return <Redirect href="/" />;
@@ -33,7 +42,7 @@ export default function AccountIndex() {
         <View className="flex-col items-center justify-center gap-4">
           <Avatar
             alt={`${fullName}'s Avatar`}
-            className="w-24 h-24 shadow-lg shadow-black/10"
+            className="h-24 w-24 shadow-lg shadow-black/10"
           >
             <AvatarImage
               source={{ uri: user.profilePictureUrl ?? undefined }}
@@ -43,22 +52,25 @@ export default function AccountIndex() {
             </AvatarFallback>
           </Avatar>
           <View className="items-center gap-1">
-            <Text className="text-foreground text-3xl font-bold">
+            <Text className="text-3xl font-bold text-foreground">
               {fullName}
             </Text>
-            <Text className="text-muted-foreground text-lg">{user.email}</Text>
+            <Text className="text-lg text-muted-foreground">{user.email}</Text>
           </View>
         </View>
 
         <View className="flex-col gap-4">
           <Button
             variant="outline"
-            className="border-destructive active:bg-destructive/10"
+            className="
+              border-destructive
+              active:bg-destructive/10
+            "
             onPress={() => signOut()}
           >
-            <Text className="text-destructive font-semibold">Sign Out</Text>
+            <Text className="font-semibold text-destructive">Sign Out</Text>
           </Button>
-          <Text className="text-muted-foreground text-xs text-center">
+          <Text className="text-center text-xs text-muted-foreground">
             Signed in as {user.email}
           </Text>
         </View>

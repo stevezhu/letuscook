@@ -1,32 +1,19 @@
 import '#main.css';
 import { ConvexQueryClient } from '@convex-dev/react-query';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ConvexProviderWithAuth, ConvexReactClient } from 'convex/react';
-import { once } from 'es-toolkit';
+import { ConvexReactClient } from 'convex/react';
 import { Stack } from 'expo-router';
-import React, { useCallback } from 'react';
-import { useColorScheme } from 'react-native';
-import {
-  SafeAreaListener,
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
-import { Uniwind } from 'uniwind';
+import React from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
-import { AnimatedSplashOverlay } from '#components/animated-icon.tsx';
+import StorybookUIRoot from '#.rnstorybook/index.ts';
+import { AppAuthProvider } from '#components/providers/app-auth-provider.tsx';
+import { AppReactQueryDevtools } from '#components/providers/app-react-query-devtools.tsx';
+import { AppSafeAreaProvider } from '#components/providers/app-safe-area-provider.tsx';
+import { AppThemeProvider } from '#components/providers/app-theme-provider.tsx';
 import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.ts';
-import { createAuthProvider, useAuth } from '#modules/auth/auth-context.tsx';
-import { ExpoAuthClient } from '#modules/auth/auth.ts';
+import { AuthKitClient } from '#modules/auth/expo/auth-kit-client.ts';
 import { CaptureMigrationProvider } from '#modules/capture/capture-migration-provider.tsx';
-
-export const unstable_settings = {
-  initialRouteName: '(tabs)',
-  anchor: '(tabs)',
-};
 
 const convex = new ConvexReactClient(CONVEX_URL, {
   unsavedChangesWarning: false,
@@ -42,69 +29,56 @@ const queryClient = new QueryClient({
 });
 convexQueryClient.connect(queryClient);
 
-const authClient = once(
-  () =>
-    new ExpoAuthClient({
-      clientId: WORKOS_CLIENT_ID,
-      sessionKey: 'workos_session',
-      pkceKey: 'workos_pkce',
-    }),
-);
-
-const getAuthProvider = once(() =>
-  createAuthProvider({ authClient: authClient() }),
-);
-
-const getUseConvexAuth = once(() => {
-  return function useConvexAuth() {
-    const { user, loading } = useAuth();
-    const fetchAccessToken = useCallback(
-      async (_: {
-        // TODO: not supported for now
-        forceRefreshToken: boolean;
-      }) => {
-        return await authClient().getAccessToken();
-      },
-      [],
-    );
-    return { isLoading: loading, isAuthenticated: !!user, fetchAccessToken };
-  };
+const authKitClient = new AuthKitClient({
+  clientId: WORKOS_CLIENT_ID,
+  sessionKey: 'workos_session',
+  pkceKey: 'workos_pkce',
 });
 
-export default function RootLayout() {
-  const AuthProvider = getAuthProvider();
-  const useConvexAuth = getUseConvexAuth();
-  const colorScheme = useColorScheme();
+function RootLayout() {
+  // TODO: add top level suspense
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ConvexProviderWithAuth client={convex} useAuth={useConvexAuth}>
-          {/*
+      <AppAuthProvider authKitClient={authKitClient} convex={convex}>
+        {/*
             CaptureMigrationProvider is placed inside ConvexProviderWithAuth
             so that it has access to both authentication state and the Convex client.
             It wraps the UI to passively detect sign-in events and trigger
             the guest capture migration process without blocking rendering.
           */}
-          <CaptureMigrationProvider>
-            <ThemeProvider
-              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-            >
-              <SafeAreaProvider>
-                <SafeAreaListener
-                  onChange={({ insets }) => {
-                    Uniwind.updateInsets(insets);
-                  }}
-                >
-                  <AnimatedSplashOverlay />
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="(tabs)" />
-                  </Stack>
-                </SafeAreaListener>
-              </SafeAreaProvider>
-            </ThemeProvider>
-          </CaptureMigrationProvider>
-        </ConvexProviderWithAuth>
-      </AuthProvider>
+        <CaptureMigrationProvider>
+          <AppThemeProvider>
+            <KeyboardProvider>
+              <AppSafeAreaProvider>
+                {/* TODO: this isn't needed, but just kept here as a reference for now */}
+                {/* <AnimatedSplashOverlay /> */}
+                <RootLayoutContent />
+              </AppSafeAreaProvider>
+            </KeyboardProvider>
+          </AppThemeProvider>
+        </CaptureMigrationProvider>
+      </AppAuthProvider>
+      <AppReactQueryDevtools queryClient={queryClient} />
     </QueryClientProvider>
   );
 }
+
+function RootLayoutContent() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="review/[captureId]"
+        options={{
+          headerShown: true,
+          presentation: 'modal',
+        }}
+      />
+    </Stack>
+  );
+}
+
+let App = RootLayout;
+if (process.env['EXPO_PUBLIC_STORYBOOK_ENABLED'] === 'true') {
+  App = StorybookUIRoot;
+}
+export default App;

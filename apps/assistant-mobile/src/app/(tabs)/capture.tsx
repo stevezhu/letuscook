@@ -1,62 +1,104 @@
-import { Suspense, useEffect, useState } from 'react';
+import { convexQuery } from '@convex-dev/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { api } from 'assistant-convex/convex/_generated/api';
+import { useId, useMemo, useState } from 'react';
+import { KeyboardGestureArea } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCSSVariable } from 'uniwind';
+
+import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { StyledKeyboardStickyView } from '#components/styled.ts';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import {
-  ActivityIndicator,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  View,
-} from 'react-native';
+  CaptureComposer,
+  CaptureComposerControls,
+  CaptureComposerTextInput,
+} from '#modules/capture/components/capture-composer.tsx';
+import {
+  CaptureItemData,
+  CaptureList,
+} from '#modules/capture/components/capture-list.tsx';
+import { useCaptureSubmit } from '#modules/capture/use-capture-submit.ts';
+import { useGuestCaptureStore } from '#modules/capture/use-guest-capture-store.ts';
 
-import { CaptureInput } from '#modules/capture/components/capture-input.tsx';
-import { RecentCapturesList } from '#modules/capture/components/recent-captures-list.tsx';
-
-function useKeyboardVisible() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardWillShow', () =>
-      setVisible(true),
-    );
-    const hideSub = Keyboard.addListener('keyboardWillHide', () =>
-      setVisible(false),
-    );
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-  return visible;
-}
-
-// 👀 Needs Verification
-function CaptureScreenInner() {
-  const keyboardVisible = useKeyboardVisible();
-
+export default function CaptureTab() {
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={0}
-    >
-      <View className="flex-1 pt-safe">
-        <RecentCapturesList />
-      </View>
-      <View className={keyboardVisible ? undefined : 'pb-20'}>
-        <CaptureInput />
-      </View>
-    </KeyboardAvoidingView>
+    <DefaultSuspense>
+      <CaptureScreen />
+    </DefaultSuspense>
   );
 }
 
-export default function CaptureScreen() {
+const TEXT_HEIGHT = 101;
+
+// 👀 Needs Verification
+function CaptureScreen() {
+  const textInputNativeId = useId();
+  const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
+  const { bottom } = useSafeAreaInsets();
+  const spacing = useCSSVariable('--spacing') as number;
+  const { submit, isPending } = useCaptureSubmit();
+  const { user } = useAuth();
+  const { data: serverCaptures } = useQuery(
+    convexQuery(api.captures.getRecentCaptures, user ? { limit: 20 } : 'skip'),
+  );
+  const { captures: guestCaptures } = useGuestCaptureStore();
+
+  const items: CaptureItemData[] = useMemo(() => {
+    if (user) {
+      return (serverCaptures ?? []).map((c) => ({
+        id: c._id,
+        rawContent: c.rawContent,
+        capturedAt: c.capturedAt,
+        captureType: c.captureType,
+      }));
+    }
+    return [...guestCaptures]
+      .sort((a, b) => b.capturedAt - a.capturedAt)
+      .map((c) => ({
+        id: c.id,
+        rawContent: c.rawContent,
+        capturedAt: c.capturedAt,
+        captureType: c.captureType,
+      }));
+  }, [user, serverCaptures, guestCaptures]);
+
   return (
-    <Suspense
-      fallback={
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
-      }
+    <KeyboardGestureArea
+      interpolator="ios"
+      offset={inputHeight}
+      style={{ flex: 1, justifyContent: 'flex-end' }}
+      textInputNativeID={textInputNativeId}
     >
-      <CaptureScreenInner />
-    </Suspense>
+      <CaptureList
+        data={items}
+        estimatedItemSize={80}
+        contentContainerStyle={{
+          paddingBottom: TEXT_HEIGHT + spacing * 2,
+        }}
+      />
+      <StyledKeyboardStickyView
+        className="absolute w-full px-2"
+        offset={{ opened: bottom }}
+        style={{
+          minHeight: TEXT_HEIGHT,
+          marginBottom: bottom + spacing * 2,
+        }}
+      >
+        <CaptureComposer
+          isPending={isPending}
+          onLayout={(e) => {
+            setInputHeight(e.nativeEvent.layout.height);
+          }}
+        >
+          <CaptureComposerTextInput />
+          <CaptureComposerControls
+            onSubmit={async ({ value, captureType }) => {
+              await submit(value, captureType);
+            }}
+          />
+        </CaptureComposer>
+      </StyledKeyboardStickyView>
+    </KeyboardGestureArea>
   );
 }

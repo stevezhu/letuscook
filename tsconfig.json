@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "module": "node20",
-    "moduleResolution": "node16"
+    "moduleResolution": "node16",
+    "verbatimModuleSyntax": true
   }
 }

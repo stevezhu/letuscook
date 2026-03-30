@@ -12,6 +12,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const apiClient = useApiClient();
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   const { data } = useSuspenseQuery({
     queryKey: ['example', 'test'],
     queryFn: () => apiClient.example.test(),

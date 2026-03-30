@@ -1,9 +1,10 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll.oxc": "explicit"
+    "source.format.oxc": "always", // run formatter first
+    "source.fixAll.oxc": "always" // run lint fixes after
   },
   "editor.defaultFormatter": "oxc.oxc-vscode",
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.tabSize": 2,
   "files.associations": {
     ".dev.vars": "properties"
@@ -11,7 +12,6 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "json.schemaDownload.enable": true,
-  "oxc.typeAware": true,
   "tailwindCSS.classAttributes": [
     "class",
     "className",

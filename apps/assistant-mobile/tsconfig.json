@@ -5,7 +5,8 @@
     "src/**/*",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "uniwind-types.d.ts"
+    "uniwind-types.d.ts",
+    ".rnstorybook/**/*"
   ],
   "exclude": ["metro.config.ts"],
   "references": [{ "path": "./tsconfig.metro.json" }],
@@ -23,6 +24,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    "lib": ["ESNext"],
     "target": "esnext",
     "preserveWatchOutput": true
   }
