@@ -78,10 +78,6 @@ function RootLayoutContent() {
 }
 
 let App = RootLayout;
-console.log(
-  'process.env.EXPO_PUBLIC_STORYBOOK_ENABLED',
-  process.env['EXPO_PUBLIC_STORYBOOK_ENABLED'],
-);
 if (process.env['EXPO_PUBLIC_STORYBOOK_ENABLED'] === 'true') {
   App = StorybookUIRoot;
 }
