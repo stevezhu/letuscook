@@ -42,6 +42,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    items: MOCK_CAPTURES,
+    data: MOCK_CAPTURES,
   },
 };

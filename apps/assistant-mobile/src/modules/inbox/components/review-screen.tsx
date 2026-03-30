@@ -156,18 +156,18 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
         <View className="flex-row items-center gap-2">
           <StatePill state={capture.captureState as CaptureState} />
           {suggestionData?.suggestor && (
-            <Text className="text-muted-foreground text-xs">
+            <Text className="text-xs text-muted-foreground">
               Suggested by {suggestionData.suggestor.displayName ?? 'CookBot'}
             </Text>
           )}
         </View>
 
         <View className="gap-2">
-          <Text className="text-muted-foreground text-xs font-semibold uppercase">
+          <Text className="text-xs font-semibold text-muted-foreground uppercase">
             Title
           </Text>
           <TextInput
-            className="border-border text-foreground rounded-lg border px-3 py-2 text-base"
+            className="rounded-lg border border-border px-3 py-2 text-base text-foreground"
             value={title}
             onChangeText={setTitle}
             placeholder="Enter a title..."
@@ -176,11 +176,11 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
         </View>
 
         <View className="gap-2">
-          <Text className="text-muted-foreground text-xs font-semibold uppercase">
+          <Text className="text-xs font-semibold text-muted-foreground uppercase">
             Content
           </Text>
           <TextInput
-            className="border-border text-foreground min-h-[120px] rounded-lg border px-3 py-2 text-base"
+            className="min-h-[120px] rounded-lg border border-border px-3 py-2 text-base text-foreground"
             value={content}
             onChangeText={setContent}
             placeholder="Content..."
@@ -192,14 +192,17 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
 
         {links.length > 0 && (
           <View className="gap-2">
-            <Text className="text-muted-foreground text-xs font-semibold uppercase">
+            <Text className="text-xs font-semibold text-muted-foreground uppercase">
               Links
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {links.map((link) => (
                 <View
                   key={link.id}
-                  className="flex-row items-center gap-1 rounded-full bg-purple-100 px-3 py-1"
+                  className="
+                    flex-row items-center gap-1 rounded-full bg-purple-100 px-3
+                    py-1
+                  "
                 >
                   <Text className="text-sm text-purple-800">@{link.title}</Text>
                   {link.suggested && (
@@ -221,7 +224,7 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
         )}
       </ScrollView>
 
-      <View className="border-border flex-row gap-3 border-t p-4 pb-safe">
+      <View className="flex-row gap-3 border-t border-border p-4 pb-safe">
         <Button
           className="flex-1"
           variant="secondary"
@@ -230,7 +233,7 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
           <Text>Discard</Text>
         </Button>
         <Pressable onPress={handleArchive} className="justify-center px-3">
-          <Text className="text-muted-foreground text-sm">Archive</Text>
+          <Text className="text-sm text-muted-foreground">Archive</Text>
         </Pressable>
         <Button className="flex-1" onPress={handleSave} disabled={isSaving}>
           <Text className="text-primary-foreground">

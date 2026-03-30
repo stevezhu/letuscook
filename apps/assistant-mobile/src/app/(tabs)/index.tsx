@@ -37,10 +37,10 @@ function HomeScreen() {
     >
       <View className="flex-col gap-8">
         <View className="flex-col gap-2">
-          <Text className="text-muted-foreground text-lg font-medium">
+          <Text className="text-lg font-medium text-muted-foreground">
             Welcome back,
           </Text>
-          <Text className="text-foreground text-4xl font-bold tracking-tight">
+          <Text className="text-4xl font-bold tracking-tight text-foreground">
             {user?.firstName ?? 'Guest'}
           </Text>
         </View>
@@ -62,12 +62,12 @@ function HomeScreen() {
         )}
 
         <View className="flex-col gap-4">
-          <Text className="text-foreground text-xl font-semibold">
+          <Text className="text-xl font-semibold text-foreground">
             Recent Activity
           </Text>
           <Card>
-            <CardContent className="py-10 flex-col items-center justify-center gap-2">
-              <Text className="text-muted-foreground text-center">
+            <CardContent className="flex-col items-center justify-center gap-2 py-10">
+              <Text className="text-center text-muted-foreground">
                 No recent activity to show.
               </Text>
             </CardContent>
@@ -75,22 +75,22 @@ function HomeScreen() {
         </View>
 
         <View className="flex-col gap-4">
-          <Text className="text-foreground text-xl font-semibold">
+          <Text className="text-xl font-semibold text-foreground">
             Quick Actions
           </Text>
           <View className="flex-row flex-wrap gap-4">
-            <Card className="flex-1 min-w-[140px]">
+            <Card className="min-w-[140px] flex-1">
               <CardHeader className="gap-2">
-                <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center">
-                  <Text className="text-primary font-bold">+</Text>
+                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
+                  <Text className="font-bold text-primary">+</Text>
                 </View>
                 <CardTitle className="text-base">New Task</CardTitle>
               </CardHeader>
             </Card>
-            <Card className="flex-1 min-w-[140px]">
+            <Card className="min-w-[140px] flex-1">
               <CardHeader className="gap-2">
-                <View className="w-10 h-10 rounded-full bg-primary/10 items-center justify-center">
-                  <Text className="text-primary font-bold">📄</Text>
+                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
+                  <Text className="font-bold text-primary">📄</Text>
                 </View>
                 <CardTitle className="text-base">Draft Doc</CardTitle>
               </CardHeader>

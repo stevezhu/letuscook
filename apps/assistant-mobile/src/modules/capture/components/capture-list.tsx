@@ -1,5 +1,6 @@
 import {
   LegendList,
+  LegendListProps,
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
 import { Text } from '@workspace/rn-reusables/components/text';
@@ -15,15 +16,15 @@ export type CaptureItemData = {
   captureType: string;
 };
 
-export function CaptureList({ items }: { items: CaptureItemData[] }) {
+export function CaptureList(props: LegendListProps<CaptureItemData>) {
   return (
-    <LegendList
-      data={items}
+    <LegendList<CaptureItemData>
       renderItem={(props) => <CaptureItemSpread {...props} />}
       keyExtractor={(item) => item.id}
       recycleItems
       ItemSeparatorComponent={() => <View className="h-4" />}
       contentContainerClassName="p-4"
+      {...props}
     />
   );
 }

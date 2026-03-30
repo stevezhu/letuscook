@@ -20,6 +20,9 @@ jest.mock<typeof authContext>('#modules/auth/auth-context.tsx', () => {
         profilePictureUrl: 'https://test.com/profile.png',
       },
       isLoading: false,
+      getAccessToken: jest
+        .fn<authContext.AuthContextValue['getAccessToken']>()
+        .mockImplementation(async () => 'test-token'),
       signIn: jest
         .fn<authContext.AuthContextValue['signIn']>()
         .mockImplementation(async () => ({ success: true })),

@@ -10,3 +10,5 @@ if (!globalThis.crypto.subtle) {
     enumerable: true,
   });
 }
+
+import '@workspace/intl-polyfill';

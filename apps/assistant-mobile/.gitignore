@@ -6,3 +6,6 @@ web-build/
 # generated native folders
 /ios
 /android
+
+*storybook.log
+storybook-static

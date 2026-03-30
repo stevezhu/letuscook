@@ -30,22 +30,22 @@ export function InboxItemRow({
   return (
     <Pressable
       onPress={onPress}
-      className="border-border border-b px-4 py-3 active:bg-muted/50"
+      className="border-b border-border px-4 py-3 active:bg-muted/50"
     >
-      <Text className="text-foreground text-sm" numberOfLines={2}>
+      <Text className="text-sm text-foreground" numberOfLines={2}>
         {item.rawContent}
       </Text>
 
       <View className="mt-2 flex-row items-center gap-2">
         <StatePill state={item.captureState} />
         {isReady && item.suggestor && (
-          <View className="rounded bg-blue-50 px-2 py-0.5">
+          <View className="rounded-sm bg-blue-50 px-2 py-0.5">
             <Text className="text-xs text-blue-600">
               Suggested by {item.suggestor.displayName ?? 'CookBot'}
             </Text>
           </View>
         )}
-        <Text className="text-muted-foreground ml-auto text-xs">
+        <Text className="ml-auto text-xs text-muted-foreground">
           {formatTime(item.capturedAt)}
         </Text>
       </View>
@@ -71,7 +71,7 @@ export function InboxItemRow({
             }}
             disabled={acceptPending || rejectPending}
           >
-            <Text className="text-muted-foreground text-sm font-semibold">
+            <Text className="text-sm font-semibold text-muted-foreground">
               Reject
             </Text>
           </Button>

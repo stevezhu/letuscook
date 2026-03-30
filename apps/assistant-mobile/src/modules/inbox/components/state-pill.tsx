@@ -30,8 +30,18 @@ const stateConfig: Record<
 export function StatePill({ state }: { state: CaptureState }) {
   const config = stateConfig[state];
   return (
-    <View className={`rounded-full px-2 py-0.5 ${config.bg}`}>
-      <Text className={`text-xs font-medium ${config.text}`}>
+    <View
+      className={`
+      rounded-full px-2 py-0.5
+      ${config.bg}
+    `}
+    >
+      <Text
+        className={`
+        text-xs font-medium
+        ${config.text}
+      `}
+      >
         {config.label}
       </Text>
     </View>

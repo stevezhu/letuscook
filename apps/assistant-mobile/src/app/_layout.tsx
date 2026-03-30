@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConvexReactClient } from 'convex/react';
 import { Stack } from 'expo-router';
 import React from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { AppAuthProvider } from '#components/providers/app-auth-provider.tsx';
 import { AppReactQueryDevtools } from '#components/providers/app-react-query-devtools.tsx';
@@ -12,11 +13,6 @@ import { AppThemeProvider } from '#components/providers/app-theme-provider.tsx';
 import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.ts';
 import { AuthKitClient } from '#modules/auth/expo/auth-kit-client.ts';
 import { CaptureMigrationProvider } from '#modules/capture/capture-migration-provider.tsx';
-
-export const unstable_settings = {
-  initialRouteName: '(tabs)',
-  anchor: '(tabs)',
-};
 
 const convex = new ConvexReactClient(CONVEX_URL, {
   unsavedChangesWarning: false,
@@ -51,11 +47,13 @@ export default function RootLayout() {
           */}
         <CaptureMigrationProvider>
           <AppThemeProvider>
-            <AppSafeAreaProvider>
-              {/* TODO: this isn't needed, but just kept here as a reference for now */}
-              {/* <AnimatedSplashOverlay /> */}
-              <RootLayoutContent />
-            </AppSafeAreaProvider>
+            <KeyboardProvider>
+              <AppSafeAreaProvider>
+                {/* TODO: this isn't needed, but just kept here as a reference for now */}
+                {/* <AnimatedSplashOverlay /> */}
+                <RootLayoutContent />
+              </AppSafeAreaProvider>
+            </KeyboardProvider>
           </AppThemeProvider>
         </CaptureMigrationProvider>
       </AppAuthProvider>
@@ -67,14 +65,15 @@ export default function RootLayout() {
 function RootLayoutContent() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
+      {/* <Stack.Screen name="index" /> */}
+      {/* <Stack.Screen name="(tabs)" />
       <Stack.Screen
         name="review/[captureId]"
         options={{
           headerShown: true,
           presentation: 'modal',
         }}
-      />
+      /> */}
     </Stack>
   );
 }
