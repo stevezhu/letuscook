@@ -10,9 +10,8 @@ import { EntityNotFoundError } from '#convex/utils/errors.ts';
 /**
  * Soft-deletes a node and all its connected edges by setting `archivedAt`.
  *
- * @throws {EntityNotFoundError} If the node doesn't exist or isn't owned by the current user.
- *
- * 👀 Needs Verification
+ * @throws {EntityNotFoundError} If the node doesn't exist or isn't owned by the
+ *   current user. 👀 Needs Verification
  */
 export const archiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
@@ -73,11 +72,11 @@ export const archiveNode = authMutation({
 });
 
 /**
- * Restores a soft-deleted node and all its connected edges by clearing `archivedAt`.
+ * Restores a soft-deleted node and all its connected edges by clearing
+ * `archivedAt`.
  *
- * @throws {EntityNotFoundError} If the node doesn't exist or isn't owned by the current user.
- *
- * 👀 Needs Verification
+ * @throws {EntityNotFoundError} If the node doesn't exist or isn't owned by the
+ *   current user. 👀 Needs Verification
  */
 export const unarchiveNode = authMutation({
   args: { nodeId: v.id('nodes') },
@@ -123,8 +122,8 @@ export const unarchiveNode = authMutation({
 });
 
 /**
- * Returns all published, non-archived nodes owned by the current user,
- * each annotated with a count of its published edges.
+ * Returns all published, non-archived nodes owned by the current user, each
+ * annotated with a count of its published edges.
  */
 export const getKnowledgeBasePages = authQuery({
   args: {},

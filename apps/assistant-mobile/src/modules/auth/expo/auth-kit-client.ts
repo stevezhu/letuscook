@@ -3,11 +3,10 @@
 /**
  * Core authentication module using WorkOS SDK with PKCE.
  *
- * This mirrors the electron-authkit-example's auth.ts pattern:
- * - getSignInUrl() generates PKCE-protected authorization URL
- * - handleCallback() exchanges code for tokens
- * - getUser() returns current user (with auto-refresh)
- * - clearSession() clears stored credentials
+ * This mirrors the electron-authkit-example's auth.ts pattern: - getSignInUrl()
+ * generates PKCE-protected authorization URL - handleCallback() exchanges code
+ * for tokens - getUser() returns current user (with auto-refresh) -
+ * clearSession() clears stored credentials
  *
  * Note: Requires react-native-quick-crypto polyfill (see src/polyfills.ts)
  */
@@ -33,17 +32,11 @@ type PkceState = {
 };
 
 export class AuthKitClient {
-  /**
-   * Key for storing the session data in the secure store.
-   */
+  /** Key for storing the session data in the secure store. */
   private sessionKey: string;
-  /**
-   * Key for storing the PKCE state in the secure store.
-   */
+  /** Key for storing the PKCE state in the secure store. */
   private pkceKey: string;
-  /**
-   * WorkOS client instance.
-   */
+  /** WorkOS client instance. */
   private workos: WorkOS;
 
   constructor({
@@ -61,9 +54,7 @@ export class AuthKitClient {
     this.workos = new WorkOS({ clientId });
   }
 
-  /**
-   * Get session ID from stored access token (needed for logout).
-   */
+  /** Get session ID from stored access token (needed for logout). */
   async getSessionId(): Promise<string | null> {
     const sessionData = await SecureStore.getItemAsync(this.sessionKey);
     if (!sessionData) return null;
@@ -89,9 +80,7 @@ export class AuthKitClient {
     }
   }
 
-  /**
-   * Clear stored session and PKCE state.
-   */
+  /** Clear stored session and PKCE state. */
   async clearSession(): Promise<void> {
     await SecureStore.deleteItemAsync(this.sessionKey);
     await SecureStore.deleteItemAsync(this.pkceKey);
@@ -102,8 +91,8 @@ export class AuthKitClient {
   }
 
   /**
-   * Generate sign-in URL with PKCE challenge.
-   * The WorkOS SDK handles PKCE generation automatically via getAuthorizationUrlWithPKCE.
+   * Generate sign-in URL with PKCE challenge. The WorkOS SDK handles PKCE
+   * generation automatically via getAuthorizationUrlWithPKCE.
    */
   async getSignInUrl({
     redirectUri,
@@ -126,9 +115,7 @@ export class AuthKitClient {
     return url;
   }
 
-  /**
-   * Get WorkOS logout URL for the current session.
-   */
+  /** Get WorkOS logout URL for the current session. */
   getLogoutUrl({
     sessionId,
     returnTo,
@@ -142,9 +129,7 @@ export class AuthKitClient {
     });
   }
 
-  /**
-   * Exchange authorization code for tokens using stored code verifier.
-   */
+  /** Exchange authorization code for tokens using stored code verifier. */
   async handleCallback(code: string): Promise<User> {
     const pkceData = await SecureStore.getItemAsync(this.pkceKey);
     if (!pkceData) {
@@ -177,9 +162,7 @@ export class AuthKitClient {
     return session.user;
   }
 
-  /**
-   * Get current user, refreshing token if expired.
-   */
+  /** Get current user, refreshing token if expired. */
   async getUser(): Promise<User | null> {
     const sessionData = await SecureStore.getItemAsync(this.sessionKey);
     if (!sessionData) return null;

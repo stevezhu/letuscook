@@ -34,4 +34,5 @@ export default defineConfig<OxfmtConfig>({
   ],
   printWidth: 80,
   singleQuote: true,
+  jsdoc: {},
 });

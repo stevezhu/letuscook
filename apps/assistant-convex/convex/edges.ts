@@ -6,9 +6,7 @@ import { edgeFields } from '#convex/schema.ts';
 import { authMutation } from '#convex/utils/customFunctions.ts';
 import { EntityNotFoundError } from '#convex/utils/errors.ts';
 
-/**
- * 👀 Needs Verification
- */
+/** 👀 Needs Verification */
 export const createEdge = authMutation({
   args: pick(edgeFields, ['fromNodeId', 'toNodeId', 'edgeType']),
   returns: v.id('edges'),

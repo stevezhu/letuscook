@@ -37,8 +37,8 @@ function parseMentionedNodeIds(rawContent: string): Id<'nodes'>[] {
  * Bulk migrates offline guest captures to the authenticated user's account.
  * This is called automatically when an unauthenticated user signs in.
  *
- * It performs a bulk insert of all guest captures and schedules them
- * for asynchronous processing (e.g. AI analysis) in the background.
+ * It performs a bulk insert of all guest captures and schedules them for
+ * asynchronous processing (e.g. AI analysis) in the background.
  */
 export const migrateGuestCaptures = authMutation({
   args: {
