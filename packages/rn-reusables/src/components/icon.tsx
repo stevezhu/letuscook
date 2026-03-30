@@ -30,12 +30,10 @@ const StyledIcon = withUniwind(IconImpl, {
  * individually.
  *
  * @example
- *   ```tsx
  *   import { ArrowRight } from 'lucide-react-native';
  *   import { Icon } from '@/registry/uniwind/registry/components/ui/icon';
  *
  *   <Icon as={ArrowRight} className="text-red-500 size-4" />;
- *   ```
  *
  * @param {LucideIcon} as - The Lucide icon component to render.
  * @param {string} className - Utility classes to style the icon using Uniwind.
