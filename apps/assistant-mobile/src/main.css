@@ -1,2 +1,2 @@
-@import '@workspace/rn-reusables/main.css';
+@import '../../../packages/rn-reusables/src/main.css';
 @source '../node_modules/@workspace/rn-reusables';
