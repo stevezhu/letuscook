@@ -1,7 +1,7 @@
 ---
 date: 2026-03-31T21:52:32Z
 type: plan
-status: in-progress
+status: done
 agent: claudecode
 models: [claude-opus-4-6, claude-haiku-4-5-20251001]
 branch: update-deps
