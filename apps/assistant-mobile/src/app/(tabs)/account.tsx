@@ -62,10 +62,7 @@ function AccountScreen() {
         <View className="flex-col gap-4">
           <Button
             variant="outline"
-            className="
-              border-destructive
-              active:bg-destructive/10
-            "
+            className="border-destructive active:bg-destructive/10"
             onPress={() => signOut()}
           >
             <Text className="font-semibold text-destructive">Sign Out</Text>

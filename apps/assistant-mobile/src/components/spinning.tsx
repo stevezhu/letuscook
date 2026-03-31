@@ -12,7 +12,7 @@ import Animated, {
  * An Animated.View that spins infinitely when 'animate-spin' is in className.
  *
  * @example
- * <SpinningView className="animate-spin">...</SpinningView>
+ *   <SpinningView className="animate-spin">...</SpinningView>;
  */
 // 👀 Needs Verification
 export function SpinningView(

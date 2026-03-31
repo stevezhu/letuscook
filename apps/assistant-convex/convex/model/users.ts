@@ -23,7 +23,8 @@ export async function getCurrentUser(
 }
 
 /**
- * Subset of the data model containing only tables whose documents have an `ownerUserId` field.
+ * Subset of the data model containing only tables whose documents have an
+ * `ownerUserId` field.
  */
 type OwnedDataModel = ConditionalPick<
   DataModel,
@@ -35,8 +36,8 @@ type OwnedDataModel = ConditionalPick<
  *
  * The tuple keeps the table name and document ID correlated so that when
  * destructured in `authCustomCtx` (e.g. `ctx.db.get(args[0], args[1])`),
- * TypeScript narrows the ID type to match the specific table, ensuring
- * the returned document is correctly typed.
+ * TypeScript narrows the ID type to match the specific table, ensuring the
+ * returned document is correctly typed.
  */
 type GetDocOwnedByCurrentUserParameters = {
   [K in keyof OwnedDataModel]: [K, OwnedDataModel[K]['document']['_id']];

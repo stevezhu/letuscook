@@ -3,11 +3,10 @@
 /**
  * Core authentication module using WorkOS SDK with PKCE.
  *
- * This mirrors the electron-authkit-example's auth.ts pattern:
- * - getSignInUrl() generates PKCE-protected authorization URL
- * - handleCallback() exchanges code for tokens
- * - getUser() returns current user (with auto-refresh)
- * - clearSession() clears stored credentials
+ * This mirrors the electron-authkit-example's auth.ts pattern: - getSignInUrl()
+ * generates PKCE-protected authorization URL - handleCallback() exchanges code
+ * for tokens - getUser() returns current user (with auto-refresh) -
+ * clearSession() clears stored credentials
  *
  * Note: Requires react-native-quick-crypto polyfill (see src/polyfills.ts)
  */
@@ -102,8 +101,8 @@ export class AuthKitClient {
   }
 
   /**
-   * Generate sign-in URL with PKCE challenge.
-   * The WorkOS SDK handles PKCE generation automatically via getAuthorizationUrlWithPKCE.
+   * Generate sign-in URL with PKCE challenge. The WorkOS SDK handles PKCE
+   * generation automatically via getAuthorizationUrlWithPKCE.
    */
   async getSignInUrl({
     redirectUri,

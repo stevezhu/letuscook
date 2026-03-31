@@ -2,6 +2,7 @@ import { Validator, VOptional, v, OptionalProperty } from 'convex/values';
 
 /**
  * Same as `pick` from `convex-helpers` but makes the values optional.
+ *
  * @param obj - The object to pick from.
  * @param keys - The keys to pick from the object.
  * @returns A new object with only the keys you picked and their values.

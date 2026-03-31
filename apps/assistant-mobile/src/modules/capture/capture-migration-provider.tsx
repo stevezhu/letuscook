@@ -15,8 +15,8 @@ export type CaptureMigrationProviderProps = {
 // TODO: test this component
 
 /**
- * Watches for a user to transition from unauthenticated to authenticated,
- * and triggers a one-time migration of any offline captures to Convex.
+ * Watches for a user to transition from unauthenticated to authenticated, and
+ * triggers a one-time migration of any offline captures to Convex.
  */
 function MigrationWatcher({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -59,9 +59,9 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
     <>
       {/* Show a non-blocking banner at the top while migrating */}
       {migration.isPending && (
-        <View className="absolute top-safe left-0 right-0 z-50 flex-row items-center justify-center gap-2 bg-muted px-4 py-2">
+        <View className="absolute top-safe right-0 left-0 z-50 flex-row items-center justify-center gap-2 bg-muted px-4 py-2">
           <ActivityIndicator size="small" />
-          <Text className="text-muted-foreground text-sm">
+          <Text className="text-sm text-muted-foreground">
             Syncing {captures.length} captures…
           </Text>
         </View>
@@ -74,8 +74,8 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
 /**
  * A provider that wraps the application to enable automatic capture migrations.
  *
- * It uses a `Suspense` boundary with `fallback={children}` to prevent
- * the application from showing a blank screen or blocking rendering while the
+ * It uses a `Suspense` boundary with `fallback={children}` to prevent the
+ * application from showing a blank screen or blocking rendering while the
  * `useGuestCaptureStore` initially loads data from AsyncStorage.
  */
 export function CaptureMigrationProvider({

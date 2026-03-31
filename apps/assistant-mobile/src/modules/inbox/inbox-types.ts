@@ -14,7 +14,9 @@ export type InboxItem = {
   captureType: string;
   capturedAt: number;
   captureState: CaptureState;
-  /** Only present for server-backed captures */
+  /**
+   * Only present for server-backed captures
+   */
   captureId?: Id<'captures'>;
   suggestion?: Doc<'suggestions'> | null;
   suggestor?: {

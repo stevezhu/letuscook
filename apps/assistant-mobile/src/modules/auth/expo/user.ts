@@ -15,6 +15,7 @@ export type User = Pick<
  * Map AuthKit user response to our User type
  *
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
+ *
  * @param authKitUser
  * @returns
  */

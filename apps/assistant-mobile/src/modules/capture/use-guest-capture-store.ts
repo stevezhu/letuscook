@@ -19,8 +19,8 @@ import {
 const QUERY_KEY = ['guest_captures'];
 
 /**
- * Reads the raw guest captures from AsyncStorage.
- * Wraps parsing in a try/catch to avoid crashing on malformed/corrupted local data.
+ * Reads the raw guest captures from AsyncStorage. Wraps parsing in a try/catch
+ * to avoid crashing on malformed/corrupted local data.
  */
 async function loadCaptures(): Promise<GuestCapture[]> {
   try {
@@ -45,11 +45,12 @@ async function saveCaptures(captures: GuestCapture[]): Promise<void> {
 }
 
 /**
- * A local store for offline/guest captures, backed by AsyncStorage and TanStack Query.
+ * A local store for offline/guest captures, backed by AsyncStorage and TanStack
+ * Query.
  *
- * This hook uses `useSuspenseQuery` with `staleTime: Infinity` to load the stored
- * captures exactly once. Subsequent changes (add/clear) mutate the data and
- * manually invalidate the query to re-render UI.
+ * This hook uses `useSuspenseQuery` with `staleTime: Infinity` to load the
+ * stored captures exactly once. Subsequent changes (add/clear) mutate the data
+ * and manually invalidate the query to re-render UI.
  */
 export function useGuestCaptureStore() {
   const queryClient = useQueryClient();
@@ -105,7 +106,8 @@ export function useGuestCaptureStore() {
   });
 
   /**
-   * Clears all local captures, typically called after a successful migration to Convex.
+   * Clears all local captures, typically called after a successful migration to
+   * Convex.
    */
   const clearGuestCaptures = useMutation({
     mutationFn: async () => {

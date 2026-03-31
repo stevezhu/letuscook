@@ -18,7 +18,8 @@ import { useAuthKitClient } from './auth-kit-client-context.ts';
 WebBrowser.maybeCompleteAuthSession();
 
 /**
- * NOTE: make compatible with `ContextValue` from [@workos-inc/authkit-react](https://github.com/workos/authkit-react).
+ * NOTE: make compatible with `ContextValue` from
+ * [@workos-inc/authkit-react](https://github.com/workos/authkit-react).
  */
 export type AuthContextValue = {
   isLoading: boolean;

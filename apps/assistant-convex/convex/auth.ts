@@ -4,16 +4,16 @@ import { components, internal } from '#convex/_generated/api.js';
 import type { DataModel } from '#convex/_generated/dataModel.js';
 
 /**
- * Internal auth function reference used by AuthKit for token verification
- * and session management.
+ * Internal auth function reference used by AuthKit for token verification and
+ * session management.
  *
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
  */
 const authFunctions: AuthFunctions = internal.auth;
 
 /**
- * AuthKit instance configured with the WorkOS AuthKit component.
- * Provides authentication utilities including user retrieval and event handling.
+ * AuthKit instance configured with the WorkOS AuthKit component. Provides
+ * authentication utilities including user retrieval and event handling.
  *
  * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
  */
@@ -22,8 +22,8 @@ export const authKit = new AuthKit<DataModel>(components.workOSAuthKit, {
 });
 
 /**
- * WorkOS AuthKit webhook event handlers for user lifecycle events.
- * Syncs WorkOS user data to the local `users` table on create, update, and delete.
+ * WorkOS AuthKit webhook event handlers for user lifecycle events. Syncs WorkOS
+ * user data to the local `users` table on create, update, and delete.
  *
  * 👀 Needs Verification
  */
