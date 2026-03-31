@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/dyoshikawa/rulesync/refs/heads/main/config-schema.json",
+  "$schema": "https://github.com/dyoshikawa/rulesync/releases/latest/download/config-schema.json",
   "targets": ["cursor", "claudecode", "geminicli"],
   "features": ["rules", "ignore", "mcp", "commands", "subagents", "skills"],
   "baseDirs": ["."],
@@ -16,13 +16,13 @@
     },
     {
       "source": "anthropics/skills",
-      "skills": ["frontend-design", "skill-creator", "doc-coauthoring"]
+      "skills": ["skill-creator", "doc-coauthoring"]
     },
     {
       "source": "coreyhaines31/marketingskills"
     },
     {
-      "source": "expo/skills:plugins/expo-app-design/skills",
+      "source": "expo/skills:plugins/expo/skills",
       "skills": ["building-native-ui", "native-data-fetching"]
     },
     {
@@ -67,6 +67,9 @@
     },
     {
       "source": "waynesutton/convexskills"
+    },
+    {
+      "source": "pbakaus/impeccable:source/skills"
     }
   ]
 }

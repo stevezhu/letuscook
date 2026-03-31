@@ -3,5 +3,15 @@
   "extends": ["config:recommended"],
   "lockFileMaintenance": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["@rn-primitives/**"],
+      "groupName": "rn-primitives monorepo"
+    },
+    {
+      "matchSourceUrls": ["https://github.com/vercel/ai"],
+      "groupName": "vercel ai-sdk monorepo"
+    }
+  ]
 }
