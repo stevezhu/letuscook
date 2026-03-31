@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import { defineConfig, type OxfmtConfig } from 'oxfmt';
 
 export default defineConfig<OxfmtConfig>({
@@ -21,6 +23,17 @@ export default defineConfig<OxfmtConfig>({
         // XXX: do not use trailing commas for jsonc files
         // Reference: https://github.com/prettier/prettier/issues/15956#issuecomment-3000347490
         trailingComma: 'none',
+      },
+    },
+    {
+      files: ['apps/assistant-mobile/**'],
+      options: {
+        sortTailwindcss: {
+          stylesheet: resolve(
+            import.meta.dirname,
+            'apps/assistant-mobile/src/main.css',
+          ),
+        },
       },
     },
   ],
