@@ -1,12 +1,13 @@
 ---
-
-## date: 2026-03-31T23:14:45Z
+date: 2026-03-31T23:14:45Z
 type: plan
 status: in-progress
 agent: claudecode
-models: [claude-opus-4-6]
+models: [claude-opus-4-6, claude-haiku-4-5-20251001]
 branch: improve-capture
+sessionId: d7567385-a030-46cf-b018-74d0d259e939
 tags: [capture, ux, mobile]
+---
 
 # Improve Capture Flow UX
 
@@ -193,3 +194,32 @@ Identify and propose UX improvements to the capture flow — the core loop of ca
 - Traycer specs: `.agent-logbook/other/traycer/`
 - TODOs in `capture-composer.tsx:104,109` (error handling, success feedback)
 
+## Session Stats
+
+```
+claudecode Session Stats: d7567385-a030-46cf-b018-74d0d259e939
+========================================
+Models Used:  Main: claude-opus-4-6
+              Subagents: claude-haiku-4-5-20251001
+----------------------------------------
+MAIN SESSION:
+  Input Tokens         318
+  Output Tokens        5,679
+  Cache Creation Input 121,808
+  Cache Read Input     1,013,969
+----------------------------------------
+SUBAGENTS (2 total):
+  Input Tokens         3,214
+  Output Tokens        14,484
+  Cache Creation Input 371,241
+  Cache Read Input     2,282,992
+----------------------------------------
+TOTAL USAGE:
+  Total Input Tokens   3,532
+  Total Output Tokens  20,163
+  Total Cache Creation 493,049
+  Total Cache Read     3,296,961
+----------------------------------------
+GRAND TOTAL TOKENS:  3,813,705
+========================================
+```
