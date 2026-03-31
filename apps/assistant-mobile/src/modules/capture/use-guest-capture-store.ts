@@ -34,7 +34,9 @@ async function loadCaptures(): Promise<GuestCapture[]> {
   }
 }
 
-/** Persists the entire array of guest captures back to AsyncStorage. */
+/**
+ * Persists the entire array of guest captures back to AsyncStorage.
+ */
 async function saveCaptures(captures: GuestCapture[]): Promise<void> {
   await AsyncStorage.setItem(
     GUEST_CAPTURES_STORAGE_KEY,
@@ -69,7 +71,9 @@ export function useGuestCaptureStore() {
     [rawCaptures],
   );
 
-  /** Adds a new capture to the local store if under the limit. */
+  /**
+   * Adds a new capture to the local store if under the limit.
+   */
   const addGuestCapture = useMutation({
     mutationFn: async ({
       rawContent,

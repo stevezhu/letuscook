@@ -13,9 +13,13 @@ import {
   MutationCtx,
 } from '#convex/_generated/server.js';
 
-/** ✅ Reviewed by [@stevezhu](https://github.com/stevezhu) */
+/**
+ * ✅ Reviewed by [@stevezhu](https://github.com/stevezhu)
+ */
 export type AuthCtx = {
-  /** The verified {@link UserIdentity} from the JWT. */
+  /**
+   * The verified {@link UserIdentity} from the JWT.
+   */
   identity: UserIdentity;
 };
 

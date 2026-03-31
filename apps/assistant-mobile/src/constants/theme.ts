@@ -31,13 +31,21 @@ export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
   ios: {
-    /** IOS `UIFontDescriptorSystemDesignDefault` */
+    /**
+     * IOS `UIFontDescriptorSystemDesignDefault`
+     */
     sans: 'system-ui',
-    /** IOS `UIFontDescriptorSystemDesignSerif` */
+    /**
+     * IOS `UIFontDescriptorSystemDesignSerif`
+     */
     serif: 'ui-serif',
-    /** IOS `UIFontDescriptorSystemDesignRounded` */
+    /**
+     * IOS `UIFontDescriptorSystemDesignRounded`
+     */
     rounded: 'ui-rounded',
-    /** IOS `UIFontDescriptorSystemDesignMonospaced` */
+    /**
+     * IOS `UIFontDescriptorSystemDesignMonospaced`
+     */
     mono: 'ui-monospace',
   },
   default: {

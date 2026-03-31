@@ -11,7 +11,9 @@ import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import type { GuestCaptureWithState } from '../guest-capture-types.ts';
 import { useGuestCaptureStore } from '../use-guest-capture-store.ts';
 
-/** Shared shape for rendering a capture item. */
+/**
+ * Shared shape for rendering a capture item.
+ */
 type CaptureItem = {
   id: string;
   rawContent: string;

@@ -8,7 +8,9 @@ import { View } from 'react-native';
 
 import { StyledGlassView } from '#components/styled.ts';
 
-/** Shared shape for rendering a capture item. */
+/**
+ * Shared shape for rendering a capture item.
+ */
 export type CaptureItemData = {
   id: string;
   rawContent: string;

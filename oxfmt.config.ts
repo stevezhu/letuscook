@@ -34,5 +34,8 @@ export default defineConfig<OxfmtConfig>({
   ],
   printWidth: 80,
   singleQuote: true,
-  jsdoc: {},
+  endOfLine: 'lf',
+  jsdoc: {
+    commentLineStrategy: 'multiline',
+  },
 });

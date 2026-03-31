@@ -1,4 +1,6 @@
-/** Defines the type of content captured by the user. */
+/**
+ * Defines the type of content captured by the user.
+ */
 export type CaptureType = 'text' | 'link' | 'task';
 
 /**
@@ -35,5 +37,7 @@ export type AddGuestCaptureResult =
  */
 export const GUEST_CAPTURE_LIMIT = 100;
 
-/** AsyncStorage key used to persist the guest captures array. */
+/**
+ * AsyncStorage key used to persist the guest captures array.
+ */
 export const GUEST_CAPTURES_STORAGE_KEY = 'guestCaptures';
