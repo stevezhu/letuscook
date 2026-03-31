@@ -37,7 +37,7 @@ function CaptureScreen() {
   const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
   const { bottom } = useSafeAreaInsets();
   const spacing = useCSSVariable('--spacing') as number;
-  const { submit, isPending } = useCaptureSubmit();
+  const { submit, isPending, isSuccess } = useCaptureSubmit();
   const { user } = useAuth();
   const { data: serverCaptures } = useQuery(
     convexQuery(api.captures.getRecentCaptures, user ? { limit: 20 } : 'skip'),
@@ -87,6 +87,7 @@ function CaptureScreen() {
       >
         <CaptureComposer
           isPending={isPending}
+          isSuccess={isSuccess}
           onLayout={(e) => {
             setInputHeight(e.nativeEvent.layout.height);
           }}

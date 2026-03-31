@@ -3,10 +3,12 @@ import { ConvexQueryClient } from '@convex-dev/react-query';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConvexReactClient } from 'convex/react';
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import StorybookUIRoot from '#.rnstorybook/index.ts';
+import { DefaultActivityView } from '#components/default-activity-view.tsx';
+import { ErrorBoundary } from '#components/error-boundary.tsx';
 import { AppAuthProvider } from '#components/providers/app-auth-provider.tsx';
 import { AppReactQueryDevtools } from '#components/providers/app-react-query-devtools.tsx';
 import { AppSafeAreaProvider } from '#components/providers/app-safe-area-provider.tsx';
@@ -36,28 +38,29 @@ const authKitClient = new AuthKitClient({
 });
 
 function RootLayout() {
-  // TODO: add top level suspense
   return (
     <QueryClientProvider client={queryClient}>
-      <AppAuthProvider authKitClient={authKitClient} convex={convex}>
-        {/*
-            CaptureMigrationProvider is placed inside ConvexProviderWithAuth
-            so that it has access to both authentication state and the Convex client.
-            It wraps the UI to passively detect sign-in events and trigger
-            the guest capture migration process without blocking rendering.
-          */}
-        <CaptureMigrationProvider>
-          <AppThemeProvider>
-            <KeyboardProvider>
-              <AppSafeAreaProvider>
-                {/* TODO: this isn't needed, but just kept here as a reference for now */}
-                {/* <AnimatedSplashOverlay /> */}
-                <RootLayoutContent />
-              </AppSafeAreaProvider>
-            </KeyboardProvider>
-          </AppThemeProvider>
-        </CaptureMigrationProvider>
-      </AppAuthProvider>
+      <ErrorBoundary>
+        <Suspense fallback={<DefaultActivityView />}>
+          <AppAuthProvider authKitClient={authKitClient} convex={convex}>
+            {/*
+              CaptureMigrationProvider is placed inside ConvexProviderWithAuth
+              so that it has access to both authentication state and the Convex client.
+              It wraps the UI to passively detect sign-in events and trigger
+              the guest capture migration process without blocking rendering.
+            */}
+            <CaptureMigrationProvider>
+              <AppThemeProvider>
+                <KeyboardProvider>
+                  <AppSafeAreaProvider>
+                    <RootLayoutContent />
+                  </AppSafeAreaProvider>
+                </KeyboardProvider>
+              </AppThemeProvider>
+            </CaptureMigrationProvider>
+          </AppAuthProvider>
+        </Suspense>
+      </ErrorBoundary>
       <AppReactQueryDevtools queryClient={queryClient} />
     </QueryClientProvider>
   );

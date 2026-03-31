@@ -1,3 +1,5 @@
+import { KMEANS_MAX_ITERATIONS } from '#convex/constants.ts';
+
 export interface Cluster {
   members: number[];
   distances: number[];
@@ -33,9 +35,7 @@ export function kMeans(vectors: number[][], k: number): Cluster[] {
 
   // Run k-means iterations
   let assignments = Array.from<number>({ length: n }).fill(0);
-  const MAX_ITER = 50;
-
-  for (let iter = 0; iter < MAX_ITER; iter++) {
+  for (let iter = 0; iter < KMEANS_MAX_ITERATIONS; iter++) {
     // Assign each vector to nearest centroid
     const newAssignments = vectors.map((v) => {
       let minDist = Infinity;

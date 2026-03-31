@@ -1,6 +1,8 @@
 import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
+import { EMBEDDING_DIMENSIONS } from '#convex/constants.ts';
+
 export const userFields = {
   displayName: v.string(),
   email: v.optional(v.string()),
@@ -48,12 +50,11 @@ export const edgeFields = {
   toNodeId: v.id('nodes'),
   publishedAt: v.optional(v.number()),
   archivedAt: v.optional(v.number()),
-  // TODO: is this required?
   edgeType: v.union(
-    v.literal('explicit'),
-    v.literal('suggested'),
-    v.literal('reference'),
-    v.literal('related'),
+    v.literal('explicit'), // User-created link between nodes
+    v.literal('suggested'), // AI-suggested link from capture processing
+    v.literal('reference'), // Reserved: explicit citation/source link
+    v.literal('related'), // Reserved: topic-based similarity link
   ),
   source: v.union(v.literal('user'), v.literal('processor')),
   verified: v.boolean(),
@@ -109,7 +110,7 @@ export default defineSchema({
     })
     .vectorIndex('by_embedding', {
       vectorField: 'embedding',
-      dimensions: 768,
+      dimensions: EMBEDDING_DIMENSIONS,
       filterFields: ['ownerUserId'],
     }),
 

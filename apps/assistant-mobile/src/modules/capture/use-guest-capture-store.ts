@@ -14,6 +14,7 @@ import {
   type GuestCaptureWithState,
   GUEST_CAPTURE_LIMIT,
   GUEST_CAPTURES_STORAGE_KEY,
+  validateGuestCaptures,
 } from './guest-capture-types.ts';
 
 const QUERY_KEY = ['guest_captures'];
@@ -26,8 +27,7 @@ async function loadCaptures(): Promise<GuestCapture[]> {
   try {
     const raw = await AsyncStorage.getItem(GUEST_CAPTURES_STORAGE_KEY);
     if (!raw) return [];
-    // TODO: validate json with [typebox](https://www.npmjs.com/package/typebox)
-    return JSON.parse(raw) as GuestCapture[];
+    return validateGuestCaptures(JSON.parse(raw));
   } catch (error) {
     console.error('[GuestCaptureStore] Failed to load captures:', error);
     return [];
@@ -62,7 +62,6 @@ export function useGuestCaptureStore() {
     staleTime: Infinity, // Treat the loaded data as stable, only refetch on manual invalidation
   });
 
-  // TODO: is this correct?
   // Inject `captureState: 'offline'` dynamically at runtime so the rest of the
   // application logic can treat these similarly to real processed captures,
   // without having to persist this static state string locally.

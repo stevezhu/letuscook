@@ -31,6 +31,26 @@ export type AddGuestCaptureResult =
   | { status: 'ok'; capture: GuestCapture }
   | { status: 'LIMIT_REACHED' };
 
+const VALID_CAPTURE_TYPES = new Set<string>(['text', 'link', 'task']);
+
+/**
+ * Validates that a parsed JSON value is a well-formed GuestCapture array.
+ * Filters out any malformed entries to avoid crashing on corrupted data.
+ */
+export function validateGuestCaptures(data: unknown): GuestCapture[] {
+  if (!Array.isArray(data)) return [];
+  return data.filter(
+    (item): item is GuestCapture =>
+      item != null &&
+      typeof item === 'object' &&
+      typeof item.id === 'string' &&
+      typeof item.rawContent === 'string' &&
+      typeof item.captureType === 'string' &&
+      VALID_CAPTURE_TYPES.has(item.captureType) &&
+      typeof item.capturedAt === 'number',
+  );
+}
+
 /**
  * Maximum number of captures a guest can store locally before being forced to
  * sign in.

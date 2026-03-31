@@ -12,6 +12,7 @@ import type * as ai_clustering from "../ai/clustering.js";
 import type * as ai_embedding from "../ai/embedding.js";
 import type * as auth from "../auth.js";
 import type * as captures from "../captures.js";
+import type * as constants from "../constants.js";
 import type * as edges from "../edges.js";
 import type * as http from "../http.js";
 import type * as model_captures from "../model/captures.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   "ai/embedding": typeof ai_embedding;
   auth: typeof auth;
   captures: typeof captures;
+  constants: typeof constants;
   edges: typeof edges;
   http: typeof http;
   "model/captures": typeof model_captures;
