@@ -23,14 +23,18 @@ export default defineConfig<OxfmtConfig>({
         trailingComma: 'none',
       },
     },
-    {
-      files: ['apps/assistant-mobile/**'],
-      options: {
-        sortTailwindcss: {
-          stylesheet: 'apps/assistant-mobile/src/main.css',
-        },
-      },
-    },
+    ...(process.env.CI === 'true'
+      ? []
+      : [
+          {
+            files: ['apps/assistant-mobile/**'],
+            options: {
+              sortTailwindcss: {
+                stylesheet: 'apps/assistant-mobile/src/main.css',
+              },
+            },
+          },
+        ]),
   ],
   printWidth: 80,
   singleQuote: true,
