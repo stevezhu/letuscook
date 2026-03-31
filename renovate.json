@@ -3,5 +3,11 @@
   "extends": ["config:recommended"],
   "lockFileMaintenance": {
     "enabled": true
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["@rn-primitives/**"],
+      "groupName": "rn-primitives monorepo"
+    }
+  ]
 }
