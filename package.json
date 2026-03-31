@@ -21,13 +21,13 @@
     "@stzhu/prettier-plugin-tsconfig": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "^9.2.1",
-    "oxfmt": "^0.42.0",
-    "oxlint": "^1.57.0",
+    "oxfmt": "^0.43.0",
+    "oxlint": "^1.58.0",
     "oxlint-tsgolint": "^0.18.1",
     "prettier": "^3.8.1",
     "rulesync": "^7.25.0",
-    "syncpack": "^14.2.0",
-    "turbo": "^2.8.17"
+    "syncpack": "^14.3.0",
+    "turbo": "^2.9.1"
   },
   "engines": {
     "node": ">=25",

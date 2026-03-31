@@ -21,7 +21,7 @@
   "dependencies": {
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
-    "lucide-react": "^0.577.0"
+    "lucide-react": "^1.7.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "catalog:",
@@ -31,13 +31,13 @@
     "@storybook/react-vite": "catalog:",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/tsconfig": "catalog:",
-    "@tailwindcss/vite": "^4.2.1",
-    "@tanstack/eslint-plugin-query": "^5.91.4",
+    "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/eslint-plugin-query": "^5.96.0",
     "@tanstack/eslint-plugin-router": "^1.161.6",
-    "@tanstack/router-cli": "^1.166.12",
+    "@tanstack/router-cli": "^1.166.25",
     "@vitejs/plugin-react": "^5.2.0",
     "eslint": "catalog:",
-    "eslint-plugin-oxlint": "^1.56.0",
+    "eslint-plugin-oxlint": "^1.58.0",
     "storybook": "catalog:",
     "vite": "catalog:"
   },
