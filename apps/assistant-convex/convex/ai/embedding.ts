@@ -1,6 +1,8 @@
 import { google } from '@ai-sdk/google';
 import { embed, generateText } from 'ai';
 
+import { EMBEDDING_DIMENSIONS } from '#convex/constants.ts';
+
 const EMBEDDING_MODEL = google.embeddingModel('gemini-embedding-2-preview');
 
 // 👀 Needs Verification
@@ -11,7 +13,7 @@ export async function embedText(text: string): Promise<number[]> {
     model: EMBEDDING_MODEL,
     value: text,
     providerOptions: {
-      google: { outputDimensionality: 768 },
+      google: { outputDimensionality: EMBEDDING_DIMENSIONS },
     },
   });
   return embedding;

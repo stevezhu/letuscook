@@ -3,17 +3,21 @@ import { Icon } from '@workspace/rn-reusables/components/icon';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { GlassViewProps } from 'expo-glass-effect';
 import { atom, Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { ArrowUp, Loader2 } from 'lucide-react-native';
+import { ArrowUp, Check, Loader2 } from 'lucide-react-native';
 import { createContext, ReactNode, use } from 'react';
-import { TextInput, TextInputProps, View } from 'react-native';
+import { Alert, TextInput, TextInputProps, View } from 'react-native';
 
 import { SpinningView } from '#components/spinning.js';
 import { StyledGlassView, StyledSegmentedControl } from '#components/styled.js';
 
 import type { CaptureType } from '../guest-capture-types.js';
 
-const CaptureComposerContext = createContext<{ isPending: boolean }>({
+const CaptureComposerContext = createContext<{
+  isPending: boolean;
+  isSuccess: boolean;
+}>({
   isPending: false,
+  isSuccess: false,
 });
 
 const textAtom = atom('');
@@ -22,18 +26,20 @@ const captureTypeAtom = atom<CaptureType>('text');
 
 export type CaptureComposerProps = GlassViewProps & {
   isPending: boolean;
+  isSuccess?: boolean;
   children: ReactNode;
 };
 
 export function CaptureComposer({
   isPending,
+  isSuccess = false,
   className,
   children,
   ...props
 }: CaptureComposerProps) {
   return (
     <Provider>
-      <CaptureComposerContext.Provider value={{ isPending }}>
+      <CaptureComposerContext.Provider value={{ isPending, isSuccess }}>
         <StyledGlassView
           isInteractive
           className={cn('rounded-3xl p-2 flex gap-4', className)}
@@ -62,9 +68,13 @@ export function CaptureComposerTextInput({
       placeholder="What's on your mind?"
       value={text}
       onChangeText={setText}
-      onContentSizeChange={(event) => {
-        console.debug(event.nativeEvent.contentSize.height);
-      }}
+      onContentSizeChange={
+        __DEV__
+          ? (event) => {
+              console.debug(event.nativeEvent.contentSize.height);
+            }
+          : undefined
+      }
       {...props}
     />
   );
@@ -80,7 +90,7 @@ export type CaptureComposerControlsProps = {
 export function CaptureComposerControls({
   onSubmit,
 }: CaptureComposerControlsProps) {
-  const { isPending } = use(CaptureComposerContext);
+  const { isPending, isSuccess } = use(CaptureComposerContext);
   const setText = useSetAtom(textAtom);
   const trimmedText = useAtomValue(trimmedTextAtom);
   const [captureType, setCaptureType] = useAtom(captureTypeAtom);
@@ -101,16 +111,23 @@ export function CaptureComposerControls({
           if (!canSend) return;
           if (!trimmedText) return;
 
-          // TODO: add error handling
-          await onSubmit({ value: trimmedText, captureType });
-          setText('');
+          try {
+            await onSubmit({ value: trimmedText, captureType });
+            setText('');
+          } catch {
+            Alert.alert(
+              'Failed to save',
+              'Your capture could not be saved. Please try again.',
+            );
+          }
         }}
       >
-        {/* TODO: show success/stop icon */}
         {isPending ? (
           <SpinningView className="pointer-events-none animate-spin">
             <Icon as={Loader2} className="text-muted-foreground" />
           </SpinningView>
+        ) : isSuccess ? (
+          <Icon as={Check} className="text-green-600" />
         ) : (
           <Icon
             as={ArrowUp}

@@ -41,7 +41,6 @@ export function AppThemeProvider({ children }: AppThemeProviderProps) {
       card: card.toString(),
       text: primaryForeground.toString(),
       border: border.toString(),
-      // TODO: check if destructive is the right color for this
       notification: destructive.toString(),
     };
     return colorScheme === 'dark'

@@ -7,6 +7,10 @@ import {
   internalQuery,
 } from '#convex/_generated/server.js';
 import {
+  KMEANS_MAX_CLUSTERS,
+  KMEANS_NODES_PER_CLUSTER,
+} from '#convex/constants.ts';
+import {
   getCurrentUser,
   getDocOwnedByCurrentUser,
 } from '#convex/model/users.ts';
@@ -159,7 +163,10 @@ export const clusterTopics = internalAction({
 
     const clusters = kMeans(
       vectors.map((v) => v.vector),
-      Math.min(Math.ceil(vectors.length / 3), 10),
+      Math.min(
+        Math.ceil(vectors.length / KMEANS_NODES_PER_CLUSTER),
+        KMEANS_MAX_CLUSTERS,
+      ),
     );
 
     // Persist clusters

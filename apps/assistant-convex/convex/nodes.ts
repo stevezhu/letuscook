@@ -30,8 +30,6 @@ export const archiveNode = authMutation({
     await ctx.db.patch('nodes', args.nodeId, { archivedAt: now });
 
     // Archive related edges
-    // TODO: benchmark the performance of this approach vs. the Promise.all approach below
-    // Reference: /node_modules/.pnpm/convex@1.32.0_react@19.2.4/node_modules/convex/src/server/query.ts
     for await (const edge of ctx.db
       .query('edges')
       .withIndex('by_archivedAt_from_node', (q) =>
@@ -46,26 +44,6 @@ export const archiveNode = authMutation({
       )) {
       await ctx.db.patch('edges', edge._id, { archivedAt: now });
     }
-
-    // const [outgoing, incoming] = await Promise.all([
-    //   ctx.db
-    //     .query('edges')
-    //     .withIndex('by_archivedAt_from_node', (q) =>
-    //       q.eq('archivedAt', undefined).eq('fromNodeId', args.nodeId),
-    //     )
-    //     .collect(),
-    //   ctx.db
-    //     .query('edges')
-    //     .withIndex('by_archivedAt_to_node', (q) =>
-    //       q.eq('archivedAt', undefined).eq('toNodeId', args.nodeId),
-    //     )
-    //     .collect(),
-    // ]);
-
-    // await Promise.all([
-    //   ...outgoing.map((e) => ctx.db.patch('edges', e._id, { archivedAt: now })),
-    //   ...incoming.map((e) => ctx.db.patch('edges', e._id, { archivedAt: now })),
-    // ]);
 
     return null;
   },

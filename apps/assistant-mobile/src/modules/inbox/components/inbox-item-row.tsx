@@ -31,6 +31,9 @@ export function InboxItemRow({
     <Pressable
       onPress={onPress}
       className="border-b border-border px-4 py-3 active:bg-muted/50"
+      accessibilityRole="button"
+      accessibilityLabel={`Capture: ${item.rawContent.slice(0, 80)}`}
+      accessibilityHint="Tap to review this capture"
     >
       <Text className="text-sm text-foreground" numberOfLines={2}>
         {item.rawContent}
@@ -59,6 +62,7 @@ export function InboxItemRow({
               onAccept();
             }}
             disabled={acceptPending || rejectPending}
+            accessibilityLabel="Accept suggestion"
           >
             <Text className="text-sm font-semibold text-white">Accept</Text>
           </Button>
@@ -70,6 +74,7 @@ export function InboxItemRow({
               onReject();
             }}
             disabled={acceptPending || rejectPending}
+            accessibilityLabel="Reject suggestion"
           >
             <Text className="text-sm font-semibold text-muted-foreground">
               Reject

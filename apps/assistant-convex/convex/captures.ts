@@ -8,7 +8,8 @@ import {
   internalMutation,
   internalQuery,
 } from '#convex/_generated/server.js';
-import { setCaptureFailed as setCaptureFailed_ } from '#convex/model/captures.ts';
+import { VECTOR_SEARCH_SIMILARITY_THRESHOLD } from '#convex/constants.ts';
+import { setCaptureFailed as markCaptureFailed } from '#convex/model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
@@ -184,6 +185,11 @@ export const acceptSuggestion = authMutation({
     if (!capture) {
       throw new ConvexError('Capture not found');
     }
+    if (capture.captureState !== 'ready') {
+      throw new ConvexError(
+        `Cannot accept suggestion: capture is '${capture.captureState}', expected 'ready'`,
+      );
+    }
 
     const suggestion = await ctx.db.get(args.suggestionId);
     if (!suggestion || suggestion.captureId !== args.captureId) {
@@ -281,6 +287,11 @@ export const rejectSuggestion = authMutation({
     );
     if (!capture) {
       throw new ConvexError('Capture not found');
+    }
+    if (capture.captureState !== 'ready') {
+      throw new ConvexError(
+        `Cannot reject suggestion: capture is '${capture.captureState}', expected 'ready'`,
+      );
     }
 
     const suggestion = await ctx.db.get(args.suggestionId);
@@ -504,12 +515,14 @@ export const processCapture = internalMutation({
         argValue: args.captureId,
       });
     }
-    // TODO: verify this, why was it processing? it should be ready right?
-    if (capture.captureState !== 'ready') return;
+    // Guard: only process captures in the 'processing' state (the initial
+    // state set by createCapture / retryProcessing). Bail out if the capture
+    // has already moved to a later state to avoid duplicate processing.
+    if (capture.captureState !== 'processing') return;
 
     const agentUser = await getAgentUser(ctx);
     if (!agentUser?._id) {
-      await setCaptureFailed_(ctx, { captureId: args.captureId });
+      await markCaptureFailed(ctx, { captureId: args.captureId });
       return;
     }
 
@@ -555,7 +568,9 @@ export const embedAndClassify = internalAction({
       });
 
       // 3. Fetch full docs and filter by similarity threshold
-      const aboveThreshold = searchResults.filter((r) => r._score >= 0.7);
+      const aboveThreshold = searchResults.filter(
+        (r) => r._score >= VECTOR_SEARCH_SIMILARITY_THRESHOLD,
+      );
       const nodeResults = await Promise.all(
         aboveThreshold.map(async (result) => {
           const node = await ctx.runQuery(
@@ -696,7 +711,7 @@ export const saveEmbeddingResult = internalMutation({
 export const setCaptureFailed = internalMutation({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
-    await setCaptureFailed_(ctx, args);
+    await markCaptureFailed(ctx, args);
   },
 });
 

@@ -103,15 +103,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     error?: string;
   }> => {
     try {
-      console.log('[Auth] Starting sign in...');
+      if (__DEV__) console.log('[Auth] Starting sign in...');
       setIsLoading(true);
       const redirectUri = authClient.getRedirectUri();
-      console.log('[Auth] Redirect URI:', redirectUri);
+      if (__DEV__) console.log('[Auth] Redirect URI:', redirectUri);
       const url = await authClient.getSignInUrl({ redirectUri });
-      console.log('[Auth] Got sign in URL');
+      if (__DEV__) console.log('[Auth] Got sign in URL');
 
       const result = await WebBrowser.openAuthSessionAsync(url, redirectUri);
-      console.log('[Auth] WebBrowser result:', result.type);
+      if (__DEV__) console.log('[Auth] WebBrowser result:', result.type);
 
       if (result.type !== 'success' || !result.url) {
         return { success: false, error: 'Authentication was cancelled' };
@@ -130,9 +130,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return { success: false, error: 'No authorization code received' };
       }
 
-      console.log('[Auth] Exchanging code for tokens...');
+      if (__DEV__) console.log('[Auth] Exchanging code for tokens...');
       const newUser = await authClient.handleCallback(code);
-      console.log('[Auth] Got user:', newUser.email);
+      if (__DEV__) console.log('[Auth] Got user:', newUser.email);
       setUser(newUser);
       return { success: true };
     } catch (error) {
@@ -151,10 +151,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const sessionId = await authClient.getSessionId();
       if (sessionId) {
         const returnTo = authClient.getRedirectUri();
-        console.log('[Auth] Return to:', returnTo);
+        if (__DEV__) console.log('[Auth] Return to:', returnTo);
 
         const logoutUrl = authClient.getLogoutUrl({ sessionId, returnTo });
-        console.log('[Auth] Logout URL:', logoutUrl);
+        if (__DEV__) console.log('[Auth] Logout URL:', logoutUrl);
         await WebBrowser.openAuthSessionAsync(logoutUrl, returnTo);
 
         await authClient.clearSession();
