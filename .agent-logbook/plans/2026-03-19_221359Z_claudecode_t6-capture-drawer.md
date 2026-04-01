@@ -45,7 +45,6 @@ Build the capture screen as a chat-like interface with a bottom input that adds 
 
 ## Prerequisites / What Already Exists
 
-
 | Component                          | Status                | Location                                             |
 | ---------------------------------- | --------------------- | ---------------------------------------------------- |
 | Guest capture store (AsyncStorage) | Done (T3)             | `src/modules/capture/use-guest-capture-store.ts`     |
@@ -59,7 +58,6 @@ Build the capture screen as a chat-like interface with a bottom input that adds 
 | react-native-gesture-handler       | Installed             | `package.json`                                       |
 | react-native-reanimated            | Installed             | `package.json`                                       |
 | Bottom sheet library               | Not needed (deferred) | See Future Enhancements                              |
-
 
 ## Architecture Decision: Capture Screen Approach
 
@@ -158,14 +156,13 @@ None — all resolved:
 
 - **Bottom sheet:** Deferred to future iteration (see Future Enhancements)
 - **Tab integration:** Keeping the capture tab as a regular full-screen chat interface
-- `**@` autocomplete:** Stubbed, deferred to T7+
+- `**@` autocomplete:\*\* Stubbed, deferred to T7+
 
 ## Future Enhancements
 
 - **Bottom sheet presentation:** Convert the capture UI to an iOS-style bottom sheet using `@lodev09/react-native-true-sheet` ([https://sheet.lodev09.com/](https://sheet.lodev09.com/)). This would allow capture to be triggered from any screen via a floating button, with the sheet sliding up over the current view. Deferred because it requires a native dependency and the tab-based screen is sufficient for the MVP.
 
 ## File Summary
-
 
 | File                                                       | Action  | Description                                    |
 | ---------------------------------------------------------- | ------- | ---------------------------------------------- |
@@ -174,7 +171,6 @@ None — all resolved:
 | `src/modules/capture/components/capture-type-selector.tsx` | Create  | Segmented control component                    |
 | `src/modules/capture/components/recent-captures-list.tsx`  | Create  | Chat-like capture log                          |
 | `src/modules/capture/components/capture-input.tsx`         | Create  | Input area with send button                    |
-
 
 ## Session Stats
 
@@ -221,5 +217,7 @@ Total Cache Read 6,524,911
 - [Core Flows Spec — Flow 1](spec:63a17a79-84f1-47b6-9644-2f822ace8c50/2682931f-9865-4dc8-ab60-7b66cb7e8beb)
 - [Technical Plan](spec:63a17a79-84f1-47b6-9644-2f822ace8c50/44be7e7f-9362-4608-8f89-1633275f0edd)
 - [@lodev09/react-native-true-sheet](https://sheet.lodev09.com/)
+
+```
 
 ```

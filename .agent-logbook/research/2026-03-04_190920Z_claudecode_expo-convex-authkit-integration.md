@@ -19,16 +19,15 @@ This document synthesizes all reference implementations for integrating **Expo (
 
 Our monorepo (`letuscook`) already has:
 
-- `**apps/assistant-mobile`** — Expo app with Expo Router, TanStack Query, UniWind
+- `apps/assistant-mobile` — Expo app with Expo Router, TanStack Query, UniWind
   - Scheme: `letuscook` (defined in `app.config.ts`)
   - Already depends on `assistant-convex` workspace package
-- `**apps/assistant-convex`** — Convex backend
+- `apps/assistant-convex` — Convex backend
   - Already has `convex/auth.config.ts` with WorkOS JWT validation (two `customJwt` providers)
   - Already has a `users` table with `workosUserId` field and `createOrUpdateUser` / `getCurrentUser` functions
   - Does NOT yet have `@convex-dev/workos-authkit` component installed
 
 ## References Analyzed
-
 
 | #   | Reference                                                                                                                         | What it covers                                                       | What it lacks                               |
 | --- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
@@ -41,7 +40,6 @@ Our monorepo (`letuscook`) already has:
 | 7   | [WorkOS docs: React Native Expo](https://workos.com/docs/integrations/react-native-expo)                                          | WorkOS SSO in Expo using AuthSession + WebBrowser                    | Older SSO-only approach, no PKCE, no Convex |
 | 8   | [Expo docs: Authentication](https://docs.expo.dev/guides/authentication/)                                                         | General OAuth patterns with `expo-auth-session`                      | No WorkOS-specific guidance                 |
 | 9   | [Expo docs: Using Convex](https://docs.expo.dev/guides/using-convex/)                                                             | Basic Convex integration in Expo                                     | No auth                                     |
-
 
 ---
 

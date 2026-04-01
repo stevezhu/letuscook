@@ -106,9 +106,7 @@ function buildTitleUserPrompt(
   return prompt;
 }
 
-const MODELS = [
-  'minimax/minimax-m2.7',
-];
+const MODELS = ['minimax/minimax-m2.7'];
 
 interface Result {
   model: string;
@@ -136,7 +134,9 @@ async function runTest(modelId: string, testCase: TestCase): Promise<Result> {
       console.log(`  [DEBUG] Empty text for ${modelId}/${testCase.name}`);
       console.log(`  [DEBUG] finishReason: ${result.finishReason}`);
       console.log(`  [DEBUG] usage: ${JSON.stringify(result.usage)}`);
-      console.log(`  [DEBUG] response headers: ${JSON.stringify(result.response?.headers)}`);
+      console.log(
+        `  [DEBUG] response headers: ${JSON.stringify(result.response?.headers)}`,
+      );
       console.log(`  [DEBUG] warnings: ${JSON.stringify(result.warnings)}`);
       console.log(`  [DEBUG] raw text repr: ${JSON.stringify(result.text)}`);
     }
