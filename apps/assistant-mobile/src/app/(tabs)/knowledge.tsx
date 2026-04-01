@@ -1,47 +1,34 @@
 import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@workspace/rn-reusables/components/button';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
-import { type Href, useRouter } from 'expo-router';
-import { ActivityIndicator, FlatList, Pressable, View } from 'react-native';
+import { type Href, Redirect, useRouter } from 'expo-router';
+import { FlatList, Pressable, View } from 'react-native';
 
+import { DefaultSuspense } from '#components/default-suspense.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function KnowledgeTab() {
-  return <KnowledgeScreen />;
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Redirect href="/" />;
+  }
+
+  return (
+    <DefaultSuspense>
+      <KnowledgeScreen />
+    </DefaultSuspense>
+  );
 }
 
 function KnowledgeScreen() {
   const router = useRouter();
-  const { user, signIn } = useAuth();
-  const { data, isLoading } = useQuery({
-    ...convexQuery(api.nodes.getKnowledgeBasePages, user ? {} : 'skip'),
-    enabled: !!user,
-  });
+  const { data } = useSuspenseQuery(
+    convexQuery(api.nodes.getKnowledgeBasePages, {}),
+  );
 
-  if (!user) {
-    return (
-      <View className="flex-1 items-center justify-center gap-4 p-8">
-        <Text className="text-center text-base text-muted-foreground">
-          Sign in to view your knowledge base
-        </Text>
-        <Button onPress={signIn}>
-          <Text>Sign In</Text>
-        </Button>
-      </View>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (!data || data.length === 0) {
+  if (data.length === 0) {
     return (
       <View className="flex-1 items-center justify-center p-8">
         <Text className="text-center text-base text-muted-foreground">

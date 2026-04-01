@@ -1,13 +1,27 @@
 import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
 import type { Id } from 'assistant-convex/convex/_generated/dataModel';
-import { type Href, Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import {
+  type Href,
+  Redirect,
+  Stack,
+  useLocalSearchParams,
+  useRouter,
+} from 'expo-router';
+import { Pressable, ScrollView, View } from 'react-native';
+
+import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function NodeDetailRoute() {
   const { nodeId } = useLocalSearchParams<{ nodeId: string }>();
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <View className="flex-1">
@@ -17,24 +31,18 @@ export default function NodeDetailRoute() {
           presentation: 'modal',
         }}
       />
-      <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
+      <DefaultSuspense>
+        <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
+      </DefaultSuspense>
     </View>
   );
 }
 
 function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
   const router = useRouter();
-  const { data, isLoading } = useQuery(
+  const { data } = useSuspenseQuery(
     convexQuery(api.nodes.getNodeWithEdges, { nodeId }),
   );
-
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   if (!data) {
     return (
