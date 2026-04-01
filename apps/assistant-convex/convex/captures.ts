@@ -569,6 +569,14 @@ export const embedAndClassify = internalAction({
           ownerUserId: args.ownerUserId,
         });
 
+        if (linkMeta.fetchStatus === 'failed') {
+          await ctx.runMutation(internal.toolRequests.logToolRequest, {
+            description: `Failed to fetch metadata from ${linkMeta.domain}`,
+            domain: linkMeta.domain,
+            ownerUserId: args.ownerUserId,
+          });
+        }
+
         // Build enriched content for embedding and title generation
         const parts: string[] = [];
         if (linkMeta.title) parts.push(linkMeta.title);

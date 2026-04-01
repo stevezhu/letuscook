@@ -89,6 +89,19 @@ export const nodeDocumentFields = {
   ownerUserId: v.id('users'),
 };
 
+export const toolRequestFields = {
+  description: v.string(),
+  domain: v.optional(v.string()),
+  frequency: v.number(),
+  status: v.union(
+    v.literal('open'),
+    v.literal('implemented'),
+    v.literal('dismissed'),
+  ),
+  createdAt: v.number(),
+  ownerUserId: v.id('users'),
+};
+
 export const linkMetadataFields = {
   captureId: v.id('captures'),
   url: v.string(),
@@ -180,6 +193,11 @@ export default defineSchema({
       searchField: 'title',
       filterFields: ['domain', 'ownerUserId'],
     }),
+
+  toolRequests: defineTable(toolRequestFields).index('by_owner_status', [
+    'ownerUserId',
+    'status',
+  ]),
 
   topics: defineTable({
     label: v.string(),

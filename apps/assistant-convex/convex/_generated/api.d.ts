@@ -25,6 +25,7 @@ import type * as nodes from "../nodes.js";
 import type * as scripts_seedAgentUser from "../scripts/seedAgentUser.js";
 import type * as search from "../search.js";
 import type * as suggestions from "../suggestions.js";
+import type * as toolRequests from "../toolRequests.js";
 import type * as topics from "../topics.js";
 import type * as utils_customFunctions from "../utils/customFunctions.js";
 import type * as utils_errors from "../utils/errors.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   "scripts/seedAgentUser": typeof scripts_seedAgentUser;
   search: typeof search;
   suggestions: typeof suggestions;
+  toolRequests: typeof toolRequests;
   topics: typeof topics;
   "utils/customFunctions": typeof utils_customFunctions;
   "utils/errors": typeof utils_errors;
