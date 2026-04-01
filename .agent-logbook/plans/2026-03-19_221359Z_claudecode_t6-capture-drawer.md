@@ -1,6 +1,5 @@
 ---
-
-## date: 2026-03-19T22:13:59Z
+date: 2026-03-19T22:13:59Z
 type: plan
 status: in-progress
 agent: claudecode
@@ -9,6 +8,7 @@ branch: main
 sessionId: 3d175654-b3f2-4ba9-8cd4-c1764b5277b8
 taskId: T6
 tags: [capture, bottom-sheet, mobile-ui, offline]
+---
 
 # T6: Capture Drawer — Flow 1
 

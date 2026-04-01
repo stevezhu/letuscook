@@ -1,13 +1,13 @@
 ---
 date: 2026-03-03T05:39:07Z
 type: activity
-status: complete
+status: done
 agent: claudecode
 models: [claude-opus-4-6]
 branch: t2
-task_id: T2
+taskId: T2
 tags: [auth, workos, oauth, convex, mobile]
-files_modified:
+filesModified:
   - apps/assistant-mobile/src/polyfills.ts
   - apps/assistant-server/convex/auth.config.ts
   - apps/assistant-mobile/src/lib/auth.ts

@@ -1,7 +1,7 @@
 ---
 date: 2026-04-01T01:03:47Z
 type: activity
-status: complete
+status: done
 agent: claudecode
 models: [claude-opus-4-6, claude-haiku-4-5-20251001, claude-opus-4-6]
 branch: improve-capture

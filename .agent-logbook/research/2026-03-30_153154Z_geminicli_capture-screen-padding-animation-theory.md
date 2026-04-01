@@ -1,11 +1,10 @@
 ---
 date: 2026-03-30T15:31:54Z
 type: research
-status: complete
+status: done
 agent: geminicli
 models: [gemini-2.0-flash-001]
 branch: t7
-slug: capture-screen-padding-animation-theory
 tags: [react-native, reanimated, layout, animations]
 filesModified: []
 ---

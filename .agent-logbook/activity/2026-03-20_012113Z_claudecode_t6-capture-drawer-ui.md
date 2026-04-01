@@ -1,7 +1,7 @@
 ---
 date: 2026-03-20T01:21:13Z
 type: activity
-status: complete
+status: done
 agent: claudecode
 models: [claude-opus-4-6, claude-haiku-4-5-20251001]
 branch: t6

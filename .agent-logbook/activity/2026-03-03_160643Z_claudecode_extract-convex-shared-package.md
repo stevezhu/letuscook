@@ -1,14 +1,14 @@
 ---
 date: 2026-03-03T16:06:43Z
 type: activity
-status: complete
+status: done
 agent: claudecode
 models: [claude-sonnet-4-6]
 branch: t2
-task_id: T2
+taskId: T2
 cost: $0.00
 tags: [convex, monorepo, refactor, packages]
-files_modified:
+filesModified:
   - packages/convex/package.json
   - packages/convex/.gitignore
   - packages/convex/.env.local
@@ -22,7 +22,7 @@ files_modified:
   - apps/assistant-server/.env.local
   - apps/assistant-mobile/package.json
   - apps/assistant-mobile/src/components/user-sync.tsx
-related_plan: plans/extract_convex_package_fa7d9970.plan.md
+relatedPlan: plans/extract_convex_package_fa7d9970.plan.md
 ---
 
 # Extract Convex into Shared Workspace Package

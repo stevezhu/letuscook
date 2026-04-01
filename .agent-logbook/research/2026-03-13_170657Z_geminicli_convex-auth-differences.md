@@ -1,7 +1,7 @@
 ---
 date: 2026-03-13T17:06:57Z
 type: research
-status: complete
+status: done
 agent: geminicli
 models: [gemini-3-auto]
 branch: t4

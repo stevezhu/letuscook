@@ -1,14 +1,13 @@
 ---
-
-## date: 2026-03-04T19:09:20Z
-
+date: 2026-03-04T19:09:20Z
 type: research
-status: complete
+status: done
 agent: claudecode
 models: [claude-opus-4-6]
 branch: t2
-session_id: 060d3f6b-eea4-4a8c-8c42-77cbcf3213e2
+sessionId: 060d3f6b-eea4-4a8c-8c42-77cbcf3213e2
 tags: [auth, expo, convex, workos, authkit, monorepo]
+---
 
 # Expo + Convex + WorkOS AuthKit Integration in a Monorepo
 
