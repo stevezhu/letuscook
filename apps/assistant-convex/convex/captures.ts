@@ -619,7 +619,19 @@ export const embedAndClassify = internalAction({
         similarNodes,
       );
 
-      // 5. Save results
+      // 5. Identify organizing nodes (graph-based categorization)
+      const { identifyOrganizingNodes } =
+        await import('#convex/ai/nodeLinker.ts');
+      const organizingNodeSuggestions = await identifyOrganizingNodes(ctx, {
+        contentTitle: title,
+        rawContent: contentForEmbedding,
+        captureType: args.captureType,
+        embedding,
+        ownerUserId: args.ownerUserId,
+        similarNodes,
+      });
+
+      // 6. Save results
       await ctx.runMutation(internal.captures.saveEmbeddingResult, {
         captureId: args.captureId,
         agentUserId: args.agentUserId,
@@ -630,6 +642,10 @@ export const embedAndClassify = internalAction({
         similarNodeIds: similarNodes.map((n) => n.id),
         similarNodeScores: similarNodes.map((n) => n.score),
         explicitMentionNodeIds: args.explicitMentionNodeIds,
+        organizingNodeIds: organizingNodeSuggestions.map((s) => s.nodeId),
+        organizingNodeConfidences: organizingNodeSuggestions.map(
+          (s) => s.confidence,
+        ),
       });
     } catch (error) {
       console.error('embedAndClassify failed:', error);
@@ -666,6 +682,8 @@ export const saveEmbeddingResult = internalMutation({
     similarNodeIds: v.array(v.id('nodes')),
     similarNodeScores: v.array(v.number()),
     explicitMentionNodeIds: v.array(v.id('nodes')),
+    organizingNodeIds: v.optional(v.array(v.id('nodes'))),
+    organizingNodeConfidences: v.optional(v.array(v.number())),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -711,7 +729,37 @@ export const saveEmbeddingResult = internalMutation({
       ),
     );
 
-    // 4. Create suggestion row
+    // 4. Create categorized_as edges to organizing nodes
+    const organizingNodeIds = args.organizingNodeIds ?? [];
+    const organizingNodeConfidences = args.organizingNodeConfidences ?? [];
+    await Promise.all(
+      organizingNodeIds.map((nodeId, i) => {
+        const confidence = organizingNodeConfidences[i] ?? 0;
+        // Auto-verify edges with confidence > 0.8
+        const isAutomatic = confidence > 0.8;
+        // Check for existing edge before inserting
+        return ctx.db
+          .query('edges')
+          .withIndex('by_edge_pair', (q) =>
+            q.eq('fromNodeId', draftNodeId).eq('toNodeId', nodeId),
+          )
+          .first()
+          .then((existing) => {
+            if (existing) return;
+            return ctx.db.insert('edges', {
+              fromNodeId: draftNodeId,
+              toNodeId: nodeId,
+              edgeType: 'categorized_as',
+              source: 'processor',
+              verified: isAutomatic,
+              confidence,
+              createdAt: now,
+            });
+          });
+      }),
+    );
+
+    // 5. Create suggestion row
     await ctx.db.insert('suggestions', {
       captureId: args.captureId,
       suggestorUserId: args.agentUserId,
@@ -720,7 +768,7 @@ export const saveEmbeddingResult = internalMutation({
       createdAt: now,
     });
 
-    // 5. Set capture state to ready
+    // 6. Set capture state to ready
     await ctx.db.patch('captures', args.captureId, {
       captureState: 'ready',
       updatedAt: now,

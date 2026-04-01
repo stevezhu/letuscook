@@ -41,6 +41,7 @@ export const nodeFields = {
   archivedAt: v.optional(v.number()),
   sourceCaptureId: v.optional(v.id('captures')),
   embedding: v.optional(v.array(v.float64())),
+  nodeKind: v.optional(v.union(v.literal('regular'), v.literal('virtual'))),
 };
 
 export const edgeFields = {
@@ -54,6 +55,7 @@ export const edgeFields = {
     v.literal('suggested'),
     v.literal('reference'),
     v.literal('related'),
+    v.literal('categorized_as'),
   ),
   source: v.union(v.literal('user'), v.literal('processor')),
   verified: v.boolean(),
@@ -123,6 +125,7 @@ export default defineSchema({
       'updatedAt',
     ])
     .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
+    .index('by_owner_nodeKind', ['ownerUserId', 'nodeKind'])
     .searchIndex('search_nodes', {
       searchField: 'searchText',
       filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],

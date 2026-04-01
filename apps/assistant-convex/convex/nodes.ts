@@ -122,8 +122,8 @@ export const unarchiveNode = authMutation({
 });
 
 /**
- * Returns all published, non-archived nodes owned by the current user, each
- * annotated with a count of its published edges.
+ * Returns all published, non-archived, non-virtual nodes owned by the current
+ * user, each annotated with a count of its published edges.
  */
 export const getKnowledgeBasePages = authQuery({
   args: {},
@@ -142,9 +142,15 @@ export const getKnowledgeBasePages = authQuery({
       .order('desc')
       .collect();
 
+    // Filter out virtual nodes — they are organizing concepts not yet promoted
+    // by the user. Treat undefined nodeKind as 'regular'.
+    const regularNodes = nodes.filter(
+      (n) => (n.nodeKind ?? 'regular') !== 'virtual',
+    );
+
     // Attach edge counts
     const nodesWithCounts = await Promise.all(
-      nodes.map(async (node) => {
+      regularNodes.map(async (node) => {
         const [outgoing, incoming] = await Promise.all([
           ctx.db
             .query('edges')
