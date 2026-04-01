@@ -44,9 +44,7 @@ function KnowledgeScreen() {
         renderItem={({ item }) => (
           <Pressable
             className="border-b border-border px-4 py-3"
-            onPress={() =>
-              router.push(`/knowledge/${item.node._id}` as Href)
-            }
+            onPress={() => router.push(`/knowledge/${item.node._id}` as Href)}
           >
             <Text className="text-base font-medium text-foreground">
               {item.node.title}

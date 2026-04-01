@@ -48,9 +48,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
       contentContainerClassName="p-4 gap-6"
     >
       <View className="gap-2">
-        <Text className="text-2xl font-bold text-foreground">
-          {node.title}
-        </Text>
+        <Text className="text-2xl font-bold text-foreground">{node.title}</Text>
         <Text className="text-base text-foreground">{node.content}</Text>
       </View>
 
@@ -67,9 +65,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
               label={entry.edge.label}
               onPress={() => {
                 if (entry.linkedNode?.type === 'node') {
-                  router.push(
-                    `/knowledge/${entry.linkedNode._id}` as Href,
-                  );
+                  router.push(`/knowledge/${entry.linkedNode._id}` as Href);
                 }
               }}
             />
@@ -90,9 +86,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
               label={entry.edge.label}
               onPress={() => {
                 if (entry.linkedNode?.type === 'node') {
-                  router.push(
-                    `/knowledge/${entry.linkedNode._id}` as Href,
-                  );
+                  router.push(`/knowledge/${entry.linkedNode._id}` as Href);
                 }
               }}
             />
@@ -115,7 +109,10 @@ function EdgeRow({
   label,
   onPress,
 }: {
-  linkedNode: { type: 'node'; _id: string; title: string } | { type: 'private' } | null;
+  linkedNode:
+    | { type: 'node'; _id: string; title: string }
+    | { type: 'private' }
+    | null;
   edgeType: string;
   label?: string;
   onPress: () => void;

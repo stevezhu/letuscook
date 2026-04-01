@@ -17,11 +17,13 @@ Add a dedicated "Knowledge" tab to the mobile app that lets users browse all the
 ## Scope
 
 **Included:**
+
 - New Knowledge tab with list of all published nodes (title + edge count)
 - Node detail screen showing content + outgoing/incoming connections
 - Navigation between connected nodes
 
 **Not included:**
+
 - No backend changes (existing queries suffice)
 - No new module directory (only 2 screen files)
 - No search/filter on the knowledge list
@@ -29,14 +31,18 @@ Add a dedicated "Knowledge" tab to the mobile app that lets users browse all the
 ## Steps
 
 ### 1. Create Knowledge tab screen
+
 **Create `apps/assistant-mobile/src/app/(tabs)/knowledge.tsx`**
+
 - `DefaultSuspense` wrapper, `useSuspenseQuery` with `convexQuery(api.nodes.getKnowledgeBasePages, {})`
 - `FlatList` of nodes showing title + edge count
 - Tap navigates to `/knowledge/${node._id}`
 - Empty state when no nodes
 
 ### 2. Create node detail route
+
 **Create `apps/assistant-mobile/src/app/knowledge/[nodeId].tsx`**
+
 - `useLocalSearchParams<{ nodeId: string }>()` cast to `Id<'nodes'>`
 - `useSuspenseQuery(convexQuery(api.nodes.getNodeWithEdges, { nodeId }))`
 - `ScrollView` with: title, content, outgoing connections, incoming connections
@@ -44,11 +50,15 @@ Add a dedicated "Knowledge" tab to the mobile app that lets users browse all the
 - Edge type/label shown as secondary info
 
 ### 3. Register tab in tabs layout
+
 **Modify `apps/assistant-mobile/src/app/(tabs)/_layout.tsx`**
+
 - Add `NativeTabs.Trigger` with `sf="book.fill"` / `md="menu_book"`
 
 ### 4. Register detail route in root Stack
+
 **Modify `apps/assistant-mobile/src/app/_layout.tsx`**
+
 - Add `Stack.Screen name="knowledge/[nodeId]"` with modal presentation
 
 ## Key Files
