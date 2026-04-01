@@ -73,6 +73,13 @@ function RootLayoutContent() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="knowledge/[nodeId]"
+        options={{
+          headerShown: true,
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
 }
