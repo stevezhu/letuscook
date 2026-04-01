@@ -76,6 +76,26 @@ export const suggestionFields = {
   processedAt: v.optional(v.number()),
 };
 
+export const linkMetadataFields = {
+  captureId: v.id('captures'),
+  url: v.string(),
+  canonicalUrl: v.optional(v.string()),
+  domain: v.string(),
+  title: v.optional(v.string()),
+  description: v.optional(v.string()),
+  faviconUrl: v.optional(v.string()),
+  ogImageUrl: v.optional(v.string()),
+  ogImageStorageId: v.optional(v.id('_storage')),
+  contentSnippet: v.optional(v.string()),
+  fetchedAt: v.number(),
+  fetchStatus: v.union(
+    v.literal('success'),
+    v.literal('partial'),
+    v.literal('failed'),
+  ),
+  ownerUserId: v.id('users'),
+};
+
 export default defineSchema({
   users: defineTable(userFields)
     .index('by_workos_user_id', ['workosUserId'])
@@ -132,6 +152,11 @@ export default defineSchema({
     .index('by_capture', ['captureId'])
     .index('by_suggestor', ['suggestorUserId'])
     .index('by_capture_status', ['captureId', 'status']),
+
+  linkMetadata: defineTable(linkMetadataFields)
+    .index('by_capture', ['captureId'])
+    .index('by_url', ['url'])
+    .index('by_domain_owner', ['domain', 'ownerUserId']),
 
   topics: defineTable({
     label: v.string(),

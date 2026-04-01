@@ -542,8 +542,38 @@ export const embedAndClassify = internalAction({
       const { embedText, generateTitle } =
         await import('#convex/ai/embedding.ts');
 
-      // 1. Embed the raw content
-      const embedding = await embedText(args.rawContent);
+      // 0. If link capture, fetch metadata and use enriched content
+      let contentForEmbedding = args.rawContent;
+      if (args.captureType === 'link') {
+        const { fetchLinkMetadata } = await import('#convex/ai/linkFetcher.ts');
+        const linkMeta = await fetchLinkMetadata(args.rawContent.trim());
+        await ctx.runMutation(internal.linkMetadata.saveLinkMetadata, {
+          captureId: args.captureId,
+          url: linkMeta.url,
+          canonicalUrl: linkMeta.canonicalUrl,
+          domain: linkMeta.domain,
+          title: linkMeta.title,
+          description: linkMeta.description,
+          faviconUrl: linkMeta.faviconUrl,
+          ogImageUrl: linkMeta.ogImageUrl,
+          contentSnippet: linkMeta.contentSnippet,
+          fetchedAt: linkMeta.fetchedAt,
+          fetchStatus: linkMeta.fetchStatus,
+          ownerUserId: args.ownerUserId,
+        });
+
+        // Build enriched content for embedding and title generation
+        const parts: string[] = [];
+        if (linkMeta.title) parts.push(linkMeta.title);
+        if (linkMeta.description) parts.push(linkMeta.description);
+        if (linkMeta.contentSnippet) parts.push(linkMeta.contentSnippet);
+        if (parts.length > 0) {
+          contentForEmbedding = parts.join('\n\n');
+        }
+      }
+
+      // 1. Embed the raw content (or enriched content for links)
+      const embedding = await embedText(contentForEmbedding);
 
       // 2. Vector search for similar published nodes
       const searchResults = await ctx.vectorSearch('nodes', 'by_embedding', {
@@ -577,7 +607,7 @@ export const embedAndClassify = internalAction({
 
       // 4. Generate title with LLM fallback chain
       const title = await generateTitle(
-        args.rawContent,
+        contentForEmbedding,
         args.captureType,
         similarNodes,
       );
