@@ -78,6 +78,17 @@ export const suggestionFields = {
   processedAt: v.optional(v.number()),
 };
 
+export const nodeDocumentFields = {
+  nodeId: v.id('nodes'),
+  version: v.number(),
+  title: v.string(),
+  content: v.string(),
+  generatedAt: v.number(),
+  generatedFromEdgesUpTo: v.number(),
+  isEdited: v.boolean(),
+  ownerUserId: v.id('users'),
+};
+
 export const linkMetadataFields = {
   captureId: v.id('captures'),
   url: v.string(),
@@ -155,6 +166,11 @@ export default defineSchema({
     .index('by_capture', ['captureId'])
     .index('by_suggestor', ['suggestorUserId'])
     .index('by_capture_status', ['captureId', 'status']),
+
+  nodeDocuments: defineTable(nodeDocumentFields).index('by_node_version', [
+    'nodeId',
+    'version',
+  ]),
 
   linkMetadata: defineTable(linkMetadataFields)
     .index('by_capture', ['captureId'])
