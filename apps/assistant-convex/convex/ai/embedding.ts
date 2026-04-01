@@ -44,8 +44,8 @@ function buildTitleUserPrompt(
 // Benchmarked 2026-04-01 — see .agent-logbook/research/2026-04-01_021940Z_claudecode_bench-title-generation-models.md
 const TITLE_MODELS = [
   google('gemini-2.5-flash'),
+  openrouter('google/gemini-2.5-flash'), // backup model
   google('gemini-3-flash-preview'),
-  // openrouter('google/gemini-2.5-flash'),
 ];
 
 const MAX_RETRIES = 3;

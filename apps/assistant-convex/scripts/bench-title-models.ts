@@ -147,7 +147,7 @@ async function runTest(modelId: string, testCase: TestCase): Promise<Result> {
       latencyMs: Date.now() - start,
     };
   } catch (err) {
-    console.log(`  [DEBUG ERROR] ${modelId}/${testCase.name}: ${err}`);
+    console.error(`  [DEBUG ERROR] ${modelId}/${testCase.name}`, err);
     return {
       model: modelId,
       testCase: testCase.name,
