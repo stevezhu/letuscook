@@ -1,18 +1,38 @@
 import { convexQuery } from '@convex-dev/react-query';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { Button } from '@workspace/rn-reusables/components/button';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
-import { type Href, Redirect, useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import { FlatList, Pressable, View } from 'react-native';
 
 import { DefaultSuspense } from '#components/default-suspense.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function KnowledgeTab() {
-  const { user } = useAuth();
+  const { user, signIn } = useAuth();
 
   if (!user) {
-    return <Redirect href="/" />;
+    return (
+      <View className="flex-1 bg-background p-safe">
+        <View className="flex-row items-center justify-between border-b border-border px-4 py-2">
+          <Text className="text-sm text-muted-foreground">
+            Sign in to view your knowledge base
+          </Text>
+          <Button variant="outline" size="sm" onPress={signIn}>
+            <Text className="text-sm">Sign in</Text>
+          </Button>
+        </View>
+        <View className="flex-1 items-center justify-center p-8">
+          <Text className="text-center text-base text-muted-foreground">
+            No knowledge items yet
+          </Text>
+          <Text className="mt-2 text-center text-sm text-muted-foreground">
+            Accepted captures will appear here as nodes
+          </Text>
+        </View>
+      </View>
+    );
   }
 
   return (
