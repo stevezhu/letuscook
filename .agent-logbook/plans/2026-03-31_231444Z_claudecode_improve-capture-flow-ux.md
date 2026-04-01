@@ -158,7 +158,6 @@ Identify and propose UX improvements to the capture flow — the core loop of ca
 
 ## Priority Ranking
 
-
 | Priority | Item                                | Effort | Impact |
 | -------- | ----------------------------------- | ------ | ------ |
 | P0       | A1 - Submit feedback & haptics      | Low    | High   |
@@ -178,7 +177,6 @@ Identify and propose UX improvements to the capture flow — the core loop of ca
 | P3       | E2 - Hashtag parsing                | Medium | Medium |
 | P3       | D2 - Quick capture from home        | Low    | Low    |
 | P3       | E3 - Voice capture                  | High   | Medium |
-
 
 ## Open Questions
 

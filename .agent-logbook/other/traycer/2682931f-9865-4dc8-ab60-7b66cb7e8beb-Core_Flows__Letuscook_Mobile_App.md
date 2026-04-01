@@ -1,8 +1,8 @@
 ---
-id: "2682931f-9865-4dc8-ab60-7b66cb7e8beb"
-title: "Core Flows: Letuscook Mobile App"
-createdAt: "2026-02-13T06:11:17.275Z"
-updatedAt: "2026-03-18T04:26:53.248Z"
+id: '2682931f-9865-4dc8-ab60-7b66cb7e8beb'
+title: 'Core Flows: Letuscook Mobile App'
+createdAt: '2026-02-13T06:11:17.275Z'
+updatedAt: '2026-03-18T04:26:53.248Z'
 type: spec
 ---
 
@@ -86,18 +86,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #
 1. User taps capture input
 2. App opens an iOS-style bottom drawer (bottom sheet) capture interface
 3. Drawer shows:
-  - Grab handle + lightweight header ("Capture")
-  - Recent captures above (stream-of-consciousness log, backed by all non-archived captures, ordered by most recent)
-  - **captureType selector** (Text / Link / Task segmented control; default: Text) in the input area, above the text input
-  - Text input docked below the selector (directly above the keyboard when open)
-  - Send button next to input
+
+- Grab handle + lightweight header ("Capture")
+- Recent captures above (stream-of-consciousness log, backed by all non-archived captures, ordered by most recent)
+- **captureType selector** (Text / Link / Task segmented control; default: Text) in the input area, above the text input
+- Text input docked below the selector (directly above the keyboard when open)
+- Send button next to input
+
 4. User selects a capture type (Text, Link, or Task), then types their content
-  - Optional: typing `@` opens link autocomplete (when signed in + synced) so the user can link to an existing page/item
+
+- Optional: typing `@` opens link autocomplete (when signed in + synced) so the user can link to an existing page/item
+
 5. User submits by tapping the send button
-  - Pressing Enter/Return inserts a newline (multi-line capture)
+
+- Pressing Enter/Return inserts a newline (multi-line capture)
+
 6. Item is saved to the local inbox immediately with timestamp and the selected `captureType`
 7. If offline or not signed in, item is marked **"Offline"** until sign-in + sync
-  - **Guest limit**: if the user has already captured 100 items without signing in, show a **"Sign in to continue capturing"** prompt instead of saving
+
+- **Guest limit**: if the user has already captured 100 items without signing in, show a **"Sign in to continue capturing"** prompt instead of saving
+
 8. Input clears, ready for next capture
 9. User can continue capturing, or dismiss the drawer by swiping down on the sheet
 10. Dismissing returns to the main Knowledge Base view
@@ -227,10 +235,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: w
   - If state is not Ready, Accept/Reject buttons are hidden (tap to open detail)
 
 1. User can:
-  - Scroll through captures
-  - Tap capture content to open detailed review/edit at any time (manual overrides the suggestion)
-  - Tap "Accept" (Ready only) to accept the suggestion and organize the capture
-  - Tap "Reject" (Ready only) to mark the suggestion wrong and label capture **Needs manual**
+
+- Scroll through captures
+- Tap capture content to open detailed review/edit at any time (manual overrides the suggestion)
+- Tap "Accept" (Ready only) to accept the suggestion and organize the capture
+- Tap "Reject" (Ready only) to mark the suggestion wrong and label capture **Needs manual**
+
 2. Back button returns to Knowledge Base view
 
 **UI Feedback**:
@@ -409,19 +419,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: w
 1. User taps inbox item
 2. Full-screen review modal slides up
 3. Modal shows:
-  - Header with a **back button on the left** and title
-  - **Title input** (prefilled when the processor suggests a title)
-  - Item content (editable text area)
-  - Item state: Offline / Processing / Ready / Failed / Needs manual
-  - Links section (always), including any **suggested links** from the suggestor (AI agent in Phase 1)
-  - Actions: Save (organize), Discard changes, and an overflow menu with **Archive**
+
+- Header with a **back button on the left** and title
+- **Title input** (prefilled when the processor suggests a title)
+- Item content (editable text area)
+- Item state: Offline / Processing / Ready / Failed / Needs manual
+- Links section (always), including any **suggested links** from the suggestor (AI agent in Phase 1)
+- Actions: Save (organize), Discard changes, and an overflow menu with **Archive**
+
 4. User can:
-  - Edit the content at any time
-    - Typing `@` opens an autocomplete to link to an existing page/item (creates explicit graph edges)
-  - Edit the title (node title)
-  - Add/remove links to pages (via `@` linking)
-  - Review **suggested links** (if present) and keep/remove them before saving
-  - View related items/links (explicit + suggested)
+
+- Edit the content at any time
+  - Typing `@` opens an autocomplete to link to an existing page/item (creates explicit graph edges)
+- Edit the title (node title)
+- Add/remove links to pages (via `@` linking)
+- Review **suggested links** (if present) and keep/remove them before saving
+- View related items/links (explicit + suggested)
+
 5. If item state is **Failed**, user can choose: retry processing (AI in Phase 1) OR organize manually
 6. User taps Save
 7. Capture is organized and treated as verified; the resulting page/node appears in the Knowledge Base list
@@ -521,13 +535,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: w
 
 1. Main window shows Knowledge Base
 2. Content displayed as a vertical list of **recent pages**
-  - Sorted by most recently updated
-  - If there are no pages yet, show the onboarding empty state prompting capture/review
+
+- Sorted by most recently updated
+- If there are no pages yet, show the onboarding empty state prompting capture/review
+
 3. Each page shows:
-  - Page title
-  - Icon/emoji (if set)
-  - Preview snippet
-  - Lightweight metadata (linked-pages indicator, not tags/categories)
+
+- Page title
+- Icon/emoji (if set)
+- Preview snippet
+- Lightweight metadata (linked-pages indicator, not tags/categories)
+
 4. User scrolls through pages
 5. User taps a page to view full content
 6. Full page view shows:
@@ -640,17 +658,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: w
 1. User taps Search button
 2. App opens an **iOS-style bottom drawer (bottom sheet) Search panel** from the bottom
 3. If user is not signed in:
-  - Show "Sign in to sync and search" CTA inside the drawer
-  - Keep search input visible but disabled
+
+- Show "Sign in to sync and search" CTA inside the drawer
+- Keep search input visible but disabled
+
 4. If signed in:
-  - Search input is docked at the bottom of the drawer, directly above keyboard (one-handed friendly)
-  - User types search query
-  - Results appear instantly as user types
+
+- Search input is docked at the bottom of the drawer, directly above keyboard (one-handed friendly)
+- User types search query
+- Results appear instantly as user types
+
 5. Results show:
-  - Matching items from inbox
-  - Matching pages from knowledge base
-  - Highlighted matching text
-  - Source indicator (Inbox vs. Knowledge Base)
+
+- Matching items from inbox
+- Matching pages from knowledge base
+- Highlighted matching text
+- Source indicator (Inbox vs. Knowledge Base)
+
 6. User taps a result to open it
 7. Opening inbox item goes to detailed review
 8. Opening knowledge base page shows full page view
@@ -786,8 +810,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: w
 3. Item is removed from active views and **is not included in Global Search**
 4. Item remains recoverable in the Archived view
 5. In Archived view, user can:
-  - Unarchive (restore)
-  - View item detail
+
+- Unarchive (restore)
+- View item detail
 
 ```wireframe
 <!DOCTYPE html>

@@ -1,8 +1,8 @@
 ---
-id: "44be7e7f-9362-4608-8f89-1633275f0edd"
-title: "Technical Plan: Letuscook Architecture"
-createdAt: "2026-02-13T21:07:40.026Z"
-updatedAt: "2026-03-18T04:26:54.264Z"
+id: '44be7e7f-9362-4608-8f89-1633275f0edd'
+title: 'Technical Plan: Letuscook Architecture'
+createdAt: '2026-02-13T21:07:40.026Z'
+updatedAt: '2026-03-18T04:26:54.264Z'
 type: spec
 ---
 
@@ -19,41 +19,54 @@ Letuscook uses Convex as the primary backend, providing real-time database, serv
 **Key Architectural Decisions:**
 
 1. **Convex as Primary Backend**
-  - **Rationale**: Convex provides real-time reactivity, serverless functions (mutations/queries/actions), built-in auth, and automatic offline sync—eliminating the need for separate database, API server, WebSocket infrastructure, and sync logic
-  - **Trade-offs**: Vendor lock-in, but the productivity gains and built-in features (real-time, offline, auth) outweigh this for an MVP
-  - **Fallback**: Cloudflare Workers available for tasks Convex can't handle (e.g., heavy compute, specific edge requirements)
+
+- **Rationale**: Convex provides real-time reactivity, serverless functions (mutations/queries/actions), built-in auth, and automatic offline sync—eliminating the need for separate database, API server, WebSocket infrastructure, and sync logic
+- **Trade-offs**: Vendor lock-in, but the productivity gains and built-in features (real-time, offline, auth) outweigh this for an MVP
+- **Fallback**: Cloudflare Workers available for tasks Convex can't handle (e.g., heavy compute, specific edge requirements)
+
 2. **Local-First with Offline Guest Capture**
-  - **Rationale**: Users can capture thoughts offline and without logging in ("offline guest capture"); sign-in is required only to sync, organize, and search
-  - **Trade-offs**: Need to handle anonymous local storage and migration to authenticated user on sign-in, but critical for zero-friction capture
-  - **Conflict Resolution**: Convex's built-in automatic resolution (last-write-wins with vector clocks)
-  - **Guest-to-Auth Migration**: On sign-in, migrate locally stored **guest captures** to the user's Convex account
-  - **Guest capture limit**: capped at **100 items** in AsyncStorage; on the 101st attempt, show a "Sign in to continue capturing" prompt (hard gate, no silent eviction)
+
+- **Rationale**: Users can capture thoughts offline and without logging in ("offline guest capture"); sign-in is required only to sync, organize, and search
+- **Trade-offs**: Need to handle anonymous local storage and migration to authenticated user on sign-in, but critical for zero-friction capture
+- **Conflict Resolution**: Convex's built-in automatic resolution (last-write-wins with vector clocks)
+- **Guest-to-Auth Migration**: On sign-in, migrate locally stored **guest captures** to the user's Convex account
+- **Guest capture limit**: capped at **100 items** in AsyncStorage; on the 101st attempt, show a "Sign in to continue capturing" prompt (hard gate, no silent eviction)
+
 3. **Graph-Based Knowledge Structure**
-  - **Rationale**: Flexible, mirrors how knowledge actually connects (like Obsidian/web), supports both explicit user links and processor-suggested connections
-  - **Trade-offs**: More complex queries than hierarchical structure, but provides superior knowledge discovery and navigation
-  - **Implementation**: Separate `captures`, `nodes`, and `edges` tables for clean representation (raw intake vs. post-processed knowledge graph)
-  - **Edge Ownership Model**: Edges do **not** carry `ownerUserId`. Ownership and visibility are derived from the endpoint nodes — if you have access to both `fromNodeId` and `toNodeId`, you see the edge. This avoids per-edge permission rows and makes the Phase 2 sharing model trivially correct.
+
+- **Rationale**: Flexible, mirrors how knowledge actually connects (like Obsidian/web), supports both explicit user links and processor-suggested connections
+- **Trade-offs**: More complex queries than hierarchical structure, but provides superior knowledge discovery and navigation
+- **Implementation**: Separate `captures`, `nodes`, and `edges` tables for clean representation (raw intake vs. post-processed knowledge graph)
+- **Edge Ownership Model**: Edges do **not** carry `ownerUserId`. Ownership and visibility are derived from the endpoint nodes — if you have access to both `fromNodeId` and `toNodeId`, you see the edge. This avoids per-edge permission rows and makes the Phase 2 sharing model trivially correct.
+
 4. **TanStack Query + Convex Integration**
-  - **Rationale**: TanStack Query provides familiar React patterns, caching, and optimistic updates; Convex adapter provides real-time subscriptions
-  - **Trade-offs**: Additional abstraction layer vs. using Convex React hooks directly, but TanStack Query's ecosystem and patterns are well-established
-  - **Benefits**: Unified data fetching patterns, better DevTools, easier testing
+
+- **Rationale**: TanStack Query provides familiar React patterns, caching, and optimistic updates; Convex adapter provides real-time subscriptions
+- **Trade-offs**: Additional abstraction layer vs. using Convex React hooks directly, but TanStack Query's ecosystem and patterns are well-established
+- **Benefits**: Unified data fetching patterns, better DevTools, easier testing
+
 5. **Async Inbox Processing (Processor-based) with Routing**
-  - **Rationale**: Inbox processing happens asynchronously (Convex queue mutation orchestrator + internal action for external provider calls) to keep capture fast. In Phase 1 the processor is AI; in future it can be a human collaborator producing the same kind of suggestion.
-  - **Trade-offs**: Complexity in routing, retries, and attribution, but necessary for reliability and cost control
-  - **Failure Handling**: Exponential backoff retry (3 attempts), then fallback to user manual organization
+
+- **Rationale**: Inbox processing happens asynchronously (Convex queue mutation orchestrator + internal action for external provider calls) to keep capture fast. In Phase 1 the processor is AI; in future it can be a human collaborator producing the same kind of suggestion.
+- **Trade-offs**: Complexity in routing, retries, and attribution, but necessary for reliability and cost control
+- **Failure Handling**: Exponential backoff retry (3 attempts), then fallback to user manual organization
+
 6. **Suggestion Provenance (Phase 1 trust model)**
-  - **Rationale**: Suggestions are produced by a **suggestor user** (AI agent account, seeded via a Convex deploy script). The suggested node and edges are created directly under the **capture owner's `ownerUserId**` — not the suggestor's. This avoids all cross-tenant reads and keeps the security model identical to normal node/edge queries.
-  - **Trade-offs**: The suggestor writes into the owner's graph on their behalf; `suggestorUserId` is only stored for attribution display.
-  - **Implementation**:
-    - AI agent user is seeded by running a **Convex deploy script** that creates the agent's `users` row (`userType="agent"`, `agentProvider`, `agentModel`).
-    - `suggestorUserId` is set by whatever function processes the captures queue — that function resolves the agent user's ID at runtime (e.g., by querying `users` by `userType="agent"`).
-    - Provider/model live on the suggestor's `users` row (`userType="agent"`).
-    - Audit log is deferred to Phase 2.
+
+- **Rationale**: Suggestions are produced by a **suggestor user** (AI agent account, seeded via a Convex deploy script). The suggested node and edges are created directly under the **capture owner's `ownerUserId**` — not the suggestor's. This avoids all cross-tenant reads and keeps the security model identical to normal node/edge queries.
+- **Trade-offs**: The suggestor writes into the owner's graph on their behalf; `suggestorUserId` is only stored for attribution display.
+- **Implementation**:
+  - AI agent user is seeded by running a **Convex deploy script** that creates the agent's `users` row (`userType="agent"`, `agentProvider`, `agentModel`).
+  - `suggestorUserId` is set by whatever function processes the captures queue — that function resolves the agent user's ID at runtime (e.g., by querying `users` by `userType="agent"`).
+  - Provider/model live on the suggestor's `users` row (`userType="agent"`).
+  - Audit log is deferred to Phase 2.
+
 7. **WorkOS AuthKit Integration (Optional for Capture)**
-  - **Rationale**: Enterprise-ready auth from day one, supports OAuth providers, SSO, and user management
-  - **Trade-offs**: More complex than simple device-based auth, but positions product for future team/enterprise features
-  - **Integration**: Convex Auth + WorkOS AuthKit adapter
-  - **Auth Gating**: Capture works without auth; sync, organize, search, and processor-based processing (AI in Phase 1) require sign-in
+
+- **Rationale**: Enterprise-ready auth from day one, supports OAuth providers, SSO, and user management
+- **Trade-offs**: More complex than simple device-based auth, but positions product for future team/enterprise features
+- **Integration**: Convex Auth + WorkOS AuthKit adapter
+- **Auth Gating**: Capture works without auth; sync, organize, search, and processor-based processing (AI in Phase 1) require sign-in
 
 ### Technology Stack
 
@@ -212,7 +225,7 @@ users: defineTable({
   workosUserId: v.optional(v.string()),
 
   // Type
-  userType: v.union(v.literal("human"), v.literal("agent")),
+  userType: v.union(v.literal('human'), v.literal('agent')),
 
   // If userType = agent
   agentProvider: v.optional(v.string()),
@@ -222,24 +235,20 @@ users: defineTable({
   createdAt: v.number(),
   updatedAt: v.number(),
 })
-  .index("by_workos_user_id", ["workosUserId"])
-  .index("by_user_type", ["userType"])
+  .index('by_workos_user_id', ['workosUserId'])
+  .index('by_user_type', ['userType']);
 ```
 
 #### Captures Table (Inbox entries / raw submissions)
 
-Captures (aka **Inbox items**) are the *raw*, user-submitted inputs. They have a **captureType** which determines how the input is processed.
+Captures (aka **Inbox items**) are the _raw_, user-submitted inputs. They have a **captureType** which determines how the input is processed.
 
 ```typescript
 // Convex schema definition
 captures: defineTable({
   // Raw user submission
   rawContent: v.string(),
-  captureType: v.union(
-    v.literal("text"),
-    v.literal("link"),
-    v.literal("task")
-  ), // capture type defines how we process a capture
+  captureType: v.union(v.literal('text'), v.literal('link'), v.literal('task')), // capture type defines how we process a capture
 
   // Timestamps
   capturedAt: v.number(), // set by client; preserved through guest migration
@@ -247,41 +256,45 @@ captures: defineTable({
   archivedAt: v.optional(v.number()),
 
   // Ownership
-  ownerUserId: v.id("users"), // authenticated only; guest captures are local until migration
+  ownerUserId: v.id('users'), // authenticated only; guest captures are local until migration
 
   // Capture workflow state (inbox processing pipeline + processed)
   // NOTE: "Offline" is a client-only state for guest captures stored locally.
   // NOTE: Archival is represented by `archivedAt` (not by `captureState`).
   captureState: v.union(
     // Inbox states
-    v.literal("processing"),
-    v.literal("ready"),
-    v.literal("failed"),
-    v.literal("needs_manual"),
+    v.literal('processing'),
+    v.literal('ready'),
+    v.literal('failed'),
+    v.literal('needs_manual'),
 
     // Terminal state
-    v.literal("processed")
+    v.literal('processed'),
   ),
 
   // The resulting node/page once organized (Phase 1: 0..1)
-  nodeId: v.optional(v.id("nodes")),
+  nodeId: v.optional(v.id('nodes')),
 
   // Parsed explicit @mentions at last edit (helps create edges when organizing)
   // NOTE: must be provided on insert; use [] when none.
-  explicitMentionNodeIds: v.array(v.id("nodes")),
+  explicitMentionNodeIds: v.array(v.id('nodes')),
 })
-.index("by_owner_capture_state", ["ownerUserId", "captureState"])
+  .index('by_owner_capture_state', ['ownerUserId', 'captureState'])
   // ArchivedAt is optional but still indexable in Convex; we can query `archivedAt = undefined` via indexes.
-  .index("by_owner_archivedAt", ["ownerUserId", "archivedAt"])
-  .index("by_owner_archivedAt_capture_state", ["ownerUserId", "archivedAt", "captureState"])
-  .index("by_owner_node", ["ownerUserId", "nodeId"])
-  .searchIndex("search_raw", {
-    searchField: "rawContent",
-    filterFields: ["ownerUserId", "captureState", "archivedAt"]
-  })
+  .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
+  .index('by_owner_archivedAt_capture_state', [
+    'ownerUserId',
+    'archivedAt',
+    'captureState',
+  ])
+  .index('by_owner_node', ['ownerUserId', 'nodeId'])
+  .searchIndex('search_raw', {
+    searchField: 'rawContent',
+    filterFields: ['ownerUserId', 'captureState', 'archivedAt'],
+  });
 ```
 
-**Lifecycle note (simplicity):** captures are treated as an *append-only intake log*.
+**Lifecycle note (simplicity):** captures are treated as an _append-only intake log_.
 
 - Users may edit a capture while it is still in the Inbox (during review).
 - Once organized (`captureState=processed`), the primary editable object becomes the node/page; the capture remains as historical provenance.
@@ -304,7 +317,7 @@ nodes: defineTable({
   // Timestamps + ownership
   createdAt: v.number(),
   updatedAt: v.number(),
-  ownerUserId: v.id("users"),
+  ownerUserId: v.id('users'),
 
   // Visibility / lifecycle
   // Phase 1: nodes created by the processor for suggestions are created as *drafts* (publishedAt is unset)
@@ -319,20 +332,25 @@ nodes: defineTable({
   // Provenance
   // NOTE: nodes created as part of processing a capture (primary suggested node + any new concept nodes)
   // should set sourceCaptureId = that captureId, so accept/reject can publish/cleanup drafts deterministically.
-  sourceCaptureId: v.optional(v.id("captures")),
+  sourceCaptureId: v.optional(v.id('captures')),
 
   // Structured properties (tasks/links/etc.) are intentionally omitted in Phase 1.
   // The processor writes any extracted information into `content`.
   // (Future: a polymorphic `properties` field for typed page properties.)
 })
   // Knowledge Base recent pages (Flow 6): query archivedAt = undefined AND publishedAt is set; order by updatedAt desc
-  .index("by_owner_archivedAt_publishedAt_updatedAt", ["ownerUserId", "archivedAt", "publishedAt", "updatedAt"])
+  .index('by_owner_archivedAt_publishedAt_updatedAt', [
+    'ownerUserId',
+    'archivedAt',
+    'publishedAt',
+    'updatedAt',
+  ])
   // Archived view: query archivedAt > 0
-  .index("by_owner_archivedAt", ["ownerUserId", "archivedAt"])
-  .searchIndex("search_nodes", {
-    searchField: "searchText",
-    filterFields: ["ownerUserId", "archivedAt", "publishedAt"]
-  })
+  .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
+  .searchIndex('search_nodes', {
+    searchField: 'searchText',
+    filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],
+  });
 ```
 
 #### Edges Table
@@ -343,8 +361,8 @@ Represents connections between **nodes/pages** in the knowledge graph.
 
 ```typescript
 edges: defineTable({
-  fromNodeId: v.id("nodes"),
-  toNodeId: v.id("nodes"),
+  fromNodeId: v.id('nodes'),
+  toNodeId: v.id('nodes'),
 
   // Visibility / lifecycle
   // Phase 1: suggested edges created during processing are *drafts* (publishedAt is unset)
@@ -357,14 +375,14 @@ edges: defineTable({
 
   // Edge type
   edgeType: v.union(
-    v.literal("explicit"),    // User-created @link
-    v.literal("suggested"),   // Suggested by processor
-    v.literal("reference"),   // Citation/reference
-    v.literal("related")      // General relation
+    v.literal('explicit'), // User-created @link
+    v.literal('suggested'), // Suggested by processor
+    v.literal('reference'), // Citation/reference
+    v.literal('related'), // General relation
   ),
 
   // Provenance
-  source: v.union(v.literal("user"), v.literal("processor")),
+  source: v.union(v.literal('user'), v.literal('processor')),
   verified: v.boolean(),
   confidence: v.optional(v.number()), // For processor suggestions
 
@@ -372,20 +390,28 @@ edges: defineTable({
   createdAt: v.number(),
   label: v.optional(v.string()), // Optional edge label
 })
-// Edge deduplication by node pair
-.index("by_edge_pair", ["fromNodeId", "toNodeId"])
+  // Edge deduplication by node pair
+  .index('by_edge_pair', ['fromNodeId', 'toNodeId'])
 
-// For archiving/unarchiving: fetch all edges connected to a node where archivedAt = undefined
-.index("by_archivedAt_from_node", ["archivedAt", "fromNodeId"])
-.index("by_archivedAt_to_node", ["archivedAt", "toNodeId"])
+  // For archiving/unarchiving: fetch all edges connected to a node where archivedAt = undefined
+  .index('by_archivedAt_from_node', ['archivedAt', 'fromNodeId'])
+  .index('by_archivedAt_to_node', ['archivedAt', 'toNodeId'])
 
-// Edge queries by node:
-// - Knowledge Base graph: query with `publishedAt` set AND `archivedAt = undefined`
-// - Suggestion review UI: query with `publishedAt = undefined` AND `archivedAt = undefined`
-//
-// One index supports both cases by filtering on `publishedAt`.
-.index("by_publishedAt_archivedAt_from_node", ["publishedAt", "archivedAt", "fromNodeId"])
-.index("by_publishedAt_archivedAt_to_node", ["publishedAt", "archivedAt", "toNodeId"])
+  // Edge queries by node:
+  // - Knowledge Base graph: query with `publishedAt` set AND `archivedAt = undefined`
+  // - Suggestion review UI: query with `publishedAt = undefined` AND `archivedAt = undefined`
+  //
+  // One index supports both cases by filtering on `publishedAt`.
+  .index('by_publishedAt_archivedAt_from_node', [
+    'publishedAt',
+    'archivedAt',
+    'fromNodeId',
+  ])
+  .index('by_publishedAt_archivedAt_to_node', [
+    'publishedAt',
+    'archivedAt',
+    'toNodeId',
+  ]);
 ```
 
 #### Suggestions Table
@@ -395,30 +421,30 @@ Stores pending processing suggestions before user review (AI in Phase 1; human c
 ```typescript
 suggestions: defineTable({
   // Access control key: if you own the capture, you may access the suggestion.
-  captureId: v.id("captures"),
+  captureId: v.id('captures'),
 
   // The suggestor is a user (human collaborator or AI agent user)
-  suggestorUserId: v.id("users"),
+  suggestorUserId: v.id('users'),
 
-// Suggestions reference a *draft* node (and draft edges) created under the capture owner's graph.
+  // Suggestions reference a *draft* node (and draft edges) created under the capture owner's graph.
   // The suggestor is tracked via suggestorUserId for attribution only.
-  suggestedNodeId: v.id("nodes"),
+  suggestedNodeId: v.id('nodes'),
 
   // Status
   status: v.union(
-    v.literal("pending"),
-    v.literal("accepted"),
-    v.literal("rejected"),
-    v.literal("stale")
+    v.literal('pending'),
+    v.literal('accepted'),
+    v.literal('rejected'),
+    v.literal('stale'),
   ),
 
   // Timestamps
   createdAt: v.number(),
   processedAt: v.optional(v.number()),
 })
-  .index("by_capture", ["captureId"])
-  .index("by_suggestor", ["suggestorUserId"])
-  .index("by_capture_status", ["captureId", "status"])
+  .index('by_capture', ['captureId'])
+  .index('by_suggestor', ['suggestorUserId'])
+  .index('by_capture_status', ['captureId', 'status']);
 ```
 
 #### Audit Log (Phase 2)
@@ -440,13 +466,13 @@ Inbox **captures** move through states based on authentication, connectivity, an
 - In Convex, these map to `captures.captureState` (except **Offline**, which is client-only until migration).
 - “Processing” is intentionally generic: in Phase 1 it’s done by an AI processor; in the future it can be done by a human collaborator (e.g., a secretary / personal assistant) producing the same kind of suggestion.
 
-| State | Meaning | Accept/Reject | Primary next action |
-| --- | --- | --- | --- |
-| **Offline** | Captured offline / as guest; local-only until migration | Hidden | Sign in to sync |
-| **Processing** | A processor is working on it (AI in Phase 1) | Hidden | Wait, or open detail to process manually |
-| **Ready** | Suggested links are available (with attribution) | Shown | Accept / Reject / open detail |
-| **Failed** | Processor couldn’t complete | Hidden | Retry processing or process manually |
-| **Needs manual** | Suggestion rejected; must be processed manually | Hidden | Open detail to organize |
+| State            | Meaning                                                 | Accept/Reject | Primary next action                      |
+| ---------------- | ------------------------------------------------------- | ------------- | ---------------------------------------- |
+| **Offline**      | Captured offline / as guest; local-only until migration | Hidden        | Sign in to sync                          |
+| **Processing**   | A processor is working on it (AI in Phase 1)            | Hidden        | Wait, or open detail to process manually |
+| **Ready**        | Suggested links are available (with attribution)        | Shown         | Accept / Reject / open detail            |
+| **Failed**       | Processor couldn’t complete                             | Hidden        | Retry processing or process manually     |
+| **Needs manual** | Suggestion rejected; must be processed manually         | Hidden        | Open detail to organize                  |
 
 **State transitions (typical):**
 
@@ -475,7 +501,7 @@ Inbox **captures** move through states based on authentication, connectivity, an
 **Captures ↔ Nodes (Primary: 0..1; Draft/support nodes: 0..N)**
 
 - In Phase 1, each capture results in **at most one primary** node/page when organized (`captures.nodeId`).
-- A processor suggestion may also create additional *draft* concept nodes (e.g., for new concepts) linked to the capture via `nodes.sourceCaptureId=captureId`; these remain unpublished until the user accepts/saves.
+- A processor suggestion may also create additional _draft_ concept nodes (e.g., for new concepts) linked to the capture via `nodes.sourceCaptureId=captureId`; these remain unpublished until the user accepts/saves.
 - A capture may be archived before it becomes a node
 
 **Audit Log (Phase 2)**
@@ -594,7 +620,7 @@ Inbox **captures** move through states based on authentication, connectivity, an
   - **Publish** the draft graph artifacts:
     - Set `nodes.publishedAt=now` for all draft nodes where `ownerUserId = capture.ownerUserId`, `sourceCaptureId = captureId`, `publishedAt` is not set, and `archivedAt` is not set.
     - Set `edges.publishedAt=now` and `edges.verified=true` for draft edges connected to those nodes (where `publishedAt` is not set and `archivedAt` is not set).
-  - Mark suggestion `accepted`; set capture `captureState="processed"` and `capture.nodeId = suggestion.suggestedNodeId`. (This remains the *primary* page for the capture.)
+  - Mark suggestion `accepted`; set capture `captureState="processed"` and `capture.nodeId = suggestion.suggestedNodeId`. (This remains the _primary_ page for the capture.)
 - `rejectSuggestion(captureId, suggestionId)`: Reject suggestion; set capture `captureState="needs_manual"`.
   - Cleanup: delete (hard delete) any draft nodes/edges created for this suggestion (those with `ownerUserId=capture.ownerUserId`, `sourceCaptureId=captureId`, and `publishedAt` is not set), so rejected processor drafts do not pollute the Knowledge Base or the Archived view.
 - `organizeCapture(captureId, nodeTitle, verified)`: Manual path (no suggestion): create a **published** node/page + **published** edges (from `@` links), set capture `captureState="processed"`.
@@ -667,20 +693,27 @@ Inbox **captures** move through states based on authentication, connectivity, an
 2. `processCapture` invokes `runAiProcessing` (internal action) with `rawContent`, `captureType`, and owner context.
 3. `runAiProcessing` requests structured output via Vercel AI SDK `generateObject(...)` with a strict Zod schema.
 4. `runAiProcessing` validates constraints:
-  - Title lengths, dedupe titles case-insensitively
-  - Max counts (e.g., <= 8 total links)
+
+- Title lengths, dedupe titles case-insensitively
+- Max counts (e.g., <= 8 total links)
+
 5. `runAiProcessing` post-validates referenced IDs:
-  - For `linksToExisting`: verify node exists, `ownerUserId` = capture owner, and `nodes.archivedAt` is not set.
+
+- For `linksToExisting`: verify node exists, `ownerUserId` = capture owner, and `nodes.archivedAt` is not set.
+
 6. `runAiProcessing` returns validated payload to `processCapture`.
 7. `processCapture` persists artifacts (all under the capture owner’s `ownerUserId`):
-  - Create suggested node as a **draft** (`publishedAt` unset) with `sourceCaptureId=captureId`
-  - Create any new concept nodes as **drafts** (`publishedAt` unset) with `sourceCaptureId=captureId`
-  - Create draft edges (`publishedAt` unset, `verified=false`) (no `ownerUserId`; visibility derived from endpoint node access)
-  - Create `suggestions` row: `captureId`, `suggestorUserId` (AI agent), `suggestedNodeId`
-  - Set capture `captureState="ready"`
+
+- Create suggested node as a **draft** (`publishedAt` unset) with `sourceCaptureId=captureId`
+- Create any new concept nodes as **drafts** (`publishedAt` unset) with `sourceCaptureId=captureId`
+- Create draft edges (`publishedAt` unset, `verified=false`) (no `ownerUserId`; visibility derived from endpoint node access)
+- Create `suggestions` row: `captureId`, `suggestorUserId` (AI agent), `suggestedNodeId`
+- Set capture `captureState="ready"`
+
 8. Failure handling:
-  - Retry (repair) up to 2 times, then provider fallback chain
-  - If still invalid, set capture `captureState="failed"` and require manual processing.
+
+- Retry (repair) up to 2 times, then provider fallback chain
+- If still invalid, set capture `captureState="failed"` and require manual processing.
 
 **Security model (simplified):**
 
