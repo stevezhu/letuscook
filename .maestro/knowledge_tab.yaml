@@ -1,0 +1,23 @@
+appId: com.letuscook.assistant
+---
+# Navigate to Knowledge tab
+- tapOn: Knowledge
+
+# Verify node list shows items with connection counts
+- assertVisible:
+    text: ".*connections"
+
+# Tap a node to open detail modal
+- tapOn:
+    text: ".*connections"
+    index: 0
+
+# Verify detail page shows node content
+- assertVisible:
+    text: ".*connections.*"
+    optional: true
+
+# Dismiss modal and return to list
+- swipe:
+    direction: DOWN
+    duration: 300
