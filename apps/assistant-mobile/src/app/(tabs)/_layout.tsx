@@ -31,6 +31,10 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>Inbox</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="tray.fill" md="inbox" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="knowledge">
+        <NativeTabs.Trigger.Label>Knowledge</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="book.fill" md="menu_book" />
+      </NativeTabs.Trigger>
       {user !== null && (
         <NativeTabs.Trigger name="account">
           <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
