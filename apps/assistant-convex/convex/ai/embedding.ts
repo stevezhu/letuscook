@@ -1,4 +1,5 @@
 import { google } from '@ai-sdk/google';
+import { openrouter } from '@openrouter/ai-sdk-provider';
 import { embed, generateText } from 'ai';
 
 const EMBEDDING_MODEL = google.embeddingModel('gemini-embedding-2-preview');
@@ -40,12 +41,11 @@ function buildTitleUserPrompt(
   return prompt;
 }
 
-// TODO: you need to run your own benchmarks
+// Benchmarked 2026-04-01 — see .agent-logbook/research/2026-04-01_021940Z_claudecode_bench-title-generation-models.md
 const TITLE_MODELS = [
+  google('gemini-2.5-flash'),
+  openrouter('google/gemini-2.5-flash'), // backup model
   google('gemini-3-flash-preview'),
-  // TODO: add more backup models here
-  // minimax m2.7
-  // kimi 2.5
 ];
 
 const MAX_RETRIES = 3;

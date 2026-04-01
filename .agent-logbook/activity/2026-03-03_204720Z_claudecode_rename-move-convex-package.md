@@ -1,11 +1,11 @@
 ---
 date: 2026-03-03T20:47:20Z
 type: activity
-status: complete
+status: done
 agent: claudecode
 models: [claude-sonnet-4-6]
 branch: t2
-files_modified:
+filesModified:
   - apps/assistant-convex/package.json
   - apps/assistant-mobile/package.json
   - apps/assistant-mobile/src/components/user-sync.tsx

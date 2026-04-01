@@ -1,13 +1,13 @@
 ---
 date: 2026-03-03T00:32:10Z
 type: activity
-status: complete
+status: done
 agent: geminicli
 models: [auto]
 branch: t1-convex-setup-navigation
 cost: $0.00
 tags: [mobile, ui, react-native, expo, maestro]
-files_modified:
+filesModified:
   - apps/assistant-mobile/src/app/(tabs)/index.tsx
   - apps/assistant-mobile/src/app/(tabs)/capture/index.tsx
   - apps/assistant-mobile/src/app/(tabs)/search/index.tsx

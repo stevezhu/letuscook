@@ -1,7 +1,7 @@
 ---
 date: 2026-03-13T15:56:42Z
 type: activity
-status: complete
+status: done
 agent: geminicli
 models: [unknown]
 branch: t4

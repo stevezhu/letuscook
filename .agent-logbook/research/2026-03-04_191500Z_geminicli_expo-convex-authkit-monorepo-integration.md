@@ -1,10 +1,10 @@
 ---
 date: 2026-03-04T19:15:00Z
 type: research
-status: complete
+status: done
 agent: geminicli
 models: [gemini-2.5-flash-lite, gemini-3-flash-preview]
-session_id: 5ca14ae8-bcfa-4154-b9eb-c7a5c43ec41b
+sessionId: 5ca14ae8-bcfa-4154-b9eb-c7a5c43ec41b
 branch: workos-authkit
 tags: [expo, convex, workos, authkit, monorepo]
 ---
