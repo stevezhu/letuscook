@@ -96,11 +96,18 @@ export const createCapture = authMutation({
         argValue: '',
       });
     const now = Date.now();
+    const trimmed = args.rawContent.trim();
+    const captureType =
+      args.captureType === 'text' &&
+      !trimmed.includes('\n') &&
+      (trimmed.startsWith('http://') || trimmed.startsWith('https://'))
+        ? 'link'
+        : args.captureType;
     const explicitMentionNodeIds = parseMentionedNodeIds(args.rawContent);
 
     const captureId = await ctx.db.insert('captures', {
       rawContent: args.rawContent,
-      captureType: args.captureType,
+      captureType,
       capturedAt: now,
       updatedAt: now,
       ownerUserId: user._id,
