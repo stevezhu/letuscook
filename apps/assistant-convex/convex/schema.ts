@@ -175,7 +175,11 @@ export default defineSchema({
   linkMetadata: defineTable(linkMetadataFields)
     .index('by_capture', ['captureId'])
     .index('by_url', ['url'])
-    .index('by_domain_owner', ['domain', 'ownerUserId']),
+    .index('by_domain_owner', ['domain', 'ownerUserId'])
+    .searchIndex('search_link_title', {
+      searchField: 'title',
+      filterFields: ['domain', 'ownerUserId'],
+    }),
 
   topics: defineTable({
     label: v.string(),

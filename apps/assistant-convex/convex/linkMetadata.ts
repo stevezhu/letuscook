@@ -1,6 +1,7 @@
 import { v } from 'convex/values';
 
 import { internalMutation } from '#convex/_generated/server.js';
+import { getCurrentUser } from '#convex/model/users.ts';
 import { authQuery } from '#convex/utils/customFunctions.ts';
 
 // 👀 Needs Verification
@@ -49,5 +50,45 @@ export const getLinkMetadataByCapture = authQuery({
       .query('linkMetadata')
       .withIndex('by_capture', (q) => q.eq('captureId', args.captureId))
       .unique();
+  },
+});
+
+// 👀 Needs Verification
+export const getLinksByDomain = authQuery({
+  args: { domain: v.string() },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+    return ctx.db
+      .query('linkMetadata')
+      .withIndex('by_domain_owner', (q) =>
+        q.eq('domain', args.domain).eq('ownerUserId', user._id),
+      )
+      .collect();
+  },
+});
+
+// 👀 Needs Verification
+export const getDomainList = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+
+    // Collect all link metadata for this user and group by domain
+    const allLinks = await ctx.db
+      .query('linkMetadata')
+      .filter((q) => q.eq(q.field('ownerUserId'), user._id))
+      .collect();
+
+    const domainCounts = new Map<string, number>();
+    for (const link of allLinks) {
+      const count = domainCounts.get(link.domain) ?? 0;
+      domainCounts.set(link.domain, count + 1);
+    }
+
+    return Array.from(domainCounts.entries())
+      .map(([domain, count]) => ({ domain, count }))
+      .sort((a, b) => b.count - a.count);
   },
 });

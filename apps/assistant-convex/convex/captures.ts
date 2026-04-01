@@ -637,6 +637,10 @@ export const embedAndClassify = internalAction({
         agentUserId: args.agentUserId,
         title,
         rawContent: args.rawContent,
+        enrichedContent:
+          contentForEmbedding !== args.rawContent
+            ? contentForEmbedding
+            : undefined,
         embedding,
         ownerUserId: args.ownerUserId,
         similarNodeIds: similarNodes.map((n) => n.id),
@@ -677,6 +681,7 @@ export const saveEmbeddingResult = internalMutation({
     agentUserId: v.id('users'),
     title: v.string(),
     rawContent: v.string(),
+    enrichedContent: v.optional(v.string()),
     embedding: v.array(v.float64()),
     ownerUserId: v.id('users'),
     similarNodeIds: v.array(v.id('nodes')),
@@ -688,11 +693,19 @@ export const saveEmbeddingResult = internalMutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
+    // Build searchText: include title + rawContent, and append enrichedContent
+    // if it differs from rawContent (e.g. link metadata title + description + snippet)
+    const searchTextParts = [`${args.title}\n\n${args.rawContent}`];
+    if (args.enrichedContent && args.enrichedContent !== args.rawContent) {
+      searchTextParts.push(args.enrichedContent);
+    }
+    const searchText = searchTextParts.join('\n\n');
+
     // 1. Create draft node with embedding
     const draftNodeId = await ctx.db.insert('nodes', {
       title: args.title,
       content: args.rawContent,
-      searchText: `${args.title}\n\n${args.rawContent}`,
+      searchText,
       ownerUserId: args.ownerUserId,
       sourceCaptureId: args.captureId,
       embedding: args.embedding,

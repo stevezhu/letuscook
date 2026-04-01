@@ -239,6 +239,63 @@ export const getNodeActivity = authQuery({
   },
 });
 
+// 👀 Needs Verification
+/**
+ * Returns the top "hub" nodes for the current user: published, non-archived,
+ * non-virtual nodes sorted by their total published edge count (incoming +
+ * outgoing) descending. Hub nodes are concept nodes with many connections.
+ */
+export const getHubNodes = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) return [];
+
+    const nodes = await ctx.db
+      .query('nodes')
+      .withIndex('by_owner_archivedAt_publishedAt_updatedAt', (q) =>
+        q
+          .eq('ownerUserId', user._id)
+          .eq('archivedAt', undefined)
+          .gt('publishedAt', 0),
+      )
+      .collect();
+
+    // Filter out virtual nodes
+    const regularNodes = nodes.filter(
+      (n) => (n.nodeKind ?? 'regular') !== 'virtual',
+    );
+
+    // Count incoming + outgoing published, non-archived edges for each node
+    const nodesWithCounts = await Promise.all(
+      regularNodes.map(async (node) => {
+        const [outgoing, incoming] = await Promise.all([
+          ctx.db
+            .query('edges')
+            .withIndex('by_archivedAt_from_node', (q) =>
+              q.eq('archivedAt', undefined).eq('fromNodeId', node._id),
+            )
+            .filter((q) => q.neq(q.field('publishedAt'), undefined))
+            .collect(),
+          ctx.db
+            .query('edges')
+            .withIndex('by_archivedAt_to_node', (q) =>
+              q.eq('archivedAt', undefined).eq('toNodeId', node._id),
+            )
+            .filter((q) => q.neq(q.field('publishedAt'), undefined))
+            .collect(),
+        ]);
+        return { node, edgeCount: outgoing.length + incoming.length };
+      }),
+    );
+
+    // Sort by edge count descending — nodes with most connections first
+    nodesWithCounts.sort((a, b) => b.edgeCount - a.edgeCount);
+
+    return nodesWithCounts;
+  },
+});
+
 /**
  * Returns a node with its resolved outgoing and incoming published edges.
  * Linked nodes owned by another user are returned as `{ type: 'private' }`.
