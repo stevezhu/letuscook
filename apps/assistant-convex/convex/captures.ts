@@ -8,7 +8,10 @@ import {
   internalMutation,
   internalQuery,
 } from '#convex/_generated/server.js';
-import { setCaptureFailed as setCaptureFailed_ } from '#convex/model/captures.ts';
+import {
+  saveDraftSuggestion,
+  setCaptureFailed as setCaptureFailed_,
+} from '#convex/model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
@@ -504,22 +507,17 @@ export const processCapture = internalMutation({
         argValue: args.captureId,
       });
     }
-    // TODO: verify this, why was it processing? it should be ready right?
-    if (capture.captureState !== 'ready') return;
+    if (capture.captureState !== 'processing') return;
 
+    // Stub: create draft suggestion from available data.
+    // TODO: replace with LLM-based processing (embeddings, title generation, similar node search)
     const agentUser = await getAgentUser(ctx);
-    if (!agentUser?._id) {
-      await setCaptureFailed_(ctx, { captureId: args.captureId });
-      return;
-    }
+    // TODO: Don't default to the owner user, and throw an error instead
+    const suggestorId = agentUser?._id ?? capture.ownerUserId;
 
-    await ctx.scheduler.runAfter(0, internal.captures.embedAndClassify, {
+    await saveDraftSuggestion(ctx, {
       captureId: args.captureId,
-      rawContent: capture.rawContent,
-      captureType: capture.captureType,
-      ownerUserId: capture.ownerUserId,
-      agentUserId: agentUser._id,
-      explicitMentionNodeIds: capture.explicitMentionNodeIds,
+      agentUserId: suggestorId,
     });
   },
 });
