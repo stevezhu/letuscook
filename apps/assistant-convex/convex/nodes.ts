@@ -175,6 +175,70 @@ export const getKnowledgeBasePages = authQuery({
   },
 });
 
+// 👀 Needs Verification
+/**
+ * Returns the activity feed for a node: all incoming edges (non-archived) where
+ * the fromNode has a sourceCaptureId, resolved with capture and link metadata.
+ * Results are sorted by capturedAt desc. Returns `null` if the node doesn't
+ * exist or isn't owned by the current user.
+ */
+export const getNodeActivity = authQuery({
+  args: { nodeId: v.id('nodes') },
+  handler: async (ctx, args) => {
+    const [user, node] = await Promise.all([
+      getCurrentUser(ctx),
+      ctx.db.get(args.nodeId),
+    ]);
+    if (!node || node.ownerUserId !== user?._id) return null;
+
+    // Find all non-archived incoming edges to this node
+    const incomingEdges = await ctx.db
+      .query('edges')
+      .withIndex('by_archivedAt_to_node', (q) =>
+        q.eq('archivedAt', undefined).eq('toNodeId', args.nodeId),
+      )
+      .collect();
+
+    // Resolve each edge: fetch fromNode, capture, and optional linkMetadata
+    const activityItems = await Promise.all(
+      incomingEdges.map(async (edge) => {
+        const fromNode = await ctx.db.get(edge.fromNodeId);
+        if (!fromNode) return null;
+
+        let capture = null;
+        let linkMetadata = null;
+
+        if (fromNode.sourceCaptureId) {
+          capture = await ctx.db.get(fromNode.sourceCaptureId);
+          if (capture) {
+            linkMetadata = await ctx.db
+              .query('linkMetadata')
+              .withIndex('by_capture', (q) =>
+                q.eq('captureId', fromNode.sourceCaptureId!),
+              )
+              .unique();
+          }
+        }
+
+        return { node: fromNode, capture, linkMetadata, edge };
+      }),
+    );
+
+    // Filter nulls and sort by capturedAt desc
+    const filtered = activityItems.filter(
+      (item): item is NonNullable<typeof item> => item !== null,
+    );
+
+    filtered.sort((a, b) => {
+      const aTime = a.capture?.capturedAt ?? a.node.createdAt;
+      const bTime = b.capture?.capturedAt ?? b.node.createdAt;
+      return bTime - aTime;
+    });
+
+    return filtered;
+  },
+});
+
 /**
  * Returns a node with its resolved outgoing and incoming published edges.
  * Linked nodes owned by another user are returned as `{ type: 'private' }`.
