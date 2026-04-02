@@ -2,9 +2,9 @@ import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
 import { edgeFields } from '#convex/schema.ts';
+import { EntityNotFoundError } from '#lib/errors.ts';
+import { authMutation } from '#model/customFunctions.ts';
 import { getDocOwnedByCurrentUser } from '#model/users.ts';
-import { authMutation } from '#utils/customFunctions.ts';
-import { EntityNotFoundError } from '#utils/errors.ts';
 
 /**
  * 👀 Needs Verification

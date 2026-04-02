@@ -1,9 +1,6 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
-import { embedText, generateTitle } from '#ai/embedding.ts';
-import { fetchLinkMetadata } from '#ai/linkFetcher.ts';
-import { identifyOrganizingNodes } from '#ai/nodeLinker.ts';
 import { internal } from '#convex/_generated/api.js';
 import { Id } from '#convex/_generated/dataModel.js';
 import {
@@ -12,15 +9,18 @@ import {
   internalQuery,
 } from '#convex/_generated/server.js';
 import { captureFields } from '#convex/schema.ts';
+import { EntityNotFoundError } from '#lib/errors.ts';
+import { pickOptional } from '#lib/helpers.ts';
 import { setCaptureFailed as setCaptureFailed_ } from '#model/captures.ts';
+import { authMutation, authQuery } from '#model/customFunctions.ts';
 import {
   getAgentUser,
   getCurrentUser,
   getDocOwnedByCurrentUser,
 } from '#model/users.ts';
-import { authMutation, authQuery } from '#utils/customFunctions.ts';
-import { EntityNotFoundError } from '#utils/errors.ts';
-import { pickOptional } from '#utils/helpers.ts';
+import { embedText, generateTitle } from '#services/embedding.ts';
+import { fetchLinkMetadata } from '#services/linkFetcher.ts';
+import { identifyOrganizingNodes } from '#services/nodeLinker.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

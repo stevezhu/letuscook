@@ -1,8 +1,8 @@
 import { v } from 'convex/values';
 
 import { internalMutation } from '#convex/_generated/server.js';
+import { authMutation, authQuery } from '#model/customFunctions.ts';
 import { getCurrentUser } from '#model/users.ts';
-import { authMutation, authQuery } from '#utils/customFunctions.ts';
 
 // 👀 Needs Verification
 export const logToolRequest = internalMutation({

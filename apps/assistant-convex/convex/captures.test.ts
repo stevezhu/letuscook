@@ -3,16 +3,16 @@ import { describe, expect, vi } from 'vitest';
 import { api, internal } from '#convex/_generated/api.js';
 import { type ConvexTestInstance, test } from '#test/convexTest.ts';
 
-vi.mock('#ai/embedding.ts', () => ({
+vi.mock('#services/embedding.ts', () => ({
   embedText: vi.fn().mockResolvedValue(Array.from({ length: 768 }, () => 0.1)),
   generateTitle: vi.fn().mockResolvedValue('Mock Generated Title'),
 }));
 
-vi.mock('#ai/nodeLinker.ts', () => ({
+vi.mock('#services/nodeLinker.ts', () => ({
   identifyOrganizingNodes: vi.fn().mockResolvedValue([]),
 }));
 
-vi.mock('#ai/linkFetcher.ts', () => ({
+vi.mock('#services/linkFetcher.ts', () => ({
   fetchLinkMetadata: vi.fn().mockResolvedValue({
     url: 'https://example.com',
     domain: 'example.com',
