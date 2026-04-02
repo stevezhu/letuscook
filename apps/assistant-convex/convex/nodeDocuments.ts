@@ -1,6 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { openrouter } from '@openrouter/ai-sdk-provider';
 import { generateText } from 'ai';
+import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
 import { internal } from '#convex/_generated/api.js';
@@ -10,7 +11,9 @@ import {
   internalMutation,
   internalQuery,
 } from '#convex/_generated/server.js';
+import { nodeDocumentFields } from '#convex/schema.ts';
 import { EntityNotFoundError } from '#lib/errors.ts';
+import { pickOptional } from '#lib/helpers.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
 import { getCurrentUser, getDocOwnedByCurrentUser } from '#model/users.ts';
 
@@ -77,8 +80,7 @@ export const generateDocument = authMutation({
 export const updateDocument = authMutation({
   args: {
     documentId: v.id('nodeDocuments'),
-    title: v.optional(v.string()),
-    content: v.optional(v.string()),
+    ...pickOptional(nodeDocumentFields, ['title', 'content']),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -276,15 +278,15 @@ Return ONLY the markdown content, no preamble or metadata.`;
 
 // 👀 Needs Verification
 export const saveGeneratedDocument = internalMutation({
-  args: {
-    nodeId: v.id('nodes'),
-    version: v.number(),
-    title: v.string(),
-    content: v.string(),
-    generatedAt: v.number(),
-    generatedFromEdgesUpTo: v.number(),
-    ownerUserId: v.id('users'),
-  },
+  args: pick(nodeDocumentFields, [
+    'nodeId',
+    'version',
+    'title',
+    'content',
+    'generatedAt',
+    'generatedFromEdgesUpTo',
+    'ownerUserId',
+  ]),
   returns: v.id('nodeDocuments'),
   handler: async (ctx, args) => {
     return ctx.db.insert('nodeDocuments', {

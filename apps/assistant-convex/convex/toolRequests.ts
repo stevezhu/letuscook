@@ -1,16 +1,14 @@
+import { pick } from 'convex-helpers';
 import { v } from 'convex/values';
 
 import { internalMutation } from '#convex/_generated/server.js';
+import { toolRequestFields } from '#convex/schema.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
 import { getCurrentUser } from '#model/users.ts';
 
 // 👀 Needs Verification
 export const logToolRequest = internalMutation({
-  args: {
-    description: v.string(),
-    domain: v.optional(v.string()),
-    ownerUserId: v.id('users'),
-  },
+  args: pick(toolRequestFields, ['description', 'domain', 'ownerUserId']),
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query('toolRequests')
