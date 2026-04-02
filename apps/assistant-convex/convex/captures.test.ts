@@ -3,25 +3,9 @@ import { describe, expect, vi } from 'vitest';
 import { api, internal } from '#convex/_generated/api.js';
 import { type ConvexTestInstance, test } from '#test/convexTest.ts';
 
-vi.mock('#services/embedding.ts', () => ({
-  embedText: vi.fn().mockResolvedValue(Array.from({ length: 768 }, () => 0.1)),
-  generateTitle: vi.fn().mockResolvedValue('Mock Generated Title'),
-}));
-
-vi.mock('#services/nodeLinker.ts', () => ({
-  identifyOrganizingNodes: vi.fn().mockResolvedValue([]),
-}));
-
-vi.mock('#services/linkFetcher.ts', () => ({
-  fetchLinkMetadata: vi.fn().mockResolvedValue({
-    url: 'https://example.com',
-    domain: 'example.com',
-    title: 'Example Page',
-    description: 'A mock page description',
-    fetchedAt: Date.now(),
-    fetchStatus: 'success',
-  }),
-}));
+vi.mock(import('#services/embedding.ts'));
+vi.mock(import('#services/nodeLinker.ts'));
+vi.mock(import('#services/linkFetcher.ts'));
 
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 

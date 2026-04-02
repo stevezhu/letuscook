@@ -7,7 +7,7 @@ import { internal } from '#convex/_generated/api.js';
 import schema from '#convex/schema.ts';
 
 const createConvexTest = () =>
-  convexTest(schema, import.meta.glob('../convex/**/*.*s'));
+  convexTest(schema, import.meta.glob('/convex/**/*.*s'));
 export type ConvexTestInstance = ReturnType<typeof createConvexTest>;
 
 // oxlint-disable-next-line jest/expect-expect
