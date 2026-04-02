@@ -31,6 +31,32 @@ async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Extract concept/confidence pairs from LLM text using regex. Handles JSON with
+ * single quotes, unquoted keys, markdown fences, etc.
+ */
+// 👀 Needs Verification
+function extractConceptsFromText(text: string): ConceptItem[] {
+  const concepts: ConceptItem[] = [];
+  // Match patterns like "concept": "Something", "confidence": 0.9
+  // or 'concept': 'Something', 'confidence': 0.9
+  // or concept: "Something", confidence: 0.9
+  const conceptPattern =
+    /["']?concept["']?\s*:\s*["']([^"']+)["']\s*,\s*["']?confidence["']?\s*:\s*([\d.]+)/gi;
+  let match;
+  while ((match = conceptPattern.exec(text)) !== null) {
+    const concept = match[1];
+    const confidence = parseFloat(match[2] ?? '0');
+    if (concept && !isNaN(confidence)) {
+      concepts.push({
+        concept,
+        confidence: Math.max(0, Math.min(1, confidence)),
+      });
+    }
+  }
+  return concepts;
+}
+
 // 👀 Needs Verification
 async function identifyConceptsWithLLM(
   contentTitle: string,
@@ -65,24 +91,14 @@ Return a JSON array only, no markdown, no explanation. Example format:
           maxOutputTokens: 300,
         });
 
-        // Parse and validate the JSON response
-        const trimmed = text.trim().replace(/^```json\s*|```\s*$/g, '');
-        const parsed = JSON.parse(trimmed) as unknown;
-        if (!Array.isArray(parsed)) continue;
-        const concepts: ConceptItem[] = [];
-        for (const item of parsed) {
-          if (typeof item !== 'object' || item === null) continue;
-          const rec = item as Record<string, unknown>;
-          const concept = rec['concept'];
-          const confidence = rec['confidence'];
-          if (typeof concept === 'string' && typeof confidence === 'number') {
-            concepts.push({
-              concept,
-              confidence: Math.max(0, Math.min(1, confidence)),
-            });
-          }
-        }
+        // Extract concepts using regex — more robust than JSON.parse for
+        // LLM output that may use single quotes, unquoted keys, etc.
+        const concepts = extractConceptsFromText(text);
         if (concepts.length > 0) return concepts;
+        console.warn(
+          `No concepts extracted from LLM response (${model.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
+          text.slice(0, 200),
+        );
       } catch (error) {
         console.error(
           `Concept identification failed (${model.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
