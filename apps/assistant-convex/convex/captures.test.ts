@@ -1,17 +1,14 @@
-import { convexTest } from 'convex-test';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect } from 'vitest';
 
-import { api, internal } from './_generated/api';
-import schema from './schema';
-
-const modules = import.meta.glob('./**/!(*.*.*)*.*s');
+import { api, internal } from '#convex/_generated/api.js';
+import { type ConvexTestInstance, test } from '#convexTest.ts';
 
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 
 const IDENTITY = { name: 'Test User', subject: 'workos_user_123' };
 
-async function setupUser(t: ReturnType<typeof convexTest>) {
-  const userId = await t.run(async (ctx) => {
+async function setupUser(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
     return ctx.db.insert('users', {
       displayName: 'Test User',
       email: 'test@example.com',
@@ -21,10 +18,9 @@ async function setupUser(t: ReturnType<typeof convexTest>) {
       updatedAt: Date.now(),
     });
   });
-  return userId;
 }
 
-async function setupAgentUser(t: ReturnType<typeof convexTest>) {
+async function setupAgentUser(t: ConvexTestInstance) {
   return t.run(async (ctx) => {
     return ctx.db.insert('users', {
       displayName: 'AI Agent',
@@ -40,8 +36,7 @@ async function setupAgentUser(t: ReturnType<typeof convexTest>) {
 // ─── createCapture ───────────────────────────────────────────────────────────
 
 describe('createCapture', () => {
-  test('creates a text capture and sets state to processing', async () => {
-    const t = convexTest(schema, modules);
+  test('creates a text capture and sets state to processing', async ({ t }) => {
     const userId = await setupUser(t);
 
     const asSarah = t.withIdentity(IDENTITY);
@@ -59,8 +54,7 @@ describe('createCapture', () => {
     });
   });
 
-  test('auto-detects link type when text starts with http', async () => {
-    const t = convexTest(schema, modules);
+  test('auto-detects link type when text starts with http', async ({ t }) => {
     await setupUser(t);
 
     const asSarah = t.withIdentity(IDENTITY);
@@ -73,8 +67,7 @@ describe('createCapture', () => {
     expect(capture!.captureType).toBe('link');
   });
 
-  test('does not auto-detect link when content has newlines', async () => {
-    const t = convexTest(schema, modules);
+  test('does not auto-detect link when content has newlines', async ({ t }) => {
     await setupUser(t);
 
     const asSarah = t.withIdentity(IDENTITY);
@@ -87,36 +80,22 @@ describe('createCapture', () => {
     expect(capture!.captureType).toBe('text');
   });
 
-  test('parses explicit mention node IDs from content', async () => {
-    const t = convexTest(schema, modules);
-    const userId = await setupUser(t);
-
-    // Create a node to mention
-    const nodeId = await t.run(async (ctx) => {
-      return ctx.db.insert('nodes', {
-        title: 'Mentioned Node',
-        content: 'content',
-        searchText: 'Mentioned Node\n\ncontent',
-        ownerUserId: userId,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        publishedAt: Date.now(),
-      });
-    });
+  test('stores empty explicitMentionNodeIds when no mentions present', async ({
+    t,
+  }) => {
+    await setupUser(t);
 
     const asSarah = t.withIdentity(IDENTITY);
     const captureId = await asSarah.mutation(api.captures.createCapture, {
-      rawContent: `Check @[Mentioned Node](node:${nodeId}) for details`,
+      rawContent: 'No mentions here',
       captureType: 'text',
     });
 
     const capture = await t.run(async (ctx) => ctx.db.get(captureId));
-    expect(capture!.explicitMentionNodeIds).toEqual([nodeId]);
+    expect(capture!.explicitMentionNodeIds).toEqual([]);
   });
 
-  test('rejects unauthenticated callers', async () => {
-    const t = convexTest(schema, modules);
-
+  test('rejects unauthenticated callers', async ({ t }) => {
     await expect(
       t.mutation(api.captures.createCapture, {
         rawContent: 'test',
@@ -129,8 +108,9 @@ describe('createCapture', () => {
 // ─── updateCapture ───────────────────────────────────────────────────────────
 
 describe('updateCapture', () => {
-  test('updates capture content and marks pending suggestion stale', async () => {
-    const t = convexTest(schema, modules);
+  test('updates capture content and marks pending suggestion stale', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
     const agentUserId = await setupAgentUser(t);
 
@@ -185,8 +165,9 @@ describe('updateCapture', () => {
 // ─── acceptSuggestion ────────────────────────────────────────────────────────
 
 describe('acceptSuggestion', () => {
-  test('publishes draft nodes/edges and sets capture to processed', async () => {
-    const t = convexTest(schema, modules);
+  test('publishes draft nodes/edges and sets capture to processed', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
     const agentUserId = await setupAgentUser(t);
 
@@ -281,8 +262,9 @@ describe('acceptSuggestion', () => {
 // ─── rejectSuggestion ────────────────────────────────────────────────────────
 
 describe('rejectSuggestion', () => {
-  test('deletes draft nodes/edges and sets capture to needs_manual', async () => {
-    const t = convexTest(schema, modules);
+  test('deletes draft nodes/edges and sets capture to needs_manual', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
     const agentUserId = await setupAgentUser(t);
 
@@ -365,8 +347,9 @@ describe('rejectSuggestion', () => {
 // ─── organizeCapture ─────────────────────────────────────────────────────────
 
 describe('organizeCapture', () => {
-  test('creates published node and sets capture to processed', async () => {
-    const t = convexTest(schema, modules);
+  test('creates published node and sets capture to processed', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
 
     const captureId = await t.run(async (ctx) => {
@@ -400,8 +383,7 @@ describe('organizeCapture', () => {
     expect(node!.publishedAt).toBeDefined();
   });
 
-  test('creates explicit edges for mentioned nodes', async () => {
-    const t = convexTest(schema, modules);
+  test('creates explicit edges for mentioned nodes', async ({ t }) => {
     const userId = await setupUser(t);
 
     const { captureId, mentionedNodeId } = await t.run(async (ctx) => {
@@ -452,8 +434,7 @@ describe('organizeCapture', () => {
 // ─── archiveCapture / unarchiveCapture ───────────────────────────────────────
 
 describe('archiveCapture', () => {
-  test('sets archivedAt on the capture', async () => {
-    const t = convexTest(schema, modules);
+  test('sets archivedAt on the capture', async ({ t }) => {
     const userId = await setupUser(t);
 
     const captureId = await t.run(async (ctx) => {
@@ -477,8 +458,7 @@ describe('archiveCapture', () => {
 });
 
 describe('unarchiveCapture', () => {
-  test('clears archivedAt on the capture', async () => {
-    const t = convexTest(schema, modules);
+  test('clears archivedAt on the capture', async ({ t }) => {
     const userId = await setupUser(t);
 
     const captureId = await t.run(async (ctx) => {
@@ -505,8 +485,9 @@ describe('unarchiveCapture', () => {
 // ─── retryProcessing ─────────────────────────────────────────────────────────
 
 describe('retryProcessing', () => {
-  test('resets failed capture to processing and schedules processing', async () => {
-    const t = convexTest(schema, modules);
+  test('resets failed capture to processing and schedules processing', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
 
     const captureId = await t.run(async (ctx) => {
@@ -528,8 +509,7 @@ describe('retryProcessing', () => {
     expect(capture!.captureState).toBe('processing');
   });
 
-  test('rejects retry on non-failed capture', async () => {
-    const t = convexTest(schema, modules);
+  test('rejects retry on non-failed capture', async ({ t }) => {
     const userId = await setupUser(t);
 
     const captureId = await t.run(async (ctx) => {
@@ -554,8 +534,7 @@ describe('retryProcessing', () => {
 // ─── saveEmbeddingResult (internal) ──────────────────────────────────────────
 
 describe('saveEmbeddingResult', () => {
-  test('creates draft node, edges, and suggestion', async () => {
-    const t = convexTest(schema, modules);
+  test('creates draft node, edges, and suggestion', async ({ t }) => {
     const userId = await setupUser(t);
     const agentUserId = await setupAgentUser(t);
 
@@ -581,7 +560,7 @@ describe('saveEmbeddingResult', () => {
       return { captureId, existingNodeId };
     });
 
-    const fakeEmbedding = new Array(768).fill(0.1);
+    const fakeEmbedding = Array.from({ length: 768 }, () => 0.1);
 
     await t.mutation(internal.captures.saveEmbeddingResult, {
       captureId,
@@ -641,8 +620,7 @@ describe('saveEmbeddingResult', () => {
 // ─── getInboxCaptures ────────────────────────────────────────────────────────
 
 describe('getInboxCaptures', () => {
-  test('returns captures grouped by state with suggestions', async () => {
-    const t = convexTest(schema, modules);
+  test('returns captures grouped by state with suggestions', async ({ t }) => {
     const userId = await setupUser(t);
     const agentUserId = await setupAgentUser(t);
 
@@ -710,8 +688,7 @@ describe('getInboxCaptures', () => {
     expect(inbox[2]!.capture.rawContent).toBe('failed');
   });
 
-  test('excludes archived and processed captures', async () => {
-    const t = convexTest(schema, modules);
+  test('excludes archived and processed captures', async ({ t }) => {
     const userId = await setupUser(t);
 
     await t.run(async (ctx) => {

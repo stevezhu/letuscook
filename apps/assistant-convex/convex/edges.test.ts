@@ -1,14 +1,11 @@
-import { convexTest } from 'convex-test';
-import { describe, expect, test } from 'vitest';
+import { describe, expect } from 'vitest';
 
-import { api } from './_generated/api';
-import schema from './schema';
-
-const modules = import.meta.glob('./**/!(*.*.*)*.*s');
+import { api } from '#convex/_generated/api.js';
+import { type ConvexTestInstance, test } from '#convexTest.ts';
 
 const IDENTITY = { name: 'Test User', subject: 'workos_user_123' };
 
-async function setupUser(t: ReturnType<typeof convexTest>) {
+async function setupUser(t: ConvexTestInstance) {
   return t.run(async (ctx) => {
     return ctx.db.insert('users', {
       displayName: 'Test User',
@@ -22,8 +19,7 @@ async function setupUser(t: ReturnType<typeof convexTest>) {
 }
 
 describe('createEdge', () => {
-  test('creates an explicit edge between owned nodes', async () => {
-    const t = convexTest(schema, modules);
+  test('creates an explicit edge between owned nodes', async ({ t }) => {
     const userId = await setupUser(t);
 
     const { fromNodeId, toNodeId } = await t.run(async (ctx) => {
@@ -67,8 +63,7 @@ describe('createEdge', () => {
     expect(edge!.publishedAt).toBeDefined();
   });
 
-  test('rejects duplicate edges', async () => {
-    const t = convexTest(schema, modules);
+  test('rejects duplicate edges', async ({ t }) => {
     const userId = await setupUser(t);
 
     const { fromNodeId, toNodeId } = await t.run(async (ctx) => {
@@ -110,8 +105,7 @@ describe('createEdge', () => {
     ).rejects.toThrow();
   });
 
-  test('rejects edge to node not owned by user', async () => {
-    const t = convexTest(schema, modules);
+  test('rejects edge to node not owned by user', async ({ t }) => {
     const userId = await setupUser(t);
 
     const { fromNodeId, otherNodeId } = await t.run(async (ctx) => {

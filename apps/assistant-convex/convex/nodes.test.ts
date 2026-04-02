@@ -1,14 +1,11 @@
-import { convexTest } from 'convex-test';
-import { describe, expect, test } from 'vitest';
+import { describe, expect } from 'vitest';
 
-import { api } from './_generated/api';
-import schema from './schema';
-
-const modules = import.meta.glob('./**/!(*.*.*)*.*s');
+import { api } from '#convex/_generated/api.js';
+import { type ConvexTestInstance, test } from '#convexTest.ts';
 
 const IDENTITY = { name: 'Test User', subject: 'workos_user_123' };
 
-async function setupUser(t: ReturnType<typeof convexTest>) {
+async function setupUser(t: ConvexTestInstance) {
   return t.run(async (ctx) => {
     return ctx.db.insert('users', {
       displayName: 'Test User',
@@ -24,11 +21,10 @@ async function setupUser(t: ReturnType<typeof convexTest>) {
 // ─── archiveNode ─────────────────────────────────────────────────────────────
 
 describe('archiveNode', () => {
-  test('archives node and all connected edges', async () => {
-    const t = convexTest(schema, modules);
+  test('archives node and all connected edges', async ({ t }) => {
     const userId = await setupUser(t);
 
-    const { nodeId, otherNodeId, edgeId } = await t.run(async (ctx) => {
+    const { nodeId, edgeId } = await t.run(async (ctx) => {
       const now = Date.now();
       const nodeId = await ctx.db.insert('nodes', {
         title: 'To Archive',
@@ -72,8 +68,7 @@ describe('archiveNode', () => {
     expect(edge!.archivedAt).toBeDefined();
   });
 
-  test('rejects archiving node owned by another user', async () => {
-    const t = convexTest(schema, modules);
+  test('rejects archiving node owned by another user', async ({ t }) => {
     await setupUser(t);
 
     const nodeId = await t.run(async (ctx) => {
@@ -104,8 +99,7 @@ describe('archiveNode', () => {
 // ─── unarchiveNode ───────────────────────────────────────────────────────────
 
 describe('unarchiveNode', () => {
-  test('restores node and connected edges', async () => {
-    const t = convexTest(schema, modules);
+  test('restores node and connected edges', async ({ t }) => {
     const userId = await setupUser(t);
 
     const { nodeId, edgeId } = await t.run(async (ctx) => {
@@ -158,8 +152,9 @@ describe('unarchiveNode', () => {
 // ─── getKnowledgeBasePages ───────────────────────────────────────────────────
 
 describe('getKnowledgeBasePages', () => {
-  test('returns published non-virtual nodes with edge counts', async () => {
-    const t = convexTest(schema, modules);
+  test('returns published non-virtual nodes with edge counts', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
 
     await t.run(async (ctx) => {
@@ -233,8 +228,7 @@ describe('getKnowledgeBasePages', () => {
     }
   });
 
-  test('excludes archived nodes', async () => {
-    const t = convexTest(schema, modules);
+  test('excludes archived nodes', async ({ t }) => {
     const userId = await setupUser(t);
 
     await t.run(async (ctx) => {
@@ -260,11 +254,12 @@ describe('getKnowledgeBasePages', () => {
 // ─── getNodeWithEdges ────────────────────────────────────────────────────────
 
 describe('getNodeWithEdges', () => {
-  test('returns node with resolved outgoing and incoming edges', async () => {
-    const t = convexTest(schema, modules);
+  test('returns node with resolved outgoing and incoming edges', async ({
+    t,
+  }) => {
     const userId = await setupUser(t);
 
-    const { nodeId, linkedNodeId } = await t.run(async (ctx) => {
+    const { nodeId } = await t.run(async (ctx) => {
       const now = Date.now();
       const nodeId = await ctx.db.insert('nodes', {
         title: 'Center Node',
@@ -309,8 +304,7 @@ describe('getNodeWithEdges', () => {
     expect(result!.incoming).toHaveLength(0);
   });
 
-  test('returns null for node not owned by user', async () => {
-    const t = convexTest(schema, modules);
+  test('returns null for node not owned by user', async ({ t }) => {
     await setupUser(t);
 
     const nodeId = await t.run(async (ctx) => {
@@ -336,8 +330,7 @@ describe('getNodeWithEdges', () => {
     expect(result).toBeNull();
   });
 
-  test("marks other users' linked nodes as private", async () => {
-    const t = convexTest(schema, modules);
+  test("marks other users' linked nodes as private", async ({ t }) => {
     const userId = await setupUser(t);
 
     const { nodeId } = await t.run(async (ctx) => {
