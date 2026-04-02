@@ -111,6 +111,7 @@ export const linkMetadataFields = {
   description: v.optional(v.string()),
   faviconUrl: v.optional(v.string()),
   ogImageUrl: v.optional(v.string()),
+  // TODO: is this needed?
   ogImageStorageId: v.optional(v.id('_storage')),
   contentSnippet: v.optional(v.string()),
   fetchedAt: v.number(),
