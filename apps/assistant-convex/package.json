@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#convex/*": "./convex/*"
+    "#convex/*": "./convex/*",
+    "#*": "./src/*"
   },
   "exports": {
     "./convex/_generated/*": {
@@ -17,7 +18,9 @@
     "codegen": "is-ci || convex codegen",
     "dev": "convex dev",
     "setup": "convex dev --until-success",
-    "test": "tsc --noEmit"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",
@@ -30,9 +33,13 @@
     "convex-helpers": "^0.1.114"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
     "@types/node": "catalog:",
+    "convex-test": "^0.0.46",
     "is-ci": "^4.1.0",
     "type-fest": "^5.5.0",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }
