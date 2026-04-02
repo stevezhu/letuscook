@@ -5,7 +5,6 @@ import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
 import { internal } from '#convex/_generated/api.js';
-import { Id } from '#convex/_generated/dataModel.js';
 import {
   internalAction,
   internalMutation,
@@ -15,6 +14,11 @@ import { nodeDocumentFields } from '#convex/schema.ts';
 import { EntityNotFoundError } from '#lib/errors.ts';
 import { pickOptional } from '#lib/helpers.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
+import { saveGeneratedDocument as saveGeneratedDocument_ } from '#model/nodeDocuments.ts';
+import {
+  getNodeActivityForDocument as getNodeActivityForDocument_,
+  getNodeForDocumentGeneration as getNodeForDocumentGeneration_,
+} from '#model/nodes.ts';
 import { getCurrentUser, getDocOwnedByCurrentUser } from '#model/users.ts';
 
 // ─── LLM setup ────────────────────────────────────────────────────────────────
@@ -289,16 +293,7 @@ export const saveGeneratedDocument = internalMutation({
   ]),
   returns: v.id('nodeDocuments'),
   handler: async (ctx, args) => {
-    return ctx.db.insert('nodeDocuments', {
-      nodeId: args.nodeId,
-      version: args.version,
-      title: args.title,
-      content: args.content,
-      generatedAt: args.generatedAt,
-      generatedFromEdgesUpTo: args.generatedFromEdgesUpTo,
-      isEdited: false,
-      ownerUserId: args.ownerUserId,
-    });
+    return saveGeneratedDocument_(ctx, args);
   },
 });
 
@@ -314,9 +309,7 @@ export const getNodeForDocumentGeneration = internalQuery({
     v.null(),
   ),
   handler: async (ctx, args) => {
-    const node = await ctx.db.get(args.nodeId);
-    if (!node) return null;
-    return { _id: node._id, title: node.title, content: node.content };
+    return getNodeForDocumentGeneration_(ctx, args);
   },
 });
 
@@ -354,72 +347,6 @@ export const getNodeActivityForDocument = internalQuery({
     }),
   ),
   handler: async (ctx, args) => {
-    const incomingEdges = await ctx.db
-      .query('edges')
-      .withIndex('by_archivedAt_to_node', (q) =>
-        q.eq('archivedAt', undefined).eq('toNodeId', args.nodeId),
-      )
-      .collect();
-
-    const resolvedItems = await Promise.all(
-      incomingEdges.map(async (edge) => {
-        const fromNode = await ctx.db.get(edge.fromNodeId);
-        if (!fromNode) return null;
-
-        let capture: {
-          _id: Id<'captures'>;
-          rawContent: string;
-          captureType: 'text' | 'link' | 'task';
-        } | null = null;
-        let linkMetadata: {
-          title?: string;
-          description?: string;
-          contentSnippet?: string;
-          url: string;
-        } | null = null;
-
-        if (fromNode.sourceCaptureId) {
-          const [captureDoc, meta] = await Promise.all([
-            ctx.db.get(fromNode.sourceCaptureId),
-            ctx.db
-              .query('linkMetadata')
-              .withIndex('by_capture', (q) =>
-                q.eq('captureId', fromNode.sourceCaptureId!),
-              )
-              .unique(),
-          ]);
-
-          if (captureDoc) {
-            capture = {
-              _id: captureDoc._id,
-              rawContent: captureDoc.rawContent,
-              captureType: captureDoc.captureType,
-            };
-          }
-          if (meta) {
-            linkMetadata = {
-              title: meta.title,
-              description: meta.description,
-              contentSnippet: meta.contentSnippet,
-              url: meta.url,
-            };
-          }
-        }
-
-        return {
-          fromNode: {
-            _id: fromNode._id,
-            title: fromNode.title,
-            content: fromNode.content,
-          },
-          capture,
-          linkMetadata,
-        };
-      }),
-    );
-
-    return resolvedItems.filter(
-      (item): item is NonNullable<typeof item> => item !== null,
-    );
+    return getNodeActivityForDocument_(ctx, args);
   },
 });

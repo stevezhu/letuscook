@@ -4,6 +4,7 @@ import { v } from 'convex/values';
 import { internalMutation } from '#convex/_generated/server.js';
 import { linkMetadataFields } from '#convex/schema.ts';
 import { authQuery } from '#model/customFunctions.ts';
+import { saveLinkMetadata as saveLinkMetadata_ } from '#model/linkMetadata.ts';
 import { getCurrentUser, getDocOwnedByCurrentUser } from '#model/users.ts';
 
 // 👀 Needs Verification
@@ -23,20 +24,7 @@ export const saveLinkMetadata = internalMutation({
     'ownerUserId',
   ]),
   handler: async (ctx, args) => {
-    await ctx.db.insert('linkMetadata', {
-      captureId: args.captureId,
-      url: args.url,
-      canonicalUrl: args.canonicalUrl,
-      domain: args.domain,
-      title: args.title,
-      description: args.description,
-      faviconUrl: args.faviconUrl,
-      ogImageUrl: args.ogImageUrl,
-      contentSnippet: args.contentSnippet,
-      fetchedAt: args.fetchedAt,
-      fetchStatus: args.fetchStatus,
-      ownerUserId: args.ownerUserId,
-    });
+    await saveLinkMetadata_(ctx, args);
   },
 });
 

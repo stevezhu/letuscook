@@ -4,34 +4,14 @@ import { v } from 'convex/values';
 import { internalMutation } from '#convex/_generated/server.js';
 import { toolRequestFields } from '#convex/schema.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
+import { logToolRequest as logToolRequest_ } from '#model/toolRequests.ts';
 import { getCurrentUser } from '#model/users.ts';
 
 // 👀 Needs Verification
 export const logToolRequest = internalMutation({
   args: pick(toolRequestFields, ['description', 'domain', 'ownerUserId']),
   handler: async (ctx, args) => {
-    const existing = await ctx.db
-      .query('toolRequests')
-      .withIndex('by_owner_status', (q) =>
-        q.eq('ownerUserId', args.ownerUserId).eq('status', 'open'),
-      )
-      .filter((q) => q.eq(q.field('domain'), args.domain))
-      .first();
-
-    if (existing) {
-      await ctx.db.patch('toolRequests', existing._id, {
-        frequency: existing.frequency + 1,
-      });
-    } else {
-      await ctx.db.insert('toolRequests', {
-        description: args.description,
-        domain: args.domain,
-        frequency: 1,
-        status: 'open',
-        createdAt: Date.now(),
-        ownerUserId: args.ownerUserId,
-      });
-    }
+    await logToolRequest_(ctx, args);
   },
 });
 

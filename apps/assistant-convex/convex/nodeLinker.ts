@@ -1,6 +1,10 @@
 import { v } from 'convex/values';
 
 import { internalMutation, internalQuery } from '#convex/_generated/server.js';
+import {
+  createVirtualNode as createVirtualNode_,
+  findNodesByTitle as findNodesByTitle_,
+} from '#model/nodes.ts';
 
 // 👀 Needs Verification
 export const findNodesByTitle = internalQuery({
@@ -9,20 +13,7 @@ export const findNodesByTitle = internalQuery({
     titleSubstring: v.string(),
   },
   handler: async (ctx, args) => {
-    const nodes = await ctx.db
-      .query('nodes')
-      .withSearchIndex('search_nodes', (q) =>
-        q
-          .search('searchText', args.titleSubstring)
-          .eq('ownerUserId', args.ownerUserId)
-          .eq('archivedAt', undefined),
-      )
-      .take(20);
-    return nodes.map((n) => ({
-      id: n._id,
-      title: n.title,
-      nodeKind: n.nodeKind,
-    }));
+    return findNodesByTitle_(ctx, args);
   },
 });
 
@@ -34,16 +25,6 @@ export const createVirtualNode = internalMutation({
   },
   returns: v.id('nodes'),
   handler: async (ctx, args) => {
-    const now = Date.now();
-    const nodeId = await ctx.db.insert('nodes', {
-      title: args.title,
-      content: '',
-      searchText: args.title,
-      ownerUserId: args.ownerUserId,
-      nodeKind: 'virtual',
-      createdAt: now,
-      updatedAt: now,
-    });
-    return nodeId;
+    return createVirtualNode_(ctx, args);
   },
 });

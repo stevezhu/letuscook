@@ -11,7 +11,11 @@ import {
 import { captureFields } from '#convex/schema.ts';
 import { EntityNotFoundError } from '#lib/errors.ts';
 import { pickOptional } from '#lib/helpers.ts';
-import { setCaptureFailed as setCaptureFailed_ } from '#model/captures.ts';
+import {
+  getNodeForEmbedding as getNodeForEmbedding_,
+  saveEmbeddingResult as saveEmbeddingResult_,
+  setCaptureFailed as setCaptureFailed_,
+} from '#model/captures.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
 import {
   getAgentUser,
@@ -669,14 +673,7 @@ export const embedAndClassify = internalAction({
 export const getNodeForEmbedding = internalQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
-    const node = await ctx.db.get(args.nodeId);
-    if (!node) return null;
-    return {
-      title: node.title,
-      content: node.content,
-      archivedAt: node.archivedAt,
-      publishedAt: node.publishedAt,
-    };
+    return getNodeForEmbedding_(ctx, args);
   },
 });
 
@@ -697,101 +694,7 @@ export const saveEmbeddingResult = internalMutation({
     organizingNodeConfidences: v.optional(v.array(v.number())),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
-
-    // Build searchText: include title + rawContent, and append enrichedContent
-    // if it differs from rawContent (e.g. link metadata title + description + snippet)
-    const searchTextParts = [`${args.title}\n\n${args.rawContent}`];
-    if (args.enrichedContent && args.enrichedContent !== args.rawContent) {
-      searchTextParts.push(args.enrichedContent);
-    }
-    const searchText = searchTextParts.join('\n\n');
-
-    // 1. Create draft node with embedding
-    const draftNodeId = await ctx.db.insert('nodes', {
-      title: args.title,
-      content: args.rawContent,
-      searchText,
-      ownerUserId: args.ownerUserId,
-      sourceCaptureId: args.captureId,
-      embedding: args.embedding,
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    // 2. Create edges to similar nodes with confidence scores
-    await Promise.all(
-      args.similarNodeIds.map((nodeId, i) =>
-        ctx.db.insert('edges', {
-          fromNodeId: draftNodeId,
-          toNodeId: nodeId,
-          edgeType: 'suggested',
-          source: 'processor',
-          verified: false,
-          confidence: args.similarNodeScores[i],
-          createdAt: now,
-        }),
-      ),
-    );
-
-    // 3. Create edges from explicit mentions
-    await Promise.all(
-      args.explicitMentionNodeIds.map((nodeId) =>
-        ctx.db.insert('edges', {
-          fromNodeId: draftNodeId,
-          toNodeId: nodeId,
-          edgeType: 'suggested',
-          source: 'processor',
-          verified: false,
-          createdAt: now,
-        }),
-      ),
-    );
-
-    // 4. Create categorized_as edges to organizing nodes
-    const organizingNodeIds = args.organizingNodeIds ?? [];
-    const organizingNodeConfidences = args.organizingNodeConfidences ?? [];
-    await Promise.all(
-      organizingNodeIds.map((nodeId, i) => {
-        const confidence = organizingNodeConfidences[i] ?? 0;
-        // Auto-verify edges with confidence > 0.8
-        const isAutomatic = confidence > 0.8;
-        // Check for existing edge before inserting
-        return ctx.db
-          .query('edges')
-          .withIndex('by_edge_pair', (q) =>
-            q.eq('fromNodeId', draftNodeId).eq('toNodeId', nodeId),
-          )
-          .first()
-          .then((existing) => {
-            if (existing) return;
-            return ctx.db.insert('edges', {
-              fromNodeId: draftNodeId,
-              toNodeId: nodeId,
-              edgeType: 'categorized_as',
-              source: 'processor',
-              verified: isAutomatic,
-              confidence,
-              createdAt: now,
-            });
-          });
-      }),
-    );
-
-    // 5. Create suggestion row
-    await ctx.db.insert('suggestions', {
-      captureId: args.captureId,
-      suggestorUserId: args.agentUserId,
-      suggestedNodeId: draftNodeId,
-      status: 'pending',
-      createdAt: now,
-    });
-
-    // 6. Set capture state to ready
-    await ctx.db.patch('captures', args.captureId, {
-      captureState: 'ready',
-      updatedAt: now,
-    });
+    await saveEmbeddingResult_(ctx, args);
   },
 });
 
