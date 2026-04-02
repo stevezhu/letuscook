@@ -1,5 +1,5 @@
 {
-  "include": ["convex/"],
+  "include": ["convex/", "src/"],
   "exclude": ["convex/_generated"],
   "compilerOptions": {
     "strict": true,

@@ -1,8 +1,8 @@
 import { v } from 'convex/values';
 
 import { internalMutation } from '#convex/_generated/server.js';
-import { getCurrentUser } from '#convex/model/users.ts';
-import { authQuery } from '#convex/utils/customFunctions.ts';
+import { getCurrentUser } from '#model/users.ts';
+import { authQuery } from '#utils/customFunctions.ts';
 
 // 👀 Needs Verification
 export const saveLinkMetadata = internalMutation({

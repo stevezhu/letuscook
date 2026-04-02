@@ -1,6 +1,9 @@
 import { pick } from 'convex-helpers';
 import { ConvexError, v } from 'convex/values';
 
+import { embedText, generateTitle } from '#ai/embedding.ts';
+import { fetchLinkMetadata } from '#ai/linkFetcher.ts';
+import { identifyOrganizingNodes } from '#ai/nodeLinker.ts';
 import { internal } from '#convex/_generated/api.js';
 import { Id } from '#convex/_generated/dataModel.js';
 import {
@@ -8,16 +11,16 @@ import {
   internalMutation,
   internalQuery,
 } from '#convex/_generated/server.js';
-import { setCaptureFailed as setCaptureFailed_ } from '#convex/model/captures.ts';
+import { captureFields } from '#convex/schema.ts';
+import { setCaptureFailed as setCaptureFailed_ } from '#model/captures.ts';
 import {
   getAgentUser,
   getCurrentUser,
   getDocOwnedByCurrentUser,
-} from '#convex/model/users.ts';
-import { captureFields } from '#convex/schema.ts';
-import { authMutation, authQuery } from '#convex/utils/customFunctions.ts';
-import { EntityNotFoundError } from '#convex/utils/errors.ts';
-import { pickOptional } from '#convex/utils/helpers.ts';
+} from '#model/users.ts';
+import { authMutation, authQuery } from '#utils/customFunctions.ts';
+import { EntityNotFoundError } from '#utils/errors.ts';
+import { pickOptional } from '#utils/helpers.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -547,13 +550,9 @@ export const embedAndClassify = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const { embedText, generateTitle } =
-        await import('#convex/ai/embedding.ts');
-
       // 0. If link capture, fetch metadata and use enriched content
       let contentForEmbedding = args.rawContent;
       if (args.captureType === 'link') {
-        const { fetchLinkMetadata } = await import('#convex/ai/linkFetcher.ts');
         const linkMeta = await fetchLinkMetadata(args.rawContent.trim());
         await ctx.runMutation(internal.linkMetadata.saveLinkMetadata, {
           captureId: args.captureId,
@@ -629,8 +628,6 @@ export const embedAndClassify = internalAction({
       );
 
       // 5. Identify organizing nodes (graph-based categorization)
-      const { identifyOrganizingNodes } =
-        await import('#convex/ai/nodeLinker.ts');
       const organizingNodeSuggestions = await identifyOrganizingNodes(ctx, {
         contentTitle: title,
         rawContent: contentForEmbedding,
