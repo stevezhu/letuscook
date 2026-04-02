@@ -1,3 +1,20 @@
+---
+date: 2026-04-02T21:30:17Z
+type: plan
+status: done
+agent: claudecode
+models: [claude-opus-4-6]
+branch: capture-ingestion-improvements
+sessionId: 23b45b61-fbc1-4da3-a93a-15cf8dd26cb4
+tags: [assistant-convex, code-review, security, performance]
+filesModified:
+  - apps/assistant-convex/convex/linkMetadata.ts
+  - apps/assistant-convex/convex/nodeLinker.ts
+  - apps/assistant-convex/convex/nodes.ts
+  - apps/assistant-convex/convex/schema.ts
+  - apps/assistant-convex/convex/captures.test.ts
+---
+
 # Fix Important Issues from Code Review
 
 ## Context
