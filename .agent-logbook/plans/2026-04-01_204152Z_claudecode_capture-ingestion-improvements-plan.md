@@ -43,7 +43,7 @@ Improve the capture ingestion experience, primarily for link processing. The use
 
 ## References
 
-- Plan file: `.claude/plans/memoized-brewing-balloon.md`
+- Plan file: `docs/plans/memoized-brewing-balloon.md`
 - Current captures implementation: `apps/assistant-convex/convex/captures.ts`
 - Schema: `apps/assistant-convex/convex/schema.ts`
 - Traycer specs: `docs/traycer/`
