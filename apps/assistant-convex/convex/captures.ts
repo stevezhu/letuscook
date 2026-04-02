@@ -97,6 +97,7 @@ export const createCapture = authMutation({
       });
     const now = Date.now();
     const trimmed = args.rawContent.trim();
+    // TODO: make automatic link detection more robust
     const captureType =
       args.captureType === 'text' &&
       !trimmed.includes('\n') &&
