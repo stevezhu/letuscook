@@ -198,22 +198,4 @@ export default defineSchema({
     'ownerUserId',
     'status',
   ]),
-
-  topics: defineTable({
-    label: v.string(),
-    ownerUserId: v.id('users'),
-    isUserDefined: v.boolean(),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index('by_owner', ['ownerUserId']),
-
-  nodeTopics: defineTable({
-    nodeId: v.id('nodes'),
-    topicId: v.id('topics'),
-    confidence: v.optional(v.number()),
-    source: v.union(v.literal('cluster'), v.literal('user')),
-    createdAt: v.number(),
-  })
-    .index('by_node', ['nodeId'])
-    .index('by_topic', ['topicId']),
 });
