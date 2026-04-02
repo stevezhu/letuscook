@@ -5,40 +5,12 @@ import { type ConvexTestInstance, test } from '#convexTest.ts';
 
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 
-const IDENTITY = { name: 'Test User', subject: 'workos_user_123' };
-
-async function setupUser(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
-    return ctx.db.insert('users', {
-      displayName: 'Test User',
-      email: 'test@example.com',
-      workosUserId: 'workos_user_123',
-      userType: 'human',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-  });
-}
-
-async function setupAgentUser(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
-    return ctx.db.insert('users', {
-      displayName: 'AI Agent',
-      userType: 'agent',
-      agentProvider: 'google',
-      agentModel: 'gemini',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-  });
-}
-
-test.beforeEach(async ({ t }) => {
-  await Promise.all([setupUser(t), setupAgentUser(t)]);
+test.beforeEach(async ({ setupUser, setupAgentUser }) => {
+  await Promise.all([setupUser(), setupAgentUser()]);
 });
 
-async function getUserId(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
+async function getUserId(testConvex: ConvexTestInstance) {
+  return testConvex.run(async (ctx) => {
     const user = await ctx.db
       .query('users')
       .filter((q) => q.eq(q.field('workosUserId'), 'workos_user_123'))
@@ -47,8 +19,8 @@ async function getUserId(t: ConvexTestInstance) {
   });
 }
 
-async function getAgentUserId(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
+async function getAgentUserId(testConvex: ConvexTestInstance) {
+  return testConvex.run(async (ctx) => {
     const user = await ctx.db
       .query('users')
       .filter((q) => q.eq(q.field('userType'), 'agent'))
@@ -60,16 +32,21 @@ async function getAgentUserId(t: ConvexTestInstance) {
 // ─── createCapture ───────────────────────────────────────────────────────────
 
 describe('createCapture', () => {
-  test('creates a text capture and sets state to processing', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('creates a text capture and sets state to processing', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const captureId = await asSarah.mutation(api.captures.createCapture, {
-      rawContent: 'Some interesting thought',
-      captureType: 'text',
-    });
+    const captureId = await authedTestConvex.mutation(
+      api.captures.createCapture,
+      {
+        rawContent: 'Some interesting thought',
+        captureType: 'text',
+      },
+    );
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture).toMatchObject({
       rawContent: 'Some interesting thought',
       captureType: 'text',
@@ -78,44 +55,57 @@ describe('createCapture', () => {
     });
   });
 
-  test('auto-detects link type when text starts with http', async ({ t }) => {
-    const asSarah = t.withIdentity(IDENTITY);
-    const captureId = await asSarah.mutation(api.captures.createCapture, {
-      rawContent: 'https://example.com/article',
-      captureType: 'text',
-    });
+  test('auto-detects link type when text starts with http', async ({
+    authedTestConvex,
+    testConvex,
+  }) => {
+    const captureId = await authedTestConvex.mutation(
+      api.captures.createCapture,
+      {
+        rawContent: 'https://example.com/article',
+        captureType: 'text',
+      },
+    );
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.captureType).toBe('link');
   });
 
-  test('does not auto-detect link when content has newlines', async ({ t }) => {
-    const asSarah = t.withIdentity(IDENTITY);
-    const captureId = await asSarah.mutation(api.captures.createCapture, {
-      rawContent: 'https://example.com/article\nsome notes',
-      captureType: 'text',
-    });
+  test('does not auto-detect link when content has newlines', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const captureId = await authedTestConvex.mutation(
+      api.captures.createCapture,
+      {
+        rawContent: 'https://example.com/article\nsome notes',
+        captureType: 'text',
+      },
+    );
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.captureType).toBe('text');
   });
 
   test('stores empty explicitMentionNodeIds when no mentions present', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const asSarah = t.withIdentity(IDENTITY);
-    const captureId = await asSarah.mutation(api.captures.createCapture, {
-      rawContent: 'No mentions here',
-      captureType: 'text',
-    });
+    const captureId = await authedTestConvex.mutation(
+      api.captures.createCapture,
+      {
+        rawContent: 'No mentions here',
+        captureType: 'text',
+      },
+    );
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.explicitMentionNodeIds).toEqual([]);
   });
 
-  test('rejects unauthenticated callers', async ({ t }) => {
+  test('rejects unauthenticated callers', async ({ testConvex }) => {
     await expect(
-      t.mutation(api.captures.createCapture, {
+      testConvex.mutation(api.captures.createCapture, {
         rawContent: 'test',
         captureType: 'text',
       }),
@@ -127,13 +117,14 @@ describe('createCapture', () => {
 
 describe('updateCapture', () => {
   test('updates capture content and marks pending suggestion stale', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
-    const agentUserId = await getAgentUserId(t);
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
 
     // Create capture and suggestion
-    const { captureId, suggestionId } = await t.run(async (ctx) => {
+    const { captureId, suggestionId } = await testConvex.run(async (ctx) => {
       const captureId = await ctx.db.insert('captures', {
         rawContent: 'original content',
         captureType: 'text',
@@ -162,13 +153,12 @@ describe('updateCapture', () => {
       return { captureId, suggestionId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.updateCapture, {
+    await authedTestConvex.mutation(api.captures.updateCapture, {
       captureId,
       rawContent: 'updated content',
     });
 
-    const [capture, suggestion] = await t.run(async (ctx) => {
+    const [capture, suggestion] = await testConvex.run(async (ctx) => {
       return [
         await ctx.db.get(captureId),
         await ctx.db.get(suggestionId),
@@ -184,13 +174,14 @@ describe('updateCapture', () => {
 
 describe('acceptSuggestion', () => {
   test('publishes draft nodes/edges and sets capture to processed', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
-    const agentUserId = await getAgentUserId(t);
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
 
     const { captureId, suggestionId, draftNodeId, existingNodeId } =
-      await t.run(async (ctx) => {
+      await testConvex.run(async (ctx) => {
         const now = Date.now();
         const captureId = await ctx.db.insert('captures', {
           rawContent: 'test content',
@@ -245,13 +236,12 @@ describe('acceptSuggestion', () => {
         return { captureId, suggestionId, draftNodeId, existingNodeId };
       });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.acceptSuggestion, {
+    await authedTestConvex.mutation(api.captures.acceptSuggestion, {
       captureId,
       suggestionId,
     });
 
-    const { capture, suggestion, draftNode, edge } = await t.run(
+    const { capture, suggestion, draftNode, edge } = await testConvex.run(
       async (ctx) => {
         const edges = await ctx.db
           .query('edges')
@@ -281,13 +271,14 @@ describe('acceptSuggestion', () => {
 
 describe('rejectSuggestion', () => {
   test('deletes draft nodes/edges and sets capture to needs_manual', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
-    const agentUserId = await getAgentUserId(t);
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
 
-    const { captureId, suggestionId, draftNodeId, edgeId } = await t.run(
-      async (ctx) => {
+    const { captureId, suggestionId, draftNodeId, edgeId } =
+      await testConvex.run(async (ctx) => {
         const now = Date.now();
         const captureId = await ctx.db.insert('captures', {
           rawContent: 'test content',
@@ -337,16 +328,14 @@ describe('rejectSuggestion', () => {
         });
 
         return { captureId, suggestionId, draftNodeId, edgeId };
-      },
-    );
+      });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.rejectSuggestion, {
+    await authedTestConvex.mutation(api.captures.rejectSuggestion, {
       captureId,
       suggestionId,
     });
 
-    const { capture, suggestion, draftNode, edge } = await t.run(
+    const { capture, suggestion, draftNode, edge } = await testConvex.run(
       async (ctx) => ({
         capture: await ctx.db.get(captureId),
         suggestion: await ctx.db.get(suggestionId),
@@ -366,11 +355,12 @@ describe('rejectSuggestion', () => {
 
 describe('organizeCapture', () => {
   test('creates published node and sets capture to processed', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
+    const userId = await getUserId(testConvex);
 
-    const captureId = await t.run(async (ctx) => {
+    const captureId = await testConvex.run(async (ctx) => {
       return ctx.db.insert('captures', {
         rawContent: 'Some important note',
         captureType: 'text',
@@ -382,17 +372,18 @@ describe('organizeCapture', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.organizeCapture, {
+    await authedTestConvex.mutation(api.captures.organizeCapture, {
       captureId,
       nodeTitle: 'Important Notes',
     });
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.captureState).toBe('processed');
     expect(capture!.nodeId).toBeDefined();
 
-    const node = await t.run(async (ctx) => ctx.db.get(capture!.nodeId!));
+    const node = await testConvex.run(async (ctx) =>
+      ctx.db.get(capture!.nodeId!),
+    );
     expect(node).toMatchObject({
       title: 'Important Notes',
       content: 'Some important note',
@@ -401,10 +392,13 @@ describe('organizeCapture', () => {
     expect(node!.publishedAt).toBeDefined();
   });
 
-  test('creates explicit edges for mentioned nodes', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('creates explicit edges for mentioned nodes', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const { captureId, mentionedNodeId } = await t.run(async (ctx) => {
+    const { captureId, mentionedNodeId } = await testConvex.run(async (ctx) => {
       const mentionedNodeId = await ctx.db.insert('nodes', {
         title: 'Related',
         content: 'related content',
@@ -426,13 +420,12 @@ describe('organizeCapture', () => {
       return { captureId, mentionedNodeId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.organizeCapture, {
+    await authedTestConvex.mutation(api.captures.organizeCapture, {
       captureId,
       nodeTitle: 'My Note',
     });
 
-    const edges = await t.run(async (ctx) => {
+    const edges = await testConvex.run(async (ctx) => {
       return ctx.db
         .query('edges')
         .filter((q) => q.eq(q.field('toNodeId'), mentionedNodeId))
@@ -452,10 +445,13 @@ describe('organizeCapture', () => {
 // ─── archiveCapture / unarchiveCapture ───────────────────────────────────────
 
 describe('archiveCapture', () => {
-  test('sets archivedAt on the capture', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('sets archivedAt on the capture', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const captureId = await t.run(async (ctx) => {
+    const captureId = await testConvex.run(async (ctx) => {
       return ctx.db.insert('captures', {
         rawContent: 'to archive',
         captureType: 'text',
@@ -467,19 +463,21 @@ describe('archiveCapture', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.archiveCapture, { captureId });
+    await authedTestConvex.mutation(api.captures.archiveCapture, { captureId });
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.archivedAt).toBeDefined();
   });
 });
 
 describe('unarchiveCapture', () => {
-  test('clears archivedAt on the capture', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('clears archivedAt on the capture', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const captureId = await t.run(async (ctx) => {
+    const captureId = await testConvex.run(async (ctx) => {
       return ctx.db.insert('captures', {
         rawContent: 'archived',
         captureType: 'text',
@@ -492,10 +490,11 @@ describe('unarchiveCapture', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.unarchiveCapture, { captureId });
+    await authedTestConvex.mutation(api.captures.unarchiveCapture, {
+      captureId,
+    });
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.archivedAt).toBeUndefined();
   });
 });
@@ -504,11 +503,12 @@ describe('unarchiveCapture', () => {
 
 describe('retryProcessing', () => {
   test('resets failed capture to processing and schedules processing', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
+    const userId = await getUserId(testConvex);
 
-    const captureId = await t.run(async (ctx) => {
+    const captureId = await testConvex.run(async (ctx) => {
       return ctx.db.insert('captures', {
         rawContent: 'failed capture',
         captureType: 'text',
@@ -520,17 +520,21 @@ describe('retryProcessing', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.captures.retryProcessing, { captureId });
+    await authedTestConvex.mutation(api.captures.retryProcessing, {
+      captureId,
+    });
 
-    const capture = await t.run(async (ctx) => ctx.db.get(captureId));
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
     expect(capture!.captureState).toBe('processing');
   });
 
-  test('rejects retry on non-failed capture', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('rejects retry on non-failed capture', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const captureId = await t.run(async (ctx) => {
+    const captureId = await testConvex.run(async (ctx) => {
       return ctx.db.insert('captures', {
         rawContent: 'ready capture',
         captureType: 'text',
@@ -542,9 +546,8 @@ describe('retryProcessing', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
     await expect(
-      asSarah.mutation(api.captures.retryProcessing, { captureId }),
+      authedTestConvex.mutation(api.captures.retryProcessing, { captureId }),
     ).rejects.toThrow();
   });
 });
@@ -552,11 +555,11 @@ describe('retryProcessing', () => {
 // ─── saveEmbeddingResult (internal) ──────────────────────────────────────────
 
 describe('saveEmbeddingResult', () => {
-  test('creates draft node, edges, and suggestion', async ({ t }) => {
-    const userId = await getUserId(t);
-    const agentUserId = await getAgentUserId(t);
+  test('creates draft node, edges, and suggestion', async ({ testConvex }) => {
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
 
-    const { captureId, existingNodeId } = await t.run(async (ctx) => {
+    const { captureId, existingNodeId } = await testConvex.run(async (ctx) => {
       const captureId = await ctx.db.insert('captures', {
         rawContent: 'test content',
         captureType: 'text',
@@ -580,7 +583,7 @@ describe('saveEmbeddingResult', () => {
 
     const fakeEmbedding = Array.from({ length: 768 }, () => 0.1);
 
-    await t.mutation(internal.captures.saveEmbeddingResult, {
+    await testConvex.mutation(internal.captures.saveEmbeddingResult, {
       captureId,
       agentUserId,
       title: 'Test Title',
@@ -592,7 +595,7 @@ describe('saveEmbeddingResult', () => {
       explicitMentionNodeIds: [],
     });
 
-    const { capture, suggestion, draftNode, edges } = await t.run(
+    const { capture, suggestion, draftNode, edges } = await testConvex.run(
       async (ctx) => {
         const capture = await ctx.db.get(captureId);
         const suggestion = await ctx.db
@@ -638,11 +641,14 @@ describe('saveEmbeddingResult', () => {
 // ─── getInboxCaptures ────────────────────────────────────────────────────────
 
 describe('getInboxCaptures', () => {
-  test('returns captures grouped by state with suggestions', async ({ t }) => {
-    const userId = await getUserId(t);
-    const agentUserId = await getAgentUserId(t);
+  test('returns captures grouped by state with suggestions', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
 
-    await t.run(async (ctx) => {
+    await testConvex.run(async (ctx) => {
       const now = Date.now();
 
       // Processing capture
@@ -695,8 +701,10 @@ describe('getInboxCaptures', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const inbox = await asSarah.query(api.captures.getInboxCaptures, {});
+    const inbox = await authedTestConvex.query(
+      api.captures.getInboxCaptures,
+      {},
+    );
 
     expect(inbox).toHaveLength(3);
     // Sorted by capturedAt desc
@@ -706,10 +714,13 @@ describe('getInboxCaptures', () => {
     expect(inbox[2]!.capture.rawContent).toBe('failed');
   });
 
-  test('excludes archived and processed captures', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('excludes archived and processed captures', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    await t.run(async (ctx) => {
+    await testConvex.run(async (ctx) => {
       const now = Date.now();
       // Archived capture
       await ctx.db.insert('captures', {
@@ -734,8 +745,10 @@ describe('getInboxCaptures', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const inbox = await asSarah.query(api.captures.getInboxCaptures, {});
+    const inbox = await authedTestConvex.query(
+      api.captures.getInboxCaptures,
+      {},
+    );
     expect(inbox).toHaveLength(0);
   });
 });

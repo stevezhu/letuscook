@@ -16,7 +16,7 @@ import type * as linkMetadata from "../linkMetadata.js";
 import type * as nodeDocuments from "../nodeDocuments.js";
 import type * as nodeLinker from "../nodeLinker.js";
 import type * as nodes from "../nodes.js";
-import type * as scripts_seedAgentUser from "../scripts/seedAgentUser.js";
+import type * as scripts_seed from "../scripts/seed.js";
 import type * as search from "../search.js";
 import type * as suggestions from "../suggestions.js";
 import type * as toolRequests from "../toolRequests.js";
@@ -36,7 +36,7 @@ declare const fullApi: ApiFromModules<{
   nodeDocuments: typeof nodeDocuments;
   nodeLinker: typeof nodeLinker;
   nodes: typeof nodes;
-  "scripts/seedAgentUser": typeof scripts_seedAgentUser;
+  "scripts/seed": typeof scripts_seed;
   search: typeof search;
   suggestions: typeof suggestions;
   toolRequests: typeof toolRequests;

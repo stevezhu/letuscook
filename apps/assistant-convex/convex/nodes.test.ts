@@ -3,40 +3,12 @@ import { describe, expect } from 'vitest';
 import { api } from '#convex/_generated/api.js';
 import { type ConvexTestInstance, test } from '#convexTest.ts';
 
-const IDENTITY = { name: 'Test User', subject: 'workos_user_123' };
-
-async function setupUser(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
-    return ctx.db.insert('users', {
-      displayName: 'Test User',
-      email: 'test@example.com',
-      workosUserId: 'workos_user_123',
-      userType: 'human',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-  });
-}
-
-async function setupAgentUser(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
-    return ctx.db.insert('users', {
-      displayName: 'AI Agent',
-      userType: 'agent',
-      agentProvider: 'google',
-      agentModel: 'gemini',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    });
-  });
-}
-
-test.beforeEach(async ({ t }) => {
-  await Promise.all([setupUser(t), setupAgentUser(t)]);
+test.beforeEach(async ({ setupUser, setupAgentUser }) => {
+  await Promise.all([setupUser(), setupAgentUser()]);
 });
 
-async function getUserId(t: ConvexTestInstance) {
-  return t.run(async (ctx) => {
+async function getUserId(testConvex: ConvexTestInstance) {
+  return testConvex.run(async (ctx) => {
     const user = await ctx.db
       .query('users')
       .filter((q) => q.eq(q.field('workosUserId'), 'workos_user_123'))
@@ -48,10 +20,13 @@ async function getUserId(t: ConvexTestInstance) {
 // ─── archiveNode ─────────────────────────────────────────────────────────────
 
 describe('archiveNode', () => {
-  test('archives node and all connected edges', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('archives node and all connected edges', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const { nodeId, edgeId } = await t.run(async (ctx) => {
+    const { nodeId, edgeId } = await testConvex.run(async (ctx) => {
       const now = Date.now();
       const nodeId = await ctx.db.insert('nodes', {
         title: 'To Archive',
@@ -83,10 +58,9 @@ describe('archiveNode', () => {
       return { nodeId, otherNodeId, edgeId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.nodes.archiveNode, { nodeId });
+    await authedTestConvex.mutation(api.nodes.archiveNode, { nodeId });
 
-    const { node, edge } = await t.run(async (ctx) => ({
+    const { node, edge } = await testConvex.run(async (ctx) => ({
       node: await ctx.db.get(nodeId),
       edge: await ctx.db.get(edgeId),
     }));
@@ -95,8 +69,11 @@ describe('archiveNode', () => {
     expect(edge!.archivedAt).toBeDefined();
   });
 
-  test('rejects archiving node owned by another user', async ({ t }) => {
-    const nodeId = await t.run(async (ctx) => {
+  test('rejects archiving node owned by another user', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const nodeId = await testConvex.run(async (ctx) => {
       const otherUserId = await ctx.db.insert('users', {
         displayName: 'Other',
         userType: 'human',
@@ -114,9 +91,8 @@ describe('archiveNode', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
     await expect(
-      asSarah.mutation(api.nodes.archiveNode, { nodeId }),
+      authedTestConvex.mutation(api.nodes.archiveNode, { nodeId }),
     ).rejects.toThrow();
   });
 });
@@ -124,10 +100,13 @@ describe('archiveNode', () => {
 // ─── unarchiveNode ───────────────────────────────────────────────────────────
 
 describe('unarchiveNode', () => {
-  test('restores node and connected edges', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('restores node and connected edges', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const { nodeId, edgeId } = await t.run(async (ctx) => {
+    const { nodeId, edgeId } = await testConvex.run(async (ctx) => {
       const now = Date.now();
       const nodeId = await ctx.db.insert('nodes', {
         title: 'Archived',
@@ -161,10 +140,9 @@ describe('unarchiveNode', () => {
       return { nodeId, edgeId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    await asSarah.mutation(api.nodes.unarchiveNode, { nodeId });
+    await authedTestConvex.mutation(api.nodes.unarchiveNode, { nodeId });
 
-    const { node, edge } = await t.run(async (ctx) => ({
+    const { node, edge } = await testConvex.run(async (ctx) => ({
       node: await ctx.db.get(nodeId),
       edge: await ctx.db.get(edgeId),
     }));
@@ -178,11 +156,12 @@ describe('unarchiveNode', () => {
 
 describe('getKnowledgeBasePages', () => {
   test('returns published non-virtual nodes with edge counts', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
+    const userId = await getUserId(testConvex);
 
-    await t.run(async (ctx) => {
+    await testConvex.run(async (ctx) => {
       const now = Date.now();
 
       const node1 = await ctx.db.insert('nodes', {
@@ -239,8 +218,10 @@ describe('getKnowledgeBasePages', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const pages = await asSarah.query(api.nodes.getKnowledgeBasePages, {});
+    const pages = await authedTestConvex.query(
+      api.nodes.getKnowledgeBasePages,
+      {},
+    );
 
     expect(pages).toHaveLength(2);
     const titles = pages.map((p) => p.node.title);
@@ -253,10 +234,10 @@ describe('getKnowledgeBasePages', () => {
     }
   });
 
-  test('excludes archived nodes', async ({ t }) => {
-    const userId = await getUserId(t);
+  test('excludes archived nodes', async ({ testConvex, authedTestConvex }) => {
+    const userId = await getUserId(testConvex);
 
-    await t.run(async (ctx) => {
+    await testConvex.run(async (ctx) => {
       const now = Date.now();
       await ctx.db.insert('nodes', {
         title: 'Archived',
@@ -270,8 +251,10 @@ describe('getKnowledgeBasePages', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const pages = await asSarah.query(api.nodes.getKnowledgeBasePages, {});
+    const pages = await authedTestConvex.query(
+      api.nodes.getKnowledgeBasePages,
+      {},
+    );
     expect(pages).toHaveLength(0);
   });
 });
@@ -280,11 +263,12 @@ describe('getKnowledgeBasePages', () => {
 
 describe('getNodeWithEdges', () => {
   test('returns node with resolved outgoing and incoming edges', async ({
-    t,
+    testConvex,
+    authedTestConvex,
   }) => {
-    const userId = await getUserId(t);
+    const userId = await getUserId(testConvex);
 
-    const { nodeId } = await t.run(async (ctx) => {
+    const { nodeId } = await testConvex.run(async (ctx) => {
       const now = Date.now();
       const nodeId = await ctx.db.insert('nodes', {
         title: 'Center Node',
@@ -316,8 +300,9 @@ describe('getNodeWithEdges', () => {
       return { nodeId, linkedNodeId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const result = await asSarah.query(api.nodes.getNodeWithEdges, { nodeId });
+    const result = await authedTestConvex.query(api.nodes.getNodeWithEdges, {
+      nodeId,
+    });
 
     expect(result).not.toBeNull();
     expect(result!.node.title).toBe('Center Node');
@@ -329,8 +314,11 @@ describe('getNodeWithEdges', () => {
     expect(result!.incoming).toHaveLength(0);
   });
 
-  test('returns null for node not owned by user', async ({ t }) => {
-    const nodeId = await t.run(async (ctx) => {
+  test('returns null for node not owned by user', async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const nodeId = await testConvex.run(async (ctx) => {
       const otherUser = await ctx.db.insert('users', {
         displayName: 'Other',
         userType: 'human',
@@ -348,15 +336,19 @@ describe('getNodeWithEdges', () => {
       });
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const result = await asSarah.query(api.nodes.getNodeWithEdges, { nodeId });
+    const result = await authedTestConvex.query(api.nodes.getNodeWithEdges, {
+      nodeId,
+    });
     expect(result).toBeNull();
   });
 
-  test("marks other users' linked nodes as private", async ({ t }) => {
-    const userId = await getUserId(t);
+  test("marks other users' linked nodes as private", async ({
+    testConvex,
+    authedTestConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
 
-    const { nodeId } = await t.run(async (ctx) => {
+    const { nodeId } = await testConvex.run(async (ctx) => {
       const now = Date.now();
       const otherUser = await ctx.db.insert('users', {
         displayName: 'Other',
@@ -398,8 +390,9 @@ describe('getNodeWithEdges', () => {
       return { nodeId };
     });
 
-    const asSarah = t.withIdentity(IDENTITY);
-    const result = await asSarah.query(api.nodes.getNodeWithEdges, { nodeId });
+    const result = await authedTestConvex.query(api.nodes.getNodeWithEdges, {
+      nodeId,
+    });
 
     expect(result!.outgoing).toHaveLength(1);
     expect(result!.outgoing[0]!.linkedNode).toEqual({ type: 'private' });
