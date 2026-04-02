@@ -18,11 +18,38 @@ async function setupUser(t: ConvexTestInstance) {
   });
 }
 
+async function setupAgentUser(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    return ctx.db.insert('users', {
+      displayName: 'AI Agent',
+      userType: 'agent',
+      agentProvider: 'google',
+      agentModel: 'gemini',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  });
+}
+
+test.beforeEach(async ({ t }) => {
+  await Promise.all([setupUser(t), setupAgentUser(t)]);
+});
+
+async function getUserId(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    const user = await ctx.db
+      .query('users')
+      .filter((q) => q.eq(q.field('workosUserId'), 'workos_user_123'))
+      .unique();
+    return user!._id;
+  });
+}
+
 // ─── archiveNode ─────────────────────────────────────────────────────────────
 
 describe('archiveNode', () => {
   test('archives node and all connected edges', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { nodeId, edgeId } = await t.run(async (ctx) => {
       const now = Date.now();
@@ -69,8 +96,6 @@ describe('archiveNode', () => {
   });
 
   test('rejects archiving node owned by another user', async ({ t }) => {
-    await setupUser(t);
-
     const nodeId = await t.run(async (ctx) => {
       const otherUserId = await ctx.db.insert('users', {
         displayName: 'Other',
@@ -100,7 +125,7 @@ describe('archiveNode', () => {
 
 describe('unarchiveNode', () => {
   test('restores node and connected edges', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { nodeId, edgeId } = await t.run(async (ctx) => {
       const now = Date.now();
@@ -155,7 +180,7 @@ describe('getKnowledgeBasePages', () => {
   test('returns published non-virtual nodes with edge counts', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     await t.run(async (ctx) => {
       const now = Date.now();
@@ -229,7 +254,7 @@ describe('getKnowledgeBasePages', () => {
   });
 
   test('excludes archived nodes', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     await t.run(async (ctx) => {
       const now = Date.now();
@@ -257,7 +282,7 @@ describe('getNodeWithEdges', () => {
   test('returns node with resolved outgoing and incoming edges', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { nodeId } = await t.run(async (ctx) => {
       const now = Date.now();
@@ -305,8 +330,6 @@ describe('getNodeWithEdges', () => {
   });
 
   test('returns null for node not owned by user', async ({ t }) => {
-    await setupUser(t);
-
     const nodeId = await t.run(async (ctx) => {
       const otherUser = await ctx.db.insert('users', {
         displayName: 'Other',
@@ -331,7 +354,7 @@ describe('getNodeWithEdges', () => {
   });
 
   test("marks other users' linked nodes as private", async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { nodeId } = await t.run(async (ctx) => {
       const now = Date.now();

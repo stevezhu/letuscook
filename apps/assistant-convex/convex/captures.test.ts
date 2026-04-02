@@ -33,11 +33,35 @@ async function setupAgentUser(t: ConvexTestInstance) {
   });
 }
 
+test.beforeEach(async ({ t }) => {
+  await Promise.all([setupUser(t), setupAgentUser(t)]);
+});
+
+async function getUserId(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    const user = await ctx.db
+      .query('users')
+      .filter((q) => q.eq(q.field('workosUserId'), 'workos_user_123'))
+      .unique();
+    return user!._id;
+  });
+}
+
+async function getAgentUserId(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    const user = await ctx.db
+      .query('users')
+      .filter((q) => q.eq(q.field('userType'), 'agent'))
+      .unique();
+    return user!._id;
+  });
+}
+
 // ─── createCapture ───────────────────────────────────────────────────────────
 
 describe('createCapture', () => {
   test('creates a text capture and sets state to processing', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const asSarah = t.withIdentity(IDENTITY);
     const captureId = await asSarah.mutation(api.captures.createCapture, {
@@ -55,8 +79,6 @@ describe('createCapture', () => {
   });
 
   test('auto-detects link type when text starts with http', async ({ t }) => {
-    await setupUser(t);
-
     const asSarah = t.withIdentity(IDENTITY);
     const captureId = await asSarah.mutation(api.captures.createCapture, {
       rawContent: 'https://example.com/article',
@@ -68,8 +90,6 @@ describe('createCapture', () => {
   });
 
   test('does not auto-detect link when content has newlines', async ({ t }) => {
-    await setupUser(t);
-
     const asSarah = t.withIdentity(IDENTITY);
     const captureId = await asSarah.mutation(api.captures.createCapture, {
       rawContent: 'https://example.com/article\nsome notes',
@@ -83,8 +103,6 @@ describe('createCapture', () => {
   test('stores empty explicitMentionNodeIds when no mentions present', async ({
     t,
   }) => {
-    await setupUser(t);
-
     const asSarah = t.withIdentity(IDENTITY);
     const captureId = await asSarah.mutation(api.captures.createCapture, {
       rawContent: 'No mentions here',
@@ -111,8 +129,8 @@ describe('updateCapture', () => {
   test('updates capture content and marks pending suggestion stale', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
-    const agentUserId = await setupAgentUser(t);
+    const userId = await getUserId(t);
+    const agentUserId = await getAgentUserId(t);
 
     // Create capture and suggestion
     const { captureId, suggestionId } = await t.run(async (ctx) => {
@@ -168,8 +186,8 @@ describe('acceptSuggestion', () => {
   test('publishes draft nodes/edges and sets capture to processed', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
-    const agentUserId = await setupAgentUser(t);
+    const userId = await getUserId(t);
+    const agentUserId = await getAgentUserId(t);
 
     const { captureId, suggestionId, draftNodeId, existingNodeId } =
       await t.run(async (ctx) => {
@@ -265,8 +283,8 @@ describe('rejectSuggestion', () => {
   test('deletes draft nodes/edges and sets capture to needs_manual', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
-    const agentUserId = await setupAgentUser(t);
+    const userId = await getUserId(t);
+    const agentUserId = await getAgentUserId(t);
 
     const { captureId, suggestionId, draftNodeId, edgeId } = await t.run(
       async (ctx) => {
@@ -350,7 +368,7 @@ describe('organizeCapture', () => {
   test('creates published node and sets capture to processed', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const captureId = await t.run(async (ctx) => {
       return ctx.db.insert('captures', {
@@ -384,7 +402,7 @@ describe('organizeCapture', () => {
   });
 
   test('creates explicit edges for mentioned nodes', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { captureId, mentionedNodeId } = await t.run(async (ctx) => {
       const mentionedNodeId = await ctx.db.insert('nodes', {
@@ -435,7 +453,7 @@ describe('organizeCapture', () => {
 
 describe('archiveCapture', () => {
   test('sets archivedAt on the capture', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const captureId = await t.run(async (ctx) => {
       return ctx.db.insert('captures', {
@@ -459,7 +477,7 @@ describe('archiveCapture', () => {
 
 describe('unarchiveCapture', () => {
   test('clears archivedAt on the capture', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const captureId = await t.run(async (ctx) => {
       return ctx.db.insert('captures', {
@@ -488,7 +506,7 @@ describe('retryProcessing', () => {
   test('resets failed capture to processing and schedules processing', async ({
     t,
   }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const captureId = await t.run(async (ctx) => {
       return ctx.db.insert('captures', {
@@ -510,7 +528,7 @@ describe('retryProcessing', () => {
   });
 
   test('rejects retry on non-failed capture', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const captureId = await t.run(async (ctx) => {
       return ctx.db.insert('captures', {
@@ -535,8 +553,8 @@ describe('retryProcessing', () => {
 
 describe('saveEmbeddingResult', () => {
   test('creates draft node, edges, and suggestion', async ({ t }) => {
-    const userId = await setupUser(t);
-    const agentUserId = await setupAgentUser(t);
+    const userId = await getUserId(t);
+    const agentUserId = await getAgentUserId(t);
 
     const { captureId, existingNodeId } = await t.run(async (ctx) => {
       const captureId = await ctx.db.insert('captures', {
@@ -621,8 +639,8 @@ describe('saveEmbeddingResult', () => {
 
 describe('getInboxCaptures', () => {
   test('returns captures grouped by state with suggestions', async ({ t }) => {
-    const userId = await setupUser(t);
-    const agentUserId = await setupAgentUser(t);
+    const userId = await getUserId(t);
+    const agentUserId = await getAgentUserId(t);
 
     await t.run(async (ctx) => {
       const now = Date.now();
@@ -689,7 +707,7 @@ describe('getInboxCaptures', () => {
   });
 
   test('excludes archived and processed captures', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     await t.run(async (ctx) => {
       const now = Date.now();

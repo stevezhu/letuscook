@@ -18,9 +18,36 @@ async function setupUser(t: ConvexTestInstance) {
   });
 }
 
+async function setupAgentUser(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    return ctx.db.insert('users', {
+      displayName: 'AI Agent',
+      userType: 'agent',
+      agentProvider: 'google',
+      agentModel: 'gemini',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  });
+}
+
+test.beforeEach(async ({ t }) => {
+  await Promise.all([setupUser(t), setupAgentUser(t)]);
+});
+
+async function getUserId(t: ConvexTestInstance) {
+  return t.run(async (ctx) => {
+    const user = await ctx.db
+      .query('users')
+      .filter((q) => q.eq(q.field('workosUserId'), 'workos_user_123'))
+      .unique();
+    return user!._id;
+  });
+}
+
 describe('createEdge', () => {
   test('creates an explicit edge between owned nodes', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { fromNodeId, toNodeId } = await t.run(async (ctx) => {
       const now = Date.now();
@@ -64,7 +91,7 @@ describe('createEdge', () => {
   });
 
   test('rejects duplicate edges', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { fromNodeId, toNodeId } = await t.run(async (ctx) => {
       const now = Date.now();
@@ -106,7 +133,7 @@ describe('createEdge', () => {
   });
 
   test('rejects edge to node not owned by user', async ({ t }) => {
-    const userId = await setupUser(t);
+    const userId = await getUserId(t);
 
     const { fromNodeId, otherNodeId } = await t.run(async (ctx) => {
       const now = Date.now();
