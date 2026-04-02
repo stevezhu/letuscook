@@ -1,3 +1,32 @@
+---
+date: 2026-04-02T20:05:40Z
+type: plan
+status: done
+agent: claudecode
+models: [claude-opus-4-6, claude-haiku-4-5-20251001]
+branch: capture-ingestion-improvements
+sessionId: 6da09407-be70-4f0f-9a1b-f73e6b9c5fdb
+tags: [refactor, organization, assistant-convex]
+filesModified:
+  - apps/assistant-convex/src/services/embedding.ts
+  - apps/assistant-convex/src/services/linkFetcher.ts
+  - apps/assistant-convex/src/services/nodeLinker.ts
+  - apps/assistant-convex/src/lib/clustering.ts
+  - apps/assistant-convex/src/lib/errors.ts
+  - apps/assistant-convex/src/lib/helpers.ts
+  - apps/assistant-convex/src/model/customFunctions.ts
+  - apps/assistant-convex/src/model/users.ts
+  - apps/assistant-convex/convex/captures.ts
+  - apps/assistant-convex/convex/captures.test.ts
+  - apps/assistant-convex/convex/edges.ts
+  - apps/assistant-convex/convex/nodes.ts
+  - apps/assistant-convex/convex/nodeDocuments.ts
+  - apps/assistant-convex/convex/linkMetadata.ts
+  - apps/assistant-convex/convex/search.ts
+  - apps/assistant-convex/convex/suggestions.ts
+  - apps/assistant-convex/convex/toolRequests.ts
+---
+
 # Reorganize `assistant-convex/src/` by Dependency Category
 
 ## Context
@@ -64,3 +93,33 @@ All imports use the `#*` alias (`"#*": "./src/*"` in package.json) — no packag
 1. `pnpm run lint:fix`
 2. `pnpm -w run lint`
 3. `pnpm -w run test`
+
+## Session Stats
+
+```
+claudecode Session Stats: 6da09407-be70-4f0f-9a1b-f73e6b9c5fdb
+========================================
+Models Used:  Main: claude-opus-4-6
+              Subagents: claude-opus-4-6, claude-haiku-4-5-20251001
+----------------------------------------
+MAIN SESSION:
+  Input Tokens         94
+  Output Tokens        11,043
+  Cache Creation Input 502,381
+  Cache Read Input     2,508,077
+----------------------------------------
+SUBAGENTS (3 total):
+  Input Tokens         8,693
+  Output Tokens        10,444
+  Cache Creation Input 379,623
+  Cache Read Input     1,529,537
+----------------------------------------
+TOTAL USAGE:
+  Total Input Tokens   8,787
+  Total Output Tokens  21,487
+  Total Cache Creation 882,004
+  Total Cache Read     4,037,614
+----------------------------------------
+GRAND TOTAL TOKENS:  4,949,892
+========================================
+```
