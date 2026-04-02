@@ -1,7 +1,7 @@
 import { describe, expect, vi } from 'vitest';
 
 import { api, internal } from '#convex/_generated/api.js';
-import { type ConvexTestInstance, test } from '#convexTest.ts';
+import { type ConvexTestInstance, test } from '#test/convexTest.ts';
 
 vi.mock('#ai/embedding.ts', () => ({
   embedText: vi.fn().mockResolvedValue(Array.from({ length: 768 }, () => 0.1)),

@@ -1,7 +1,7 @@
 import { describe, expect } from 'vitest';
 
 import { api } from '#convex/_generated/api.js';
-import { type ConvexTestInstance, test } from '#convexTest.ts';
+import { type ConvexTestInstance, test } from '#test/convexTest.ts';
 
 test.beforeEach(async ({ setupUser, setupAgentUser }) => {
   await Promise.all([setupUser(), setupAgentUser()]);
