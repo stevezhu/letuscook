@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>assistant-convex — Architecture Explainer</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242836;
+    --border: #2e3345;
+    --text: #e2e4ed;
+    --text2: #9298b0;
+    --accent: #7c6af6;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* ─── Header ─── */
+  .hero { padding: 56px 32px 40px; text-align: center; border-bottom: 1px solid var(--border); }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.03em; }
+  .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--text2); max-width: 640px; margin: 12px auto 0; font-size: 1.05rem; }
+
+  /* ─── Tabs ─── */
+  .tabs { display: flex; justify-content: center; gap: 6px; padding: 20px 16px 0; flex-wrap: wrap; }
+  .tab { padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text2); cursor: pointer; font-size: 0.88rem; font-weight: 500; transition: all 0.2s; }
+  .tab:hover { border-color: var(--accent); color: var(--text); }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ─── Panels ─── */
+  .panel { display: none; max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+  .panel.active { display: block; }
+
+  /* ─── Section ─── */
+  .section-title { font-size: 1.3rem; font-weight: 600; margin: 32px 0 16px; display: flex; align-items: center; gap: 10px; }
+  .section-title .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+  .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+  .card p, .card li { color: var(--text2); font-size: 0.92rem; }
+  .card ul { padding-left: 20px; margin-top: 6px; }
+  .card li { margin-bottom: 4px; }
+
+  /* ─── Pipeline Diagram ─── */
+  .pipeline { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 8px 0 16px; }
+  .pipe-step { flex: 1; min-width: 170px; position: relative; }
+  .pipe-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; text-align: center; position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .pipe-box .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 6px; }
+  .pipe-box .name { font-weight: 600; font-size: 0.95rem; }
+  .pipe-box .desc { color: var(--text2); font-size: 0.8rem; margin-top: 6px; }
+  .pipe-arrow { display: flex; align-items: center; justify-content: center; width: 36px; flex-shrink: 0; color: var(--accent); font-size: 1.4rem; }
+
+  /* ─── Schema Table ─── */
+  .schema-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .schema-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .schema-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .schema-card .badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+  .schema-card .fields { margin-top: 12px; }
+  .schema-card .field { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem; }
+  .schema-card .field:last-child { border-bottom: none; }
+  .schema-card .field .fname { font-weight: 500; color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  .schema-card .field .ftype { color: var(--text2); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.78rem; }
+
+  /* ─── Graph Diagram (SVG) ─── */
+  .graph-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; overflow-x: auto; }
+  .graph-wrap svg { max-width: 100%; }
+
+  /* ─── File tree ─── */
+  .file-tree { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; line-height: 1.8; color: var(--text2); white-space: pre; overflow-x: auto; }
+  .file-tree .dir { color: var(--accent2); font-weight: 600; }
+  .file-tree .file { color: var(--text); }
+  .file-tree .comment { color: #555b73; }
+
+  /* ─── Code blocks ─── */
+  .code { background: #161821; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.7; color: var(--text2); overflow-x: auto; white-space: pre; margin: 10px 0; }
+  .code .kw { color: var(--accent2); }
+  .code .str { color: var(--green); }
+  .code .num { color: var(--amber); }
+  .code .cm { color: #555b73; font-style: italic; }
+  .code .fn { color: var(--cyan); }
+  .code .type { color: var(--pink); }
+
+  /* ─── Threshold table ─── */
+  .thresh-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .thresh-table th { text-align: left; padding: 10px 14px; background: var(--surface2); color: var(--text); font-weight: 600; border-bottom: 2px solid var(--border); }
+  .thresh-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+  .thresh-table td:first-child { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--cyan); }
+  .thresh-table td:nth-child(2) { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; color: var(--amber); font-weight: 600; }
+  .thresh-table td:nth-child(3) { color: var(--text2); }
+
+  /* ─── Prompt block ─── */
+  .prompt-block { background: #12141e; border: 1px solid #2a2d4a; border-left: 3px solid var(--accent); border-radius: 8px; padding: 16px 20px; font-size: 0.84rem; line-height: 1.65; color: #c4c8e0; white-space: pre-wrap; word-break: break-word; margin: 10px 0; }
+  .prompt-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+
+  /* ─── Flow connector ─── */
+  .flow-vertical { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+  .flow-connector { text-align: center; color: var(--accent); font-size: 1.2rem; padding: 4px 0; }
+  .flow-step .step-num { display: inline-block; width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 50%; font-size: 0.75rem; font-weight: 700; margin-right: 10px; flex-shrink: 0; }
+
+  /* ─── Model chain ─── */
+  .model-chain { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin: 12px 0; }
+  .model-chip { padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); }
+  .model-arrow { padding: 0 8px; color: var(--text2); font-size: 0.9rem; }
+  .model-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); display: block; margin-bottom: 2px; }
+
+  /* ─── Tech badges ─── */
+  .tech-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+  .tech-badge { padding: 6px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface2); }
+
+  /* ─── Endpoint list ─── */
+  .ep-group { margin-bottom: 24px; }
+  .ep-group h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 8px; color: var(--accent2); }
+  .ep { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; align-items: baseline; }
+  .ep:last-child { border-bottom: none; }
+  .ep .method { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
+  .ep .method.q { background: #1e3a5f; color: var(--blue); }
+  .ep .method.m { background: #3b2a1a; color: var(--amber); }
+  .ep .method.a { background: #2a1a3b; color: var(--pink); }
+  .ep .ename { font-weight: 500; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; min-width: 200px; }
+  .ep .edesc { color: var(--text2); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 700px) {
+    .pipeline { flex-direction: column; align-items: center; }
+    .pipe-arrow { transform: rotate(90deg); width: auto; height: 30px; }
+    .hero h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ HERO ════════════ -->
+<div class="hero">
+  <h1><span>assistant-convex</span></h1>
+  <p>A Convex-powered AI knowledge management backend that captures ideas, auto-organizes them into a knowledge graph, and generates rich documents — all driven by LLM intelligence.</p>
+</div>
+
+<!-- ════════════ TABS ════════════ -->
+<div class="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="pipeline">Capture Pipeline</button>
+  <button class="tab" data-tab="schema">Database Schema</button>
+  <button class="tab" data-tab="graph">Knowledge Graph</button>
+  <button class="tab" data-tab="ai-deep">AI Deep Dive</button>
+  <button class="tab" data-tab="api">API Endpoints</button>
+  <button class="tab" data-tab="files">File Structure</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: OVERVIEW                                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel active" id="overview">
+  <div class="section-title"><div class="dot" style="background:var(--accent)"></div> What It Does</div>
+  <div class="card">
+    <p>This is the <strong>backend brain</strong> of a personal AI assistant. Users feed it raw "captures" — text snippets, links, or tasks — and the system automatically:</p>
+    <ul>
+      <li>Embeds each capture with <strong>Gemini</strong> vector embeddings (768-dim)</li>
+      <li>Finds semantically similar existing nodes via <strong>vector search</strong></li>
+      <li>Generates a title and identifies <strong>organizing concepts</strong> via LLM</li>
+      <li>Builds a <strong>knowledge graph</strong> of linked nodes, edges, and virtual category nodes</li>
+      <li>Lets users review, accept, or reject AI suggestions before publishing</li>
+      <li>Generates rich <strong>markdown documents</strong> from node activity</li>
+    </ul>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:var(--green)"></div> Tech Stack</div>
+  <div class="tech-row">
+    <span class="tech-badge" style="border-color:#e8603c;color:#e8603c;">Convex</span>
+    <span class="tech-badge" style="border-color:#3178c6;color:#3178c6;">TypeScript</span>
+    <span class="tech-badge" style="border-color:#4285f4;color:#4285f4;">Google Gemini</span>
+    <span class="tech-badge" style="border-color:#f48120;color:#f48120;">OpenRouter</span>
+    <span class="tech-badge" style="border-color:#6363f1;color:#6363f1;">WorkOS AuthKit</span>
+    <span class="tech-badge" style="border-color:#fcc72b;color:#fcc72b;">Vercel AI SDK</span>
+    <span class="tech-badge" style="border-color:#8dd6f9;color:#8dd6f9;">Vitest</span>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:var(--blue)"></div> Key Design Patterns</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;">
+    <div class="card">
+      <h3>Scheduled Processing Pipeline</h3>
+      <p>Mutations schedule actions via <code>ctx.scheduler.runAfter()</code>, enabling long-running AI work without blocking. Each phase hands off to the next asynchronously.</p>
+    </div>
+    <div class="card">
+      <h3>Draft → Publish Workflow</h3>
+      <p>AI creates unpublished (draft) nodes and suggested edges. Users accept or reject before anything goes live. Rejection cleanly deletes all draft artifacts.</p>
+    </div>
+    <div class="card">
+      <h3>Vector + LLM Hybrid Search</h3>
+      <p>768-dim Gemini embeddings power vector similarity (threshold 0.7), while LLMs extract organizing concepts and verify relationships — best of both worlds.</p>
+    </div>
+    <div class="card">
+      <h3>Multi-Model Fallback Chain</h3>
+      <p>Primary: Gemini 2.5-flash → Fallback: OpenRouter → Tertiary: Gemini 3-flash. Retry logic with exponential backoff ensures resilience.</p>
+    </div>
+    <div class="card">
+      <h3>Soft Deletes Everywhere</h3>
+      <p>All entities use <code>archivedAt</code> timestamps instead of hard deletes. Nodes cascade-archive their edges. Everything is restorable.</p>
+    </div>
+    <div class="card">
+      <h3>Explicit Mention Parsing</h3>
+      <p>Users can link captures to existing nodes with <code>@[Title](node:id)</code> syntax, parsed at creation time and converted to suggested edges.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: PIPELINE                                       -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="pipeline">
+  <div class="section-title"><div class="dot" style="background:var(--amber)"></div> Capture Processing Pipeline</div>
+  <p style="color:var(--text2);margin-bottom:20px;">When a user submits a capture, it moves through four async phases — each phase is a separate Convex function, scheduled by the previous one.</p>
+
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-box" style="border-color:var(--green);">
+        <div class="label" style="color:var(--green);">Phase 1 · Mutation</div>
+        <div class="name">createCapture</div>
+        <div class="desc">Parse mentions, detect links, set state → <strong>processing</strong>, schedule next phase</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-box" style="border-color:var(--blue);">
+        <div class="label" style="color:var(--blue);">Phase 2 · Mutation</div>
+        <div class="name">processCapture</div>
+        <div class="desc">Validate state, fetch agent user, schedule AI action</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-box" style="border-color:var(--pink);">
+        <div class="label" style="color:var(--pink);">Phase 3 · Action</div>
+        <div class="name">embedAndClassify</div>
+        <div class="desc">Fetch link metadata, embed via Gemini, vector search for similar nodes, generate title, identify organizing concepts</div>
+      </div>
+    </div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step">
+      <div class="pipe-box" style="border-color:var(--amber);">
+        <div class="label" style="color:var(--amber);">Phase 4 · Mutation</div>
+        <div class="name">saveEmbeddingResult</div>
+        <div class="desc">Create draft node + edges (similar, explicit, category), create pending suggestion, set state → <strong>ready</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:36px;"><div class="dot" style="background:var(--cyan)"></div> User Review Phase</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
+    <div class="card" style="border-left:3px solid var(--green);">
+      <h3 style="color:var(--green);">Accept Suggestion</h3>
+      <p>Publishes the draft node and all connected edges. Marks suggestion as accepted. The node enters the knowledge base.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--red);">
+      <h3 style="color:var(--red);">Reject Suggestion</h3>
+      <p>Deletes the draft node and all associated edges. Marks suggestion as rejected. Capture moves to <code>needs_manual</code>.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--blue);">
+      <h3 style="color:var(--blue);">Organize Manually</h3>
+      <p>User creates the node themselves with a custom title/content, linking explicit mentions. Bypasses AI entirely.</p>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:36px;"><div class="dot" style="background:var(--pink)"></div> AI Operations Detail</div>
+  <div class="card">
+    <h3>What happens inside embedAndClassify</h3>
+    <ul>
+      <li><strong>Link captures:</strong> Fetch HTML → extract OG meta, title, description, favicon, content snippet (500 chars)</li>
+      <li><strong>Embedding:</strong> Send content to Gemini embedding model → 768-dim vector</li>
+      <li><strong>Vector search:</strong> Query published nodes for cosine similarity ≥ 0.7 → top similar nodes</li>
+      <li><strong>Title generation:</strong> LLM generates ≤80 char title with context of capture type + similar nodes (3-model fallback)</li>
+      <li><strong>Organizing concepts:</strong> LLM identifies 1–3 category concepts → search or create virtual nodes → edge suggestions with confidence</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: SCHEMA                                         -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="schema">
+  <div class="section-title"><div class="dot" style="background:var(--accent)"></div> Database Schema — 8 Tables</div>
+  <div class="schema-grid">
+
+    <div class="schema-card">
+      <h3>users <span class="badge" style="background:#1e3a5f;color:var(--blue);">Auth</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">workosUserId</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">displayName</span><span class="ftype">string?</span></div>
+        <div class="field"><span class="fname">email</span><span class="ftype">string?</span></div>
+        <div class="field"><span class="fname">userType</span><span class="ftype">'human' | 'agent'</span></div>
+        <div class="field"><span class="fname">agentProvider</span><span class="ftype">string?</span></div>
+        <div class="field"><span class="fname">agentModel</span><span class="ftype">string?</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>captures <span class="badge" style="background:#2a3b1a;color:var(--green);">Core</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">ownerUserId</span><span class="ftype">Id&lt;users&gt;</span></div>
+        <div class="field"><span class="fname">rawContent</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">captureType</span><span class="ftype">'text' | 'link' | 'task'</span></div>
+        <div class="field"><span class="fname">captureState</span><span class="ftype">processing | ready | failed | needs_manual | processed</span></div>
+        <div class="field"><span class="fname">nodeId</span><span class="ftype">Id&lt;nodes&gt;?</span></div>
+        <div class="field"><span class="fname">explicitMentionNodeIds</span><span class="ftype">Id&lt;nodes&gt;[]</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>nodes <span class="badge" style="background:#2a3b1a;color:var(--green);">Core</span> <span class="badge" style="background:#2a1a3b;color:var(--pink);">Vector</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">ownerUserId</span><span class="ftype">Id&lt;users&gt;</span></div>
+        <div class="field"><span class="fname">title</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">content</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">embedding</span><span class="ftype">float64[768]</span></div>
+        <div class="field"><span class="fname">nodeKind</span><span class="ftype">'regular' | 'virtual'</span></div>
+        <div class="field"><span class="fname">publishedAt</span><span class="ftype">number?</span></div>
+        <div class="field"><span class="fname">sourceCaptureId</span><span class="ftype">Id&lt;captures&gt;?</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>edges <span class="badge" style="background:#3b2a1a;color:var(--amber);">Graph</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">fromNodeId</span><span class="ftype">Id&lt;nodes&gt;</span></div>
+        <div class="field"><span class="fname">toNodeId</span><span class="ftype">Id&lt;nodes&gt;</span></div>
+        <div class="field"><span class="fname">edgeType</span><span class="ftype">explicit | suggested | reference | related | categorized_as</span></div>
+        <div class="field"><span class="fname">source</span><span class="ftype">'user' | 'processor'</span></div>
+        <div class="field"><span class="fname">verified</span><span class="ftype">boolean</span></div>
+        <div class="field"><span class="fname">confidence</span><span class="ftype">number?</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>suggestions <span class="badge" style="background:#2a1a3b;color:var(--pink);">AI</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">captureId</span><span class="ftype">Id&lt;captures&gt;</span></div>
+        <div class="field"><span class="fname">suggestorUserId</span><span class="ftype">Id&lt;users&gt;</span></div>
+        <div class="field"><span class="fname">suggestedNodeId</span><span class="ftype">Id&lt;nodes&gt;</span></div>
+        <div class="field"><span class="fname">status</span><span class="ftype">pending | accepted | rejected | stale</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>nodeDocuments <span class="badge" style="background:#1a2a3b;color:var(--cyan);">Content</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">nodeId</span><span class="ftype">Id&lt;nodes&gt;</span></div>
+        <div class="field"><span class="fname">version</span><span class="ftype">number</span></div>
+        <div class="field"><span class="fname">title</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">content</span><span class="ftype">string (markdown)</span></div>
+        <div class="field"><span class="fname">isEdited</span><span class="ftype">boolean</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>linkMetadata <span class="badge" style="background:#1e3a5f;color:var(--blue);">Enrichment</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">captureId</span><span class="ftype">Id&lt;captures&gt;</span></div>
+        <div class="field"><span class="fname">url / canonicalUrl</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">domain</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">title / description</span><span class="ftype">string?</span></div>
+        <div class="field"><span class="fname">ogImageUrl / faviconUrl</span><span class="ftype">string?</span></div>
+        <div class="field"><span class="fname">fetchStatus</span><span class="ftype">success | partial | failed</span></div>
+      </div>
+    </div>
+
+    <div class="schema-card">
+      <h3>toolRequests <span class="badge" style="background:#3b1a2a;color:var(--red);">Meta</span></h3>
+      <div class="fields">
+        <div class="field"><span class="fname">ownerUserId</span><span class="ftype">Id&lt;users&gt;</span></div>
+        <div class="field"><span class="fname">description</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">domain</span><span class="ftype">string</span></div>
+        <div class="field"><span class="fname">frequency</span><span class="ftype">number</span></div>
+        <div class="field"><span class="fname">status</span><span class="ftype">open | implemented | dismissed</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: GRAPH                                          -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="graph">
+  <div class="section-title"><div class="dot" style="background:var(--pink)"></div> Knowledge Graph Model</div>
+  <p style="color:var(--text2);margin-bottom:20px;">Nodes are the atoms of knowledge. Edges encode typed, directed relationships between them. Virtual nodes act as organizing categories that the AI creates automatically.</p>
+
+  <div class="graph-wrap">
+    <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" style="font-family:system-ui,sans-serif;">
+      <!-- Edges -->
+      <defs>
+        <marker id="arrow-suggested" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#fbbf24"/></marker>
+        <marker id="arrow-categorized" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#a78bfa"/></marker>
+        <marker id="arrow-explicit" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#34d399"/></marker>
+        <marker id="arrow-related" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/></marker>
+      </defs>
+
+      <!-- categorized_as edges (to virtual) -->
+      <line x1="200" y1="180" x2="400" y2="85" stroke="#a78bfa" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-categorized)"/>
+      <line x1="400" y1="240" x2="400" y2="100" stroke="#a78bfa" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-categorized)"/>
+      <line x1="600" y1="190" x2="400" y2="90" stroke="#a78bfa" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow-categorized)"/>
+
+      <!-- suggested edges -->
+      <line x1="230" y1="210" x2="370" y2="240" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-suggested)"/>
+      <line x1="430" y1="260" x2="575" y2="210" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-suggested)"/>
+
+      <!-- explicit edge -->
+      <line x1="220" y1="220" x2="580" y2="200" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrow-explicit)"/>
+
+      <!-- related edge -->
+      <line x1="200" y1="230" x2="240" y2="370" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-related)"/>
+      <line x1="600" y1="220" x2="560" y2="370" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-related)"/>
+
+      <!-- Virtual node (category) -->
+      <rect x="340" y="50" width="120" height="44" rx="22" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="400" y="77" text-anchor="middle" fill="#a78bfa" font-size="13" font-weight="600">AI / ML</text>
+      <text x="400" y="38" text-anchor="middle" fill="#555b73" font-size="10">VIRTUAL NODE</text>
+
+      <!-- Regular nodes -->
+      <circle cx="200" cy="200" r="40" fill="#1a1d27" stroke="#34d399" stroke-width="2.5"/>
+      <text x="200" y="196" text-anchor="middle" fill="#e2e4ed" font-size="11" font-weight="600">GPT-4</text>
+      <text x="200" y="212" text-anchor="middle" fill="#9298b0" font-size="9">Article</text>
+
+      <circle cx="400" cy="250" r="40" fill="#1a1d27" stroke="#fbbf24" stroke-width="2.5"/>
+      <text x="400" y="246" text-anchor="middle" fill="#e2e4ed" font-size="11" font-weight="600">Vector</text>
+      <text x="400" y="262" text-anchor="middle" fill="#9298b0" font-size="9">DBs</text>
+
+      <circle cx="600" cy="200" r="40" fill="#1a1d27" stroke="#f472b6" stroke-width="2.5"/>
+      <text x="600" y="196" text-anchor="middle" fill="#e2e4ed" font-size="11" font-weight="600">RAG</text>
+      <text x="600" y="212" text-anchor="middle" fill="#9298b0" font-size="9">Pattern</text>
+
+      <!-- Lower related nodes -->
+      <circle cx="250" cy="390" r="32" fill="#1a1d27" stroke="#60a5fa" stroke-width="2"/>
+      <text x="250" y="394" text-anchor="middle" fill="#e2e4ed" font-size="10" font-weight="600">Embeddings</text>
+
+      <circle cx="550" cy="390" r="32" fill="#1a1d27" stroke="#60a5fa" stroke-width="2"/>
+      <text x="550" y="394" text-anchor="middle" fill="#e2e4ed" font-size="10" font-weight="600">Prompting</text>
+
+      <!-- Legend -->
+      <g transform="translate(40, 440)">
+        <line x1="0" y1="0" x2="30" y2="0" stroke="#34d399" stroke-width="2.5"/><text x="36" y="4" fill="#9298b0" font-size="11">explicit</text>
+        <line x1="130" y1="0" x2="160" y2="0" stroke="#fbbf24" stroke-width="2"/><text x="166" y="4" fill="#9298b0" font-size="11">suggested</text>
+        <line x1="280" y1="0" x2="310" y2="0" stroke="#a78bfa" stroke-width="2" stroke-dasharray="5,3"/><text x="316" y="4" fill="#9298b0" font-size="11">categorized_as</text>
+        <line x1="460" y1="0" x2="490" y2="0" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3"/><text x="496" y="4" fill="#9298b0" font-size="11">related</text>
+        <rect x="590" y="-10" width="40" height="20" rx="10" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="636" y="4" fill="#9298b0" font-size="11">virtual node</text>
+      </g>
+    </svg>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+    <div class="card">
+      <h3>Edge Types</h3>
+      <ul>
+        <li><strong style="color:var(--green);">explicit</strong> — User-created manual links</li>
+        <li><strong style="color:var(--amber);">suggested</strong> — AI-proposed from vector similarity</li>
+        <li><strong style="color:var(--accent2);">categorized_as</strong> — AI-assigned to virtual category nodes</li>
+        <li><strong style="color:var(--blue);">related</strong> — Semantic similarity connections</li>
+        <li><strong style="color:var(--text2);">reference</strong> — Direct content references</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Node Types</h3>
+      <ul>
+        <li><strong style="color:var(--green);">regular</strong> — Concrete knowledge items created from captures (articles, tasks, ideas)</li>
+        <li><strong style="color:var(--accent2);">virtual</strong> — Organizing concepts created by AI (categories, themes). Not tied to a specific capture.</li>
+      </ul>
+      <p style="margin-top:8px;">Edges with confidence &gt; 0.8 are auto-verified. Hub nodes = high edge count.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: AI DEEP DIVE                                   -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="ai-deep">
+
+  <!-- ───────── OVERVIEW ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--pink)"></div> The AI Engine — How It Really Works</div>
+  <div class="card">
+    <p>Four source files in <code>convex/ai/</code> power all intelligence: <strong>embedding.ts</strong> (vectors + titles), <strong>nodeLinker.ts</strong> (concept extraction), <strong>linkFetcher.ts</strong> (URL enrichment), and <strong>clustering.ts</strong> (k-means). The orchestrator is the <code>embedAndClassify</code> action in <code>captures.ts</code>, which chains them all together inside a single Convex action.</p>
+  </div>
+
+  <!-- ───────── MODEL FALLBACK ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--amber)"></div> Multi-Model Fallback Chain</div>
+  <p style="color:var(--text2);margin-bottom:12px;">Every LLM call (title generation, concept identification, document generation) uses the same 3-model cascade. If a model fails or returns empty text, the system falls through to the next.</p>
+
+  <div class="model-chain">
+    <div class="model-chip" style="border-color:#4285f4;">
+      <span class="model-label" style="color:#4285f4;">Primary</span>
+      google/gemini-2.5-flash
+    </div>
+    <div class="model-arrow">→</div>
+    <div class="model-chip" style="border-color:#f48120;">
+      <span class="model-label" style="color:#f48120;">Backup</span>
+      openrouter/gemini-2.5-flash
+    </div>
+    <div class="model-arrow">→</div>
+    <div class="model-chip" style="border-color:#a78bfa;">
+      <span class="model-label" style="color:#a78bfa;">Tertiary</span>
+      google/gemini-3-flash-preview
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:8px;">
+    <h3>Retry Logic</h3>
+    <p>Each model gets up to <strong>3 attempts</strong> with exponential backoff: <code>1s → 2s → 4s</code> (base delay 1000ms × 2<sup>attempt</sup>). If a model exhausts retries or returns empty output, the next model in the chain is tried. If all fail, a hardcoded fallback is used.</p>
+  </div>
+
+  <!-- ───────── EMBEDDING ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--cyan)"></div> Step 1 — Vector Embedding</div>
+  <div class="card">
+    <h3>embedText(text) → number[768]</h3>
+    <p>Sends raw text to <strong>Gemini Embedding 2 Preview</strong> with an explicit output dimensionality of <strong>768</strong>. Returns a dense float64 vector stored directly on the node document. This vector powers all similarity search via Convex's built-in vector index.</p>
+    <div class="code"><span class="cm">// Model configuration</span>
+<span class="kw">const</span> model = google.<span class="fn">embeddingModel</span>(<span class="str">'gemini-embedding-2-preview'</span>)
+<span class="kw">const</span> options = { google: { outputDimensionality: <span class="num">768</span> } }
+
+<span class="cm">// For link captures, content is enriched first:</span>
+<span class="cm">// contentForEmbedding = ogTitle + ogDescription + contentSnippet</span>
+<span class="cm">// Falls back to rawContent if no metadata extracted</span></div>
+  </div>
+
+  <!-- ───────── VECTOR SEARCH ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--blue)"></div> Step 2 — Vector Similarity Search</div>
+  <div class="card">
+    <h3>Finding Similar Nodes</h3>
+    <p>After embedding, the system queries Convex's vector index to find up to <strong>5 similar nodes</strong>, filtered to the current user and excluding unpublished/archived results. Only nodes with a cosine similarity score <strong>≥ 0.7</strong> survive filtering.</p>
+    <div class="code"><span class="kw">const</span> results = <span class="kw">await</span> ctx.<span class="fn">vectorSearch</span>(<span class="str">'nodes'</span>, <span class="str">'by_embedding'</span>, {
+  vector: embedding,
+  limit: <span class="num">5</span>,
+  filter: (q) =&gt; q.<span class="fn">eq</span>(<span class="str">'ownerUserId'</span>, ownerUserId),
+})
+
+<span class="cm">// Post-filter: score >= 0.7, published, not archived</span>
+<span class="cm">// Returns: { id, title, content, score }[]</span></div>
+  </div>
+
+  <!-- ───────── TITLE GENERATION ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--green)"></div> Step 3 — AI Title Generation</div>
+  <div class="card">
+    <h3>generateTitle(rawContent, captureType, similarNodes) → string</h3>
+    <p>An LLM generates a concise ≤80-character title for the capture. Similar nodes are provided as context so titles stay consistent with the existing knowledge base.</p>
+
+    <div class="prompt-label" style="color:var(--accent);">System Prompt</div>
+    <div class="prompt-block">Generate a concise, descriptive title (max 80 chars) for the following content. Return ONLY the title text, nothing else.</div>
+
+    <div class="prompt-label" style="color:var(--blue); margin-top:14px;">User Prompt (constructed dynamically)</div>
+    <div class="prompt-block">Content type: ${captureType}
+
+Content:
+${rawContent}
+
+Related existing nodes for context:    <span style="color:#555b73;">← only if similar nodes exist</span>
+- "${node.title}": ${node.content.slice(0, 100)}
+- "${node.title}": ${node.content.slice(0, 100)}</div>
+
+    <p style="margin-top:12px;"><strong>Parameters:</strong> <code>maxOutputTokens: 100</code>. <strong>Final fallback:</strong> if all models fail, truncates <code>rawContent.slice(0, 80)</code> as the title.</p>
+  </div>
+
+  <!-- ───────── LINK METADATA ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--amber)"></div> Step 0 — Link Metadata Enrichment</div>
+  <p style="color:var(--text2);margin-bottom:12px;">For <code>link</code> type captures, this runs <em>before</em> embedding — the extracted metadata becomes the content that gets embedded.</p>
+
+  <div class="card">
+    <h3>fetchLinkMetadata(url) → LinkMetadataResult</h3>
+    <p>Fetches the HTML page with a <strong>5-second timeout</strong> and a custom User-Agent, then extracts metadata via regex patterns.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <div>
+        <h3 style="font-size:0.88rem;margin-bottom:6px;">What Gets Extracted</h3>
+        <div class="code" style="font-size:0.78rem;"><span class="fn">og:title</span>      → title (fallback: &lt;title&gt; tag)
+<span class="fn">og:description</span> → description (fallback: meta description)
+<span class="fn">og:image</span>      → ogImageUrl
+<span class="fn">canonical</span>     → canonicalUrl
+<span class="fn">favicon</span>       → link[rel*=icon] or /favicon.ico
+<span class="fn">snippet</span>       → first 500 chars of body text</div>
+      </div>
+      <div>
+        <h3 style="font-size:0.88rem;margin-bottom:6px;">Content Snippet Pipeline</h3>
+        <div class="code" style="font-size:0.78rem;"><span class="num">1.</span> Remove &lt;script&gt; and &lt;style&gt; blocks
+<span class="num">2.</span> Strip all HTML tags
+<span class="num">3.</span> Decode entities: &amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;#39; &amp;nbsp;
+<span class="num">4.</span> Collapse whitespace → single space
+<span class="num">5.</span> Trim and slice to <span class="num">500</span> chars</div>
+      </div>
+    </div>
+
+    <p style="margin-top:12px;"><strong>Fetch status:</strong> <code style="color:var(--green);">success</code> if title OR description found · <code style="color:var(--amber);">partial</code> if neither · <code style="color:var(--red);">failed</code> on HTTP error or timeout.</p>
+    <p><strong>User-Agent:</strong> <code>Mozilla/5.0 (compatible; LetUsCookBot/1.0; +https://letuscook.app)</code></p>
+  </div>
+
+  <!-- ───────── CONCEPT IDENTIFICATION ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--accent)"></div> Step 4 — Organizing Concept Identification</div>
+  <div class="card">
+    <h3>identifyOrganizingNodes(ctx, args) → NodeLinkSuggestion[]</h3>
+    <p>An LLM reads the capture content and suggests <strong>1–3 organizing concepts</strong> (category labels). Each concept is searched against existing nodes — if no match is found, a new <strong>virtual node</strong> is created automatically.</p>
+
+    <div class="prompt-label" style="color:var(--accent);">System Prompt</div>
+    <div class="prompt-block">You are a knowledge organization assistant. Identify high-level organizing concepts/categories for content. Always respond with valid JSON only.</div>
+
+    <div class="prompt-label" style="color:var(--blue); margin-top:14px;">User Prompt</div>
+    <div class="prompt-block">Given this ${captureType} content titled "${contentTitle}", suggest 1-3 organizing concepts or categories it belongs to. Each concept should be a short noun phrase (2-4 words) that could serve as a category label.
+
+Existing related nodes for reference:    <span style="color:#555b73;">← if similar nodes exist</span>
+- "${similarNode.title}"
+
+Content:
+${rawContent.slice(0, 500)}
+
+Return a JSON array only, no markdown, no explanation. Example format:
+[{"concept":"Machine Learning","confidence":0.9},{"concept":"Research Papers","confidence":0.75}]</div>
+
+    <p style="margin-top:14px;"><strong>Parameters:</strong> <code>maxOutputTokens: 300</code></p>
+  </div>
+
+  <div class="card">
+    <h3>JSON Extraction &amp; Fallback Parsing</h3>
+    <p>The system tries <code>JSON.parse()</code> first. If that fails (markdown fences, extra text), it falls back to a <strong>regex extractor</strong> that handles flexible key quoting:</p>
+    <div class="code"><span class="cm">// Regex pattern for extracting concept/confidence pairs</span>
+<span class="kw">const</span> pattern = /<span class="str">["']?concept["']?\s*:\s*["']([^"']+)["']\s*,\s*["']?confidence["']?\s*:\s*([\d.]+)</span>/gi
+
+<span class="cm">// Handles: "concept": "X", 'concept': 'X', concept: "X"</span>
+<span class="cm">// Confidence clamped to [0, 1]: Math.max(0, Math.min(1, val))</span></div>
+  </div>
+
+  <div class="card">
+    <h3>Concept → Node Resolution Flow</h3>
+    <div class="flow-vertical">
+      <div class="flow-step">
+        <span class="step-num" style="background:var(--accent);color:#fff;">1</span>
+        <strong>LLM returns concepts</strong> — e.g. <code>[{concept: "Machine Learning", confidence: 0.9}]</code>
+      </div>
+      <div class="flow-connector">↓</div>
+      <div class="flow-step">
+        <span class="step-num" style="background:var(--blue);color:#fff;">2</span>
+        <strong>Search existing nodes</strong> — <code>findNodesByTitle</code> does case-insensitive substring match on all non-archived nodes owned by the user
+      </div>
+      <div class="flow-connector">↓</div>
+      <div class="flow-step">
+        <span class="step-num" style="background:var(--green);color:#fff;">3</span>
+        <strong>Match found?</strong> Use the existing node's ID · <strong>No match?</strong> Create a new <strong>virtual node</strong> (<code>nodeKind: 'virtual'</code>, empty content, title = concept string)
+      </div>
+      <div class="flow-connector">↓</div>
+      <div class="flow-step">
+        <span class="step-num" style="background:var(--amber);color:#fff;">4</span>
+        <strong>Return suggestions</strong> — each with <code>{ nodeId, edgeType: 'categorized_as', confidence, isNew }</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── SAVE RESULTS ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--green)"></div> Step 5 — Saving Results (saveEmbeddingResult)</div>
+  <div class="card">
+    <h3>What Gets Created</h3>
+    <p>A single mutation that atomically creates all artifacts from the AI pipeline:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <div>
+        <h3 style="font-size:0.88rem;color:var(--cyan);margin-bottom:8px;">1. Draft Node</h3>
+        <div class="code" style="font-size:0.78rem;">{
+  title: <span class="str">"AI-generated title"</span>,
+  content: rawContent,
+  searchText: title + <span class="str">"\n\n"</span> + rawContent
+             + (enriched if different),
+  embedding: <span class="type">float64[768]</span>,
+  ownerUserId, sourceCaptureId,
+  <span class="cm">// No publishedAt = draft (unpublished)</span>
+}</div>
+      </div>
+      <div>
+        <h3 style="font-size:0.88rem;color:var(--pink);margin-bottom:8px;">2. Pending Suggestion</h3>
+        <div class="code" style="font-size:0.78rem;">{
+  captureId,
+  suggestorUserId: agentUser._id,
+  suggestedNodeId: draftNode._id,
+  status: <span class="str">"pending"</span>,
+}</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px;font-size:0.88rem;color:var(--amber);">3. Edges (three categories)</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px;">
+      <div class="code" style="font-size:0.75rem;"><span class="cm">// Similar node edges</span>
+edgeType: <span class="str">"suggested"</span>
+source: <span class="str">"processor"</span>
+verified: <span class="kw">false</span>
+confidence: <span class="num">score</span> <span class="cm">// 0.7–1.0</span></div>
+      <div class="code" style="font-size:0.75rem;"><span class="cm">// Explicit mention edges</span>
+edgeType: <span class="str">"suggested"</span>
+source: <span class="str">"processor"</span>
+verified: <span class="kw">false</span>
+<span class="cm">// from @[Title](node:id)</span></div>
+      <div class="code" style="font-size:0.75rem;"><span class="cm">// Organizing concept edges</span>
+edgeType: <span class="str">"categorized_as"</span>
+source: <span class="str">"processor"</span>
+verified: confidence &gt; <span class="num">0.8</span>
+confidence: <span class="num">0.0–1.0</span></div>
+    </div>
+    <p style="margin-top:10px;">Organizing edges with confidence <strong>&gt; 0.8</strong> are <strong>auto-verified</strong> — they skip the review step. Duplicate organizing edges are checked before insertion.</p>
+  </div>
+
+  <!-- ───────── DOCUMENT GENERATION ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--pink)"></div> Bonus — Document Generation</div>
+  <div class="card">
+    <h3>generateDocumentAction(nodeId, version)</h3>
+    <p>Generates a rich markdown document for any published node by gathering all its incoming edge activity, then sending it to the LLM.</p>
+
+    <h3 style="margin-top:14px;font-size:0.88rem;">Context Gathering</h3>
+    <p>For each incoming edge to the target node: resolve the source node, its source capture, and any link metadata. This builds a full activity feed of everything connected to this knowledge node.</p>
+
+    <div class="prompt-label" style="color:var(--accent);margin-top:14px;">System Prompt</div>
+    <div class="prompt-block">You are a knowledge assistant. Generate a comprehensive, well-structured markdown document summarizing the given knowledge node and its related content.
+
+The document should:
+- Start with a brief introduction/summary
+- Organize the related content into logical sections
+- Use markdown formatting with headers, bullet points where appropriate
+- Be informative and useful as a reference document
+- The first line should be a top-level heading with the document title
+
+Return ONLY the markdown content, no preamble or metadata.</div>
+
+    <div class="prompt-label" style="color:var(--blue);margin-top:14px;">User Prompt Structure</div>
+    <div class="prompt-block"># Node: ${node.title}
+
+## Node Description
+${node.content}
+
+## Related Content
+
+### ${linkMetadata.title ?? fromNode.title}
+${description}
+${sourceContent.slice(0, 500)}
+${snippet.slice(0, 500)}
+
+<span style="color:#555b73;">...repeated for each connected edge/node...</span></div>
+
+    <p style="margin-top:12px;">The title is extracted from the first <code># heading</code> in the generated markdown. Documents are versioned and track whether the user has manually edited them (<code>isEdited</code> flag).</p>
+    <p><strong>Fallback content:</strong> <code># ${node.title}\n\nDocument generation failed. Please try again.</code></p>
+  </div>
+
+  <!-- ───────── K-MEANS ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--cyan)"></div> Utility — K-Means Clustering</div>
+  <div class="card">
+    <h3>kMeans(vectors, k) → Cluster[]</h3>
+    <p>A full k-means++ implementation used for semantic grouping of nodes. Uses <strong>Euclidean distance</strong> over the 768-dimensional embedding space.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <div>
+        <h3 style="font-size:0.88rem;margin-bottom:6px;">Initialization (k-means++)</h3>
+        <div class="code" style="font-size:0.78rem;"><span class="num">1.</span> Pick first centroid randomly
+<span class="num">2.</span> For each remaining centroid:
+   <span class="cm">// Weight each vector by squared distance</span>
+   <span class="cm">// to nearest existing centroid</span>
+   d² = min(dist(v, c)²) for all centroids c
+   <span class="cm">// Probabilistic selection proportional to d²</span>
+   pick next centroid from weighted distribution
+<span class="num">3.</span> Result: k well-spread initial centroids</div>
+      </div>
+      <div>
+        <h3 style="font-size:0.88rem;margin-bottom:6px;">Iteration Loop</h3>
+        <div class="code" style="font-size:0.78rem;"><span class="kw">const</span> MAX_ITER = <span class="num">50</span>
+
+<span class="kw">for each</span> iteration:
+  <span class="cm">// Assign: each vector → nearest centroid</span>
+  assignments[i] = argmin(euclidean(v, c))
+
+  <span class="cm">// Converge: if all assignments unchanged → break</span>
+
+  <span class="cm">// Update: recalculate centroids as mean</span>
+  centroid[j] = mean(vectors in cluster j)
+
+<span class="cm">// Output: clusters with members + distances</span>
+<span class="cm">// Empty clusters filtered out</span></div>
+      </div>
+    </div>
+
+    <p style="margin-top:10px;"><strong>Distance function:</strong> <code>√(Σ(aᵢ - bᵢ)²)</code> — standard Euclidean distance across all 768 dimensions.</p>
+  </div>
+
+  <!-- ───────── THRESHOLDS TABLE ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--red)"></div> All Thresholds &amp; Constants</div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <table class="thresh-table">
+      <thead><tr><th>Parameter</th><th>Value</th><th>Context</th></tr></thead>
+      <tbody>
+        <tr><td>Embedding dimensions</td><td>768</td><td>Gemini embedding output size</td></tr>
+        <tr><td>Vector search limit</td><td>5</td><td>Max similar nodes retrieved per capture</td></tr>
+        <tr><td>Similarity threshold</td><td>≥ 0.7</td><td>Minimum cosine score to be considered similar</td></tr>
+        <tr><td>Auto-verify threshold</td><td>&gt; 0.8</td><td>Organizing edges above this are auto-verified</td></tr>
+        <tr><td>Title max length</td><td>80 chars</td><td>Hard constraint in LLM prompt</td></tr>
+        <tr><td>Title maxOutputTokens</td><td>100</td><td>Gemini generation limit</td></tr>
+        <tr><td>Concept maxOutputTokens</td><td>300</td><td>Concept extraction limit</td></tr>
+        <tr><td>Content preview length</td><td>500 chars</td><td>Sliced for LLM context windows</td></tr>
+        <tr><td>Snippet extraction length</td><td>500 chars</td><td>HTML body text for link captures</td></tr>
+        <tr><td>Link fetch timeout</td><td>5000 ms</td><td>HTTP request abort timer</td></tr>
+        <tr><td>Max retries per model</td><td>3</td><td>Before falling through to next model</td></tr>
+        <tr><td>Base retry delay</td><td>1000 ms</td><td>Exponential backoff: 1s → 2s → 4s</td></tr>
+        <tr><td>K-means max iterations</td><td>50</td><td>Convergence limit for clustering</td></tr>
+        <tr><td>Concept count</td><td>1–3</td><td>Organizing concepts per capture</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ───────── FULL PIPELINE RECAP ───────── -->
+  <div class="section-title"><div class="dot" style="background:var(--accent)"></div> Complete embedAndClassify Flow</div>
+  <div class="card">
+    <div class="code" style="line-height:1.9;font-size:0.82rem;"><span class="fn">embedAndClassify</span>(captureId, rawContent, captureType, ownerUserId, agentUserId)
+│
+├─ <span class="cm">[if link]</span> <span class="fn">fetchLinkMetadata</span>(rawContent.trim())
+│   ├─ HTTP GET with 5s timeout
+│   ├─ Extract OG meta, title, favicon, snippet
+│   ├─ Save via <span class="fn">saveLinkMetadata</span> mutation
+│   └─ Build enriched content: ogTitle + ogDescription + snippet
+│
+├─ <span class="fn">embedText</span>(contentForEmbedding)
+│   └─ Gemini embedding-2-preview → <span class="num">768</span>-dim vector
+│
+├─ <span class="fn">vectorSearch</span>('nodes', 'by_embedding', { limit: <span class="num">5</span> })
+│   └─ Filter: score ≥ <span class="num">0.7</span>, published, not archived
+│
+├─ <span class="fn">generateTitle</span>(content, captureType, similarNodes)
+│   ├─ 3-model fallback × 3 retries each
+│   └─ Max <span class="num">80</span> chars, fallback: rawContent.slice(0, 80)
+│
+├─ <span class="fn">identifyOrganizingNodes</span>(title, content, captureType, embedding, ...)
+│   ├─ LLM → <span class="num">1–3</span> concept/confidence pairs
+│   ├─ Regex extraction fallback for malformed JSON
+│   ├─ <span class="fn">findNodesByTitle</span> → case-insensitive substring search
+│   └─ <span class="fn">createVirtualNode</span> if no match found
+│
+└─ <span class="fn">saveEmbeddingResult</span> (atomic mutation)
+    ├─ Insert draft node (unpublished, with embedding)
+    ├─ Insert similar edges (edgeType: <span class="str">'suggested'</span>)
+    ├─ Insert mention edges (edgeType: <span class="str">'suggested'</span>)
+    ├─ Insert category edges (edgeType: <span class="str">'categorized_as'</span>, auto-verify if &gt; <span class="num">0.8</span>)
+    ├─ Insert pending suggestion
+    └─ Update capture state → <span class="str">'ready'</span></div>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--red);">
+    <h3 style="color:var(--red);">Error Handling</h3>
+    <p>The entire <code>embedAndClassify</code> action is wrapped in try/catch. On any unrecoverable error, it calls <code>setCaptureFailed</code> which sets the capture state to <code>'failed'</code>. Users can retry failed captures via the <code>retryProcessing</code> mutation, which resets state to <code>'processing'</code> and re-schedules the pipeline from the top.</p>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: API                                            -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="api">
+  <div class="section-title"><div class="dot" style="background:var(--green)"></div> API Endpoints</div>
+  <p style="color:var(--text2);margin-bottom:20px;">All public functions require authentication via WorkOS. <span class="method q" style="display:inline-block;">Q</span> = Query, <span class="method m" style="display:inline-block;">M</span> = Mutation, <span class="method a" style="display:inline-block;">A</span> = Action (async, can call external APIs).</p>
+
+  <div class="ep-group">
+    <h4>Captures</h4>
+    <div class="ep"><span class="method m">M</span><span class="ename">createCapture</span><span class="edesc">Create capture, parse mentions, schedule AI processing</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">updateCapture</span><span class="edesc">Edit raw content/type, invalidate stale suggestions</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">acceptSuggestion</span><span class="edesc">Publish draft node + edges</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">rejectSuggestion</span><span class="edesc">Delete draft node + edges</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">organizeCapture</span><span class="edesc">Manually create node from capture</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">archiveCapture</span><span class="edesc">Soft-delete a capture</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">retryProcessing</span><span class="edesc">Restart failed capture pipeline</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getCapture</span><span class="edesc">Single capture by ID</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getInboxCaptures</span><span class="edesc">All active captures with suggestions</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getRecentCaptures</span><span class="edesc">Recent non-archived, sorted by date</span></div>
+  </div>
+
+  <div class="ep-group">
+    <h4>Nodes</h4>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getKnowledgeBasePages</span><span class="edesc">Published, non-archived nodes with edge counts</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getNodeWithEdges</span><span class="edesc">Node + resolved incoming/outgoing edges</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getNodeActivity</span><span class="edesc">Activity feed: edges → nodes → captures → links</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getHubNodes</span><span class="edesc">Most-connected nodes (knowledge hubs)</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">archiveNode</span><span class="edesc">Archive node + cascade edges</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">createEdge</span><span class="edesc">User-created link between nodes</span></div>
+  </div>
+
+  <div class="ep-group">
+    <h4>Search</h4>
+    <div class="ep"><span class="method q">Q</span><span class="ename">searchGlobal</span><span class="edesc">Full-text across captures + nodes (20 results)</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">searchNodesForLinking</span><span class="edesc">Published nodes only (for @mention typeahead)</span></div>
+  </div>
+
+  <div class="ep-group">
+    <h4>Documents &amp; Links</h4>
+    <div class="ep"><span class="method a">A</span><span class="ename">generateDocument</span><span class="edesc">LLM-generate markdown document from node activity</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">updateDocument</span><span class="edesc">User edits a generated document</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getNodeDocuments</span><span class="edesc">All document versions for a node</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getLinkMetadataByCapture</span><span class="edesc">Enriched link data (OG, favicon, etc.)</span></div>
+    <div class="ep"><span class="method q">Q</span><span class="ename">getDomainList</span><span class="edesc">Domain frequency histogram</span></div>
+  </div>
+
+  <div class="ep-group">
+    <h4>AI Pipeline (Internal)</h4>
+    <div class="ep"><span class="method a">A</span><span class="ename">embedAndClassify</span><span class="edesc">Core AI: embed, search, title, organize</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">processCapture</span><span class="edesc">Validate + schedule embedAndClassify</span></div>
+    <div class="ep"><span class="method m">M</span><span class="ename">saveEmbeddingResult</span><span class="edesc">Persist AI results as draft nodes/edges</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PANEL: FILES                                          -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="panel" id="files">
+  <div class="section-title"><div class="dot" style="background:var(--cyan)"></div> File Structure</div>
+  <div class="file-tree"><span class="dir">convex/</span>
+├── <span class="file">schema.ts</span>            <span class="comment"># 8 table definitions + indexes + vector index</span>
+├── <span class="file">captures.ts</span>          <span class="comment"># Capture lifecycle: create, process, accept/reject, archive</span>
+├── <span class="file">nodes.ts</span>             <span class="comment"># Node CRUD, knowledge base queries, hub detection</span>
+├── <span class="file">edges.ts</span>             <span class="comment"># Manual edge creation with duplicate checking</span>
+├── <span class="file">suggestions.ts</span>       <span class="comment"># Pending suggestion queries</span>
+├── <span class="file">search.ts</span>            <span class="comment"># Global + node-specific full-text search</span>
+├── <span class="file">linkMetadata.ts</span>      <span class="comment"># Link enrichment CRUD, domain analytics</span>
+├── <span class="file">nodeDocuments.ts</span>     <span class="comment"># Versioned markdown doc generation + editing</span>
+├── <span class="file">nodeLinker.ts</span>        <span class="comment"># Virtual node creation + organizing edge logic</span>
+├── <span class="file">toolRequests.ts</span>      <span class="comment"># Feature request tracking</span>
+├── <span class="file">auth.ts</span>              <span class="comment"># WorkOS webhook handlers</span>
+├── <span class="file">auth.config.ts</span>       <span class="comment"># AuthKit configuration</span>
+├── <span class="file">http.ts</span>              <span class="comment"># HTTP router for auth webhooks</span>
+├── <span class="file">convex.config.ts</span>     <span class="comment"># Convex app configuration</span>
+│
+├── <span class="dir">ai/</span>                  <span class="comment"># All AI/ML logic isolated here</span>
+│   ├── <span class="file">embedding.ts</span>     <span class="comment"># Gemini embeddings (768d) + multi-model title generation</span>
+│   ├── <span class="file">linkFetcher.ts</span>   <span class="comment"># HTML fetching + OG meta extraction (5s timeout)</span>
+│   ├── <span class="file">nodeLinker.ts</span>    <span class="comment"># LLM-driven organizing concept identification</span>
+│   └── <span class="file">clustering.ts</span>    <span class="comment"># k-means++ with Euclidean distance</span>
+│
+├── <span class="dir">model/</span>               <span class="comment"># Shared business logic helpers</span>
+│   ├── <span class="file">users.ts</span>         <span class="comment"># getCurrentUser, getAgentUser, requireAuth</span>
+│   └── <span class="file">captures.ts</span>      <span class="comment"># setCaptureFailed, saveDraftSuggestion</span>
+│
+├── <span class="dir">utils/</span>               <span class="comment"># Framework utilities</span>
+│   ├── <span class="file">customFunctions.ts</span>  <span class="comment"># authQuery / authMutation wrappers</span>
+│   ├── <span class="file">errors.ts</span>        <span class="comment"># EntityNotFoundError</span>
+│   └── <span class="file">helpers.ts</span>       <span class="comment"># pickOptional utility</span>
+│
+├── <span class="dir">scripts/</span>
+│   └── <span class="file">seedAgentUser.ts</span> <span class="comment"># One-time agent user seeding</span>
+│
+└── <span class="dir">_generated/</span>          <span class="comment"># Auto-generated Convex types</span>
+    ├── <span class="file">api.d.ts</span>
+    ├── <span class="file">dataModel.d.ts</span>
+    └── <span class="file">server.d.ts</span></div>
+</div>
+
+<!-- ════════════ TAB LOGIC ════════════ -->
+<script>
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
