@@ -1,7 +1,27 @@
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 
 import { api, internal } from '#convex/_generated/api.js';
 import { type ConvexTestInstance, test } from '#convexTest.ts';
+
+vi.mock('#ai/embedding.ts', () => ({
+  embedText: vi.fn().mockResolvedValue(Array.from({ length: 768 }, () => 0.1)),
+  generateTitle: vi.fn().mockResolvedValue('Mock Generated Title'),
+}));
+
+vi.mock('#ai/nodeLinker.ts', () => ({
+  identifyOrganizingNodes: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock('#ai/linkFetcher.ts', () => ({
+  fetchLinkMetadata: vi.fn().mockResolvedValue({
+    url: 'https://example.com',
+    domain: 'example.com',
+    title: 'Example Page',
+    description: 'A mock page description',
+    fetchedAt: Date.now(),
+    fetchStatus: 'success',
+  }),
+}));
 
 // ─── Test Helpers ────────────────────────────────────────────────────────────
 
