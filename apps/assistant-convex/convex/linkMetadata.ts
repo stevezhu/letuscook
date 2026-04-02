@@ -4,7 +4,7 @@ import { v } from 'convex/values';
 import { internalMutation } from '#convex/_generated/server.js';
 import { linkMetadataFields } from '#convex/schema.ts';
 import { authQuery } from '#model/customFunctions.ts';
-import { getCurrentUser } from '#model/users.ts';
+import { getCurrentUser, getDocOwnedByCurrentUser } from '#model/users.ts';
 
 // 👀 Needs Verification
 export const saveLinkMetadata = internalMutation({
@@ -44,6 +44,12 @@ export const saveLinkMetadata = internalMutation({
 export const getLinkMetadataByCapture = authQuery({
   args: { captureId: v.id('captures') },
   handler: async (ctx, args) => {
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
+      'captures',
+      args.captureId,
+    );
+    if (!capture) return null;
     return await ctx.db
       .query('linkMetadata')
       .withIndex('by_capture', (q) => q.eq('captureId', args.captureId))
@@ -76,7 +82,7 @@ export const getDomainList = authQuery({
     // Collect all link metadata for this user and group by domain
     const allLinks = await ctx.db
       .query('linkMetadata')
-      .filter((q) => q.eq(q.field('ownerUserId'), user._id))
+      .withIndex('by_owner', (q) => q.eq('ownerUserId', user._id))
       .collect();
 
     const domainCounts = new Map<string, number>();

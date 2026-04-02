@@ -163,6 +163,7 @@ export default defineSchema({
 
   edges: defineTable(edgeFields)
     .index('by_edge_pair', ['fromNodeId', 'toNodeId'])
+    .index('by_to_node', ['toNodeId'])
     .index('by_archivedAt_from_node', ['archivedAt', 'fromNodeId'])
     .index('by_archivedAt_to_node', ['archivedAt', 'toNodeId'])
     .index('by_publishedAt_archivedAt_from_node', [
@@ -189,6 +190,7 @@ export default defineSchema({
   linkMetadata: defineTable(linkMetadataFields)
     .index('by_capture', ['captureId'])
     .index('by_url', ['url'])
+    .index('by_owner', ['ownerUserId'])
     .index('by_domain_owner', ['domain', 'ownerUserId'])
     .searchIndex('search_link_title', {
       searchField: 'title',

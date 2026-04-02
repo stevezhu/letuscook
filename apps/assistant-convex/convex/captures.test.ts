@@ -1,6 +1,8 @@
 import { describe, expect, vi } from 'vitest';
 
 import { api, internal } from '#convex/_generated/api.js';
+import { embedText, generateTitle } from '#services/embedding.ts';
+import { fetchLinkMetadata } from '#services/linkFetcher.ts';
 import { type ConvexTestInstance, test } from '#test/convexTest.ts';
 
 vi.mock(import('#services/embedding.ts'));
@@ -553,6 +555,143 @@ describe('retryProcessing', () => {
     await expect(
       authedTestConvex.mutation(api.captures.retryProcessing, { captureId }),
     ).rejects.toThrow();
+  });
+});
+
+// ─── embedAndClassify (internal action) ─────────────────────────────────────
+
+describe('embedAndClassify', () => {
+  test('text capture: creates draft node and suggestion', async ({
+    testConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
+
+    const captureId = await testConvex.run(async (ctx) =>
+      ctx.db.insert('captures', {
+        rawContent: 'Some interesting thought about testing',
+        captureType: 'text',
+        capturedAt: Date.now(),
+        updatedAt: Date.now(),
+        ownerUserId: userId,
+        captureState: 'processing',
+        explicitMentionNodeIds: [],
+      }),
+    );
+
+    await testConvex.action(internal.captures.embedAndClassify, {
+      captureId,
+      rawContent: 'Some interesting thought about testing',
+      captureType: 'text',
+      ownerUserId: userId,
+      agentUserId,
+      explicitMentionNodeIds: [],
+    });
+
+    const { capture, suggestion, draftNode } = await testConvex.run(
+      async (ctx) => {
+        const capture = await ctx.db.get(captureId);
+        const suggestion = await ctx.db
+          .query('suggestions')
+          .withIndex('by_capture', (q) => q.eq('captureId', captureId))
+          .first();
+        const draftNode = suggestion
+          ? await ctx.db.get(suggestion.suggestedNodeId)
+          : null;
+        return { capture, suggestion, draftNode };
+      },
+    );
+
+    expect(capture!.captureState).toBe('ready');
+    expect(suggestion).not.toBeNull();
+    expect(suggestion!.status).toBe('pending');
+    expect(draftNode).not.toBeNull();
+    expect(draftNode!.title).toBe('Mock Generated Title');
+    expect(draftNode!.embedding).toHaveLength(768);
+    expect(embedText).toHaveBeenCalledWith(
+      'Some interesting thought about testing',
+    );
+    expect(generateTitle).toHaveBeenCalled();
+  });
+
+  test('link capture: fetches metadata and saves linkMetadata', async ({
+    testConvex,
+  }) => {
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
+
+    const captureId = await testConvex.run(async (ctx) =>
+      ctx.db.insert('captures', {
+        rawContent: 'https://example.com/article',
+        captureType: 'link',
+        capturedAt: Date.now(),
+        updatedAt: Date.now(),
+        ownerUserId: userId,
+        captureState: 'processing',
+        explicitMentionNodeIds: [],
+      }),
+    );
+
+    await testConvex.action(internal.captures.embedAndClassify, {
+      captureId,
+      rawContent: 'https://example.com/article',
+      captureType: 'link',
+      ownerUserId: userId,
+      agentUserId,
+      explicitMentionNodeIds: [],
+    });
+
+    const { capture, linkMeta } = await testConvex.run(async (ctx) => {
+      const capture = await ctx.db.get(captureId);
+      const linkMeta = await ctx.db
+        .query('linkMetadata')
+        .withIndex('by_capture', (q) => q.eq('captureId', captureId))
+        .unique();
+      return { capture, linkMeta };
+    });
+
+    expect(capture!.captureState).toBe('ready');
+    expect(linkMeta).not.toBeNull();
+    expect(linkMeta!.domain).toBe('example.com');
+    expect(linkMeta!.title).toBe('Example Page');
+    expect(fetchLinkMetadata).toHaveBeenCalledWith(
+      'https://example.com/article',
+    );
+    // Embedding should use enriched content from link metadata
+    expect(embedText).toHaveBeenCalledWith(
+      'Example Page\n\nA mock page description',
+    );
+  });
+
+  test('sets capture to failed on error', async ({ testConvex }) => {
+    const userId = await getUserId(testConvex);
+    const agentUserId = await getAgentUserId(testConvex);
+
+    const captureId = await testConvex.run(async (ctx) =>
+      ctx.db.insert('captures', {
+        rawContent: 'will fail',
+        captureType: 'text',
+        capturedAt: Date.now(),
+        updatedAt: Date.now(),
+        ownerUserId: userId,
+        captureState: 'processing',
+        explicitMentionNodeIds: [],
+      }),
+    );
+
+    vi.mocked(embedText).mockRejectedValueOnce(new Error('API error'));
+
+    await testConvex.action(internal.captures.embedAndClassify, {
+      captureId,
+      rawContent: 'will fail',
+      captureType: 'text',
+      ownerUserId: userId,
+      agentUserId,
+      explicitMentionNodeIds: [],
+    });
+
+    const capture = await testConvex.run(async (ctx) => ctx.db.get(captureId));
+    expect(capture!.captureState).toBe('failed');
   });
 });
 
