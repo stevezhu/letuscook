@@ -33,6 +33,18 @@ export async function createVirtualNode(
     ownerUserId: Id<'users'>;
   },
 ) {
+  // Dedup: return existing virtual node with the same title for this owner
+  const existing = await ctx.db
+    .query('nodes')
+    .withIndex('by_owner_nodeKind_title', (q) =>
+      q
+        .eq('ownerUserId', args.ownerUserId)
+        .eq('nodeKind', 'virtual')
+        .eq('title', args.title),
+    )
+    .first();
+  if (existing) return existing._id;
+
   const now = Date.now();
   const nodeId = await ctx.db.insert('nodes', {
     title: args.title,

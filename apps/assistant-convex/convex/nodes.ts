@@ -24,9 +24,7 @@ async function getRegularNodesWithEdgeCounts(
     )
     .collect();
 
-  const regularNodes = nodes.filter(
-    (n) => (n.nodeKind ?? 'regular') !== 'virtual',
-  );
+  const regularNodes = nodes.filter((n) => n.nodeKind !== 'virtual');
 
   return Promise.all(
     regularNodes.map(async (node) => {

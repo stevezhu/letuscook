@@ -41,7 +41,7 @@ export const nodeFields = {
   archivedAt: v.optional(v.number()),
   sourceCaptureId: v.optional(v.id('captures')),
   embedding: v.optional(v.array(v.float64())),
-  nodeKind: v.optional(v.union(v.literal('regular'), v.literal('virtual'))),
+  nodeKind: v.optional(v.literal('virtual')),
 };
 
 export const edgeFields = {
@@ -151,6 +151,7 @@ export default defineSchema({
     ])
     .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
     .index('by_owner_nodeKind', ['ownerUserId', 'nodeKind'])
+    .index('by_owner_nodeKind_title', ['ownerUserId', 'nodeKind', 'title'])
     .searchIndex('search_nodes', {
       searchField: 'searchText',
       filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],

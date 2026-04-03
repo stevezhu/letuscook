@@ -34,6 +34,11 @@ export async function saveEmbeddingResult(
     organizingNodeConfidences?: number[];
   },
 ) {
+  // Guard against stale captures — if the user archived or edited the capture
+  // while embedAndClassify was running, skip all work to avoid orphaned drafts.
+  const capture = await ctx.db.get(args.captureId);
+  if (!capture || capture.captureState !== 'processing') return;
+
   const now = Date.now();
 
   // Build searchText: include title + rawContent, and append enrichedContent

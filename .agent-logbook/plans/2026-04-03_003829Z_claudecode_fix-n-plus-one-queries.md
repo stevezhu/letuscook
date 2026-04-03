@@ -26,6 +26,7 @@ Eliminate unbounded fan-out query patterns in `apps/assistant-convex/convex/node
 2. **Long-term: Denormalize edge counts onto the node document.** Add `incomingEdgeCount` / `outgoingEdgeCount` fields to `nodes`. Increment/decrement in all edge create/archive/unarchive mutations. This makes the read path a single query with zero fan-out.
 
 **Trade-offs:**
+
 - Pagination is quick but doesn't reduce per-node cost.
 - Denormalization eliminates fan-out but requires maintaining counts in every edge mutation, and counts can drift if there's a bug.
 

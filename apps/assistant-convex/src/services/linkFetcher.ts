@@ -99,6 +99,8 @@ function extractContentSnippet(html: string): string {
   return text.slice(0, 500);
 }
 
+// TODO: Replace manual HTML parsing with Firecrawl or a similar service for
+// more robust metadata extraction
 // 👀 Needs Verification
 export async function fetchLinkMetadata(
   url: string,

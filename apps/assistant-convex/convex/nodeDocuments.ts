@@ -13,6 +13,7 @@ import {
 import { nodeDocumentFields } from '#convex/schema.ts';
 import { EntityNotFoundError } from '#lib/errors.ts';
 import { pickOptional } from '#lib/helpers.ts';
+import { retryWithModelFallback } from '#lib/retryWithModelFallback.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
 import { saveGeneratedDocument as saveGeneratedDocument_ } from '#model/nodeDocuments.ts';
 import {
@@ -28,13 +29,6 @@ const DOCUMENT_MODELS = [
   openrouter('google/gemini-2.5-flash'),
   google('gemini-3-flash-preview'),
 ];
-
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 1000;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 // ─── Public mutations ─────────────────────────────────────────────────────────
 
@@ -222,49 +216,30 @@ The document should:
 
 Return ONLY the markdown content, no preamble or metadata.`;
 
-    let generatedContent = '';
-    let generatedTitle = node.title;
-
-    for (const model of DOCUMENT_MODELS) {
-      let succeeded = false;
-      for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-        try {
-          // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-          const { text } = await generateText({
-            model,
-            system: systemPrompt,
-            prompt: userPrompt,
-          });
-          if (text.trim().length > 0) {
-            generatedContent = text.trim();
-            // Extract title from first heading if present
-            const firstLine = generatedContent.split('\n')[0];
-            if (firstLine?.startsWith('# ')) {
-              generatedTitle = firstLine.slice(2).trim();
-            }
-            succeeded = true;
-            break;
-          }
-        } catch (error) {
-          console.error(
-            `Document generation failed (${model.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
-            error,
-          );
-          if (attempt < MAX_RETRIES - 1) {
-            // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-            await sleep(BASE_DELAY_MS * 2 ** attempt);
-          }
+    const result = await retryWithModelFallback({
+      models: DOCUMENT_MODELS,
+      label: 'Document generation',
+      fn: async (model) => {
+        const { text } = await generateText({
+          model,
+          system: systemPrompt,
+          prompt: userPrompt,
+        });
+        const content = text.trim();
+        if (content.length === 0) return undefined;
+        let title = node.title;
+        const firstLine = content.split('\n')[0];
+        if (firstLine?.startsWith('# ')) {
+          title = firstLine.slice(2).trim();
         }
-      }
-      if (succeeded) break;
-      console.warn(
-        `All retries exhausted for ${model.modelId}, trying next provider`,
-      );
-    }
+        return { content, title };
+      },
+    });
 
-    if (!generatedContent) {
-      generatedContent = `# ${node.title}\n\nDocument generation failed. Please try again.`;
-    }
+    const generatedContent =
+      result?.content ??
+      `# ${node.title}\n\nDocument generation failed. Please try again.`;
+    const generatedTitle = result?.title ?? node.title;
 
     await ctx.runMutation(internal.nodeDocuments.saveGeneratedDocument, {
       nodeId: args.nodeId,

@@ -1,10 +1,12 @@
 import { google } from '@ai-sdk/google';
 import { openrouter } from '@openrouter/ai-sdk-provider';
-import { generateText } from 'ai';
+import { generateText, Output } from 'ai';
+import { z } from 'zod';
 
 import { internal } from '#convex/_generated/api.js';
 import { Id } from '#convex/_generated/dataModel.js';
 import { ActionCtx } from '#convex/_generated/server.js';
+import { retryWithModelFallback } from '#lib/retryWithModelFallback.ts';
 
 export interface NodeLinkSuggestion {
   nodeId: Id<'nodes'>;
@@ -18,44 +20,20 @@ interface ConceptItem {
   confidence: number;
 }
 
+const conceptsSchema = z.object({
+  concepts: z.array(
+    z.object({
+      concept: z.string(),
+      confidence: z.number().min(0).max(1),
+    }),
+  ),
+});
+
 const LINKER_MODELS = [
   google('gemini-2.5-flash'),
   openrouter('google/gemini-2.5-flash'),
   google('gemini-3-flash-preview'),
 ];
-
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 1000;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
- * Extract concept/confidence pairs from LLM text using regex. Handles JSON with
- * single quotes, unquoted keys, markdown fences, etc.
- */
-// 👀 Needs Verification
-function extractConceptsFromText(text: string): ConceptItem[] {
-  const concepts: ConceptItem[] = [];
-  // Match patterns like "concept": "Something", "confidence": 0.9
-  // or 'concept': 'Something', 'confidence': 0.9
-  // or concept: "Something", confidence: 0.9
-  const conceptPattern =
-    /["']?concept["']?\s*:\s*["']([^"']+)["']\s*,\s*["']?confidence["']?\s*:\s*([\d.]+)/gi;
-  let match;
-  while ((match = conceptPattern.exec(text)) !== null) {
-    const concept = match[1];
-    const confidence = parseFloat(match[2] ?? '0');
-    if (concept && !isNaN(confidence)) {
-      concepts.push({
-        concept,
-        confidence: Math.max(0, Math.min(1, confidence)),
-      });
-    }
-  }
-  return concepts;
-}
 
 // 👀 Needs Verification
 async function identifyConceptsWithLLM(
@@ -74,48 +52,25 @@ async function identifyConceptsWithLLM(
   const prompt = `Given this ${captureType} content titled "${contentTitle}", suggest 1-3 organizing concepts or categories it belongs to. Each concept should be a short noun phrase (2-4 words) that could serve as a category label.${similarNodeList}
 
 Content:
-${rawContent.slice(0, 500)}
+${rawContent.slice(0, 500)}`;
 
-Return a JSON array only, no markdown, no explanation. Example format:
-[{"concept":"Machine Learning","confidence":0.9},{"concept":"Research Papers","confidence":0.75}]`;
+  const result = await retryWithModelFallback({
+    models: LINKER_MODELS,
+    label: 'Concept identification',
+    fn: async (model) => {
+      const { output } = await generateText({
+        model,
+        output: Output.object({ schema: conceptsSchema }),
+        system:
+          'You are a knowledge organization assistant. Identify high-level organizing concepts/categories for content.',
+        prompt,
+        maxOutputTokens: 300,
+      });
+      return output && output.concepts.length > 0 ? output.concepts : undefined;
+    },
+  });
 
-  for (const model of LINKER_MODELS) {
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      try {
-        // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-        const { text } = await generateText({
-          model,
-          system:
-            'You are a knowledge organization assistant. Identify high-level organizing concepts/categories for content. Always respond with valid JSON only.',
-          prompt,
-          maxOutputTokens: 300,
-        });
-
-        // Extract concepts using regex — more robust than JSON.parse for
-        // LLM output that may use single quotes, unquoted keys, etc.
-        const concepts = extractConceptsFromText(text);
-        if (concepts.length > 0) return concepts;
-        console.warn(
-          `No concepts extracted from LLM response (${model.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
-          text.slice(0, 200),
-        );
-      } catch (error) {
-        console.error(
-          `Concept identification failed (${model.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
-          error,
-        );
-        if (attempt < MAX_RETRIES - 1) {
-          // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-          await sleep(BASE_DELAY_MS * 2 ** attempt);
-        }
-      }
-    }
-    console.warn(
-      `All retries exhausted for ${model.modelId}, trying next provider`,
-    );
-  }
-
-  return [];
+  return result ?? [];
 }
 
 // 👀 Needs Verification
