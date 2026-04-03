@@ -36,15 +36,18 @@ Also explored refactoring actions to only contain external API calls (task 2), b
 ## Work Performed
 
 **Created 4 new helper files:**
+
 - `src/model/linkMetadata.ts` — `saveLinkMetadata` helper
 - `src/model/toolRequests.ts` — `logToolRequest` helper (includes dedup logic)
 - `src/model/nodes.ts` — `findNodesByTitle`, `createVirtualNode`, `getNodeForDocumentGeneration`, `getNodeActivityForDocument`
 - `src/model/nodeDocuments.ts` — `saveGeneratedDocument` helper
 
 **Extended 1 existing helper file:**
+
 - `src/model/captures.ts` — added `getNodeForEmbedding`, `saveEmbeddingResult` (the largest at ~90 lines)
 
 **Updated 5 convex files** to delegate to helpers:
+
 - `convex/captures.ts` — `getNodeForEmbedding`, `saveEmbeddingResult`
 - `convex/linkMetadata.ts` — `saveLinkMetadata`
 - `convex/toolRequests.ts` — `logToolRequest`
@@ -52,6 +55,7 @@ Also explored refactoring actions to only contain external API calls (task 2), b
 - `convex/nodeDocuments.ts` — `getNodeForDocumentGeneration`, `getNodeActivityForDocument`, `saveGeneratedDocument`
 
 **Skipped (already done or not applicable):**
+
 - `setCaptureFailed` — already delegated to `#model/captures.ts`
 - `processCapture` — scheduling logic, not extractable to a helper
 
