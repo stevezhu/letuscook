@@ -6,6 +6,8 @@ import { test as baseTest } from 'vitest';
 import { internal } from '#convex/_generated/api.js';
 import schema from '#convex/schema.ts';
 
+import { suppressConsole } from './suppressConsole.ts';
+
 const createConvexTest = () =>
   convexTest(schema, import.meta.glob('/convex/**/*.*s'));
 export type ConvexTestInstance = ReturnType<typeof createConvexTest>;
@@ -41,5 +43,8 @@ export const test = baseTest
       );
   })
   .extend('setupAgentUser', ({ testConvex }) => {
-    return () => testConvex.mutation(internal.scripts.seed.seedAgentUser);
+    return () =>
+      suppressConsole('info', () =>
+        testConvex.mutation(internal.scripts.seed.seedAgentUser),
+      );
   });
