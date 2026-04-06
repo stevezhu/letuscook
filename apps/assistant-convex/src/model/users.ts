@@ -4,7 +4,7 @@ import { ConditionalPick } from 'type-fest';
 
 import { DataModel, Doc, Id } from '#convex/_generated/dataModel.js';
 import { QueryCtx } from '#convex/_generated/server.js';
-import { type authQuery } from '#convex/utils/customFunctions.ts';
+import { type authQuery } from '#model/customFunctions.ts';
 
 /**
  * Resolves the user document using the user id from the JWT claims.

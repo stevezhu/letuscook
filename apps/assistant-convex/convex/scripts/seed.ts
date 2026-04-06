@@ -8,7 +8,7 @@ export const seedAgentUser = internalMutation({
       .first();
 
     if (existing) {
-      console.log('Agent user already exists, skipping seed.');
+      console.info('Agent user already exists, skipping seed.');
       return existing._id;
     }
 
@@ -16,13 +16,15 @@ export const seedAgentUser = internalMutation({
     const id = await ctx.db.insert('users', {
       displayName: 'CookBot',
       userType: 'agent',
-      agentProvider: 'openai',
-      agentModel: 'gpt-4o',
+      agentProvider: 'google',
+      // TODO: this isn't guaranteed since the agent can be configured to use a different model
+      // this should be saved per request
+      agentModel: 'gemini-2.5-flash',
       createdAt: now,
       updatedAt: now,
     });
 
-    console.log('Agent user created:', id);
+    console.info('Agent user created:', id);
     return id;
   },
 });

@@ -8,19 +8,23 @@ import {
   internalMutation,
   internalQuery,
 } from '#convex/_generated/server.js';
+import { captureFields } from '#convex/schema.ts';
+import { EntityNotFoundError } from '#lib/errors.ts';
+import { pickOptional } from '#lib/helpers.ts';
 import {
-  saveDraftSuggestion,
+  getNodeForEmbedding as getNodeForEmbedding_,
+  saveEmbeddingResult as saveEmbeddingResult_,
   setCaptureFailed as setCaptureFailed_,
-} from '#convex/model/captures.ts';
+} from '#model/captures.ts';
+import { authMutation, authQuery } from '#model/customFunctions.ts';
 import {
   getAgentUser,
   getCurrentUser,
   getDocOwnedByCurrentUser,
-} from '#convex/model/users.ts';
-import { captureFields } from '#convex/schema.ts';
-import { authMutation, authQuery } from '#convex/utils/customFunctions.ts';
-import { EntityNotFoundError } from '#convex/utils/errors.ts';
-import { pickOptional } from '#convex/utils/helpers.ts';
+} from '#model/users.ts';
+import { embedText, generateTitle } from '#services/embedding.ts';
+import { fetchLinkMetadata } from '#services/linkFetcher.ts';
+import { identifyOrganizingNodes } from '#services/nodeLinker.ts';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -99,11 +103,19 @@ export const createCapture = authMutation({
         argValue: '',
       });
     const now = Date.now();
+    const trimmed = args.rawContent.trim();
+    // TODO: make automatic link detection more robust
+    const captureType =
+      args.captureType === 'text' &&
+      !trimmed.includes('\n') &&
+      (trimmed.startsWith('http://') || trimmed.startsWith('https://'))
+        ? 'link'
+        : args.captureType;
     const explicitMentionNodeIds = parseMentionedNodeIds(args.rawContent);
 
     const captureId = await ctx.db.insert('captures', {
       rawContent: args.rawContent,
-      captureType: args.captureType,
+      captureType,
       capturedAt: now,
       updatedAt: now,
       ownerUserId: user._id,
@@ -509,15 +521,18 @@ export const processCapture = internalMutation({
     }
     if (capture.captureState !== 'processing') return;
 
-    // Stub: create draft suggestion from available data.
-    // TODO: replace with LLM-based processing (embeddings, title generation, similar node search)
     const agentUser = await getAgentUser(ctx);
-    // TODO: Don't default to the owner user, and throw an error instead
-    const suggestorId = agentUser?._id ?? capture.ownerUserId;
+    if (!agentUser) {
+      throw new ConvexError('Agent user not found');
+    }
 
-    await saveDraftSuggestion(ctx, {
+    await ctx.scheduler.runAfter(0, internal.captures.embedAndClassify, {
       captureId: args.captureId,
-      agentUserId: suggestorId,
+      rawContent: capture.rawContent,
+      captureType: capture.captureType,
+      ownerUserId: capture.ownerUserId,
+      agentUserId: agentUser._id,
+      explicitMentionNodeIds: capture.explicitMentionNodeIds,
     });
   },
 });
@@ -539,11 +554,45 @@ export const embedAndClassify = internalAction({
   },
   handler: async (ctx, args) => {
     try {
-      const { embedText, generateTitle } =
-        await import('#convex/ai/embedding.ts');
+      // 0. If link capture, fetch metadata and use enriched content
+      let contentForEmbedding = args.rawContent;
+      if (args.captureType === 'link') {
+        const linkMeta = await fetchLinkMetadata(args.rawContent.trim());
+        await ctx.runMutation(internal.linkMetadata.saveLinkMetadata, {
+          captureId: args.captureId,
+          url: linkMeta.url,
+          canonicalUrl: linkMeta.canonicalUrl,
+          domain: linkMeta.domain,
+          title: linkMeta.title,
+          description: linkMeta.description,
+          faviconUrl: linkMeta.faviconUrl,
+          ogImageUrl: linkMeta.ogImageUrl,
+          contentSnippet: linkMeta.contentSnippet,
+          fetchedAt: linkMeta.fetchedAt,
+          fetchStatus: linkMeta.fetchStatus,
+          ownerUserId: args.ownerUserId,
+        });
 
-      // 1. Embed the raw content
-      const embedding = await embedText(args.rawContent);
+        if (linkMeta.fetchStatus === 'failed') {
+          await ctx.runMutation(internal.toolRequests.logToolRequest, {
+            description: `Failed to fetch metadata from ${linkMeta.domain}`,
+            domain: linkMeta.domain,
+            ownerUserId: args.ownerUserId,
+          });
+        }
+
+        // Build enriched content for embedding and title generation
+        const parts: string[] = [];
+        if (linkMeta.title) parts.push(linkMeta.title);
+        if (linkMeta.description) parts.push(linkMeta.description);
+        if (linkMeta.contentSnippet) parts.push(linkMeta.contentSnippet);
+        if (parts.length > 0) {
+          contentForEmbedding = parts.join('\n\n');
+        }
+      }
+
+      // 1. Embed the raw content (or enriched content for links)
+      const embedding = await embedText(contentForEmbedding);
 
       // 2. Vector search for similar published nodes
       const searchResults = await ctx.vectorSearch('nodes', 'by_embedding', {
@@ -577,22 +626,40 @@ export const embedAndClassify = internalAction({
 
       // 4. Generate title with LLM fallback chain
       const title = await generateTitle(
-        args.rawContent,
+        contentForEmbedding,
         args.captureType,
         similarNodes,
       );
 
-      // 5. Save results
+      // 5. Identify organizing nodes (graph-based categorization)
+      const organizingNodeSuggestions = await identifyOrganizingNodes(ctx, {
+        contentTitle: title,
+        rawContent: contentForEmbedding,
+        captureType: args.captureType,
+        embedding,
+        ownerUserId: args.ownerUserId,
+        similarNodes,
+      });
+
+      // 6. Save results
       await ctx.runMutation(internal.captures.saveEmbeddingResult, {
         captureId: args.captureId,
         agentUserId: args.agentUserId,
         title,
         rawContent: args.rawContent,
+        enrichedContent:
+          contentForEmbedding !== args.rawContent
+            ? contentForEmbedding
+            : undefined,
         embedding,
         ownerUserId: args.ownerUserId,
         similarNodeIds: similarNodes.map((n) => n.id),
         similarNodeScores: similarNodes.map((n) => n.score),
         explicitMentionNodeIds: args.explicitMentionNodeIds,
+        organizingNodeIds: organizingNodeSuggestions.map((s) => s.nodeId),
+        organizingNodeConfidences: organizingNodeSuggestions.map(
+          (s) => s.confidence,
+        ),
       });
     } catch (error) {
       console.error('embedAndClassify failed:', error);
@@ -606,14 +673,7 @@ export const embedAndClassify = internalAction({
 export const getNodeForEmbedding = internalQuery({
   args: { nodeId: v.id('nodes') },
   handler: async (ctx, args) => {
-    const node = await ctx.db.get(args.nodeId);
-    if (!node) return null;
-    return {
-      title: node.title,
-      content: node.content,
-      archivedAt: node.archivedAt,
-      publishedAt: node.publishedAt,
-    };
+    return getNodeForEmbedding_(ctx, args);
   },
 });
 
@@ -624,70 +684,17 @@ export const saveEmbeddingResult = internalMutation({
     agentUserId: v.id('users'),
     title: v.string(),
     rawContent: v.string(),
+    enrichedContent: v.optional(v.string()),
     embedding: v.array(v.float64()),
     ownerUserId: v.id('users'),
     similarNodeIds: v.array(v.id('nodes')),
     similarNodeScores: v.array(v.number()),
     explicitMentionNodeIds: v.array(v.id('nodes')),
+    organizingNodeIds: v.optional(v.array(v.id('nodes'))),
+    organizingNodeConfidences: v.optional(v.array(v.number())),
   },
   handler: async (ctx, args) => {
-    const now = Date.now();
-
-    // 1. Create draft node with embedding
-    const draftNodeId = await ctx.db.insert('nodes', {
-      title: args.title,
-      content: args.rawContent,
-      searchText: `${args.title}\n\n${args.rawContent}`,
-      ownerUserId: args.ownerUserId,
-      sourceCaptureId: args.captureId,
-      embedding: args.embedding,
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    // 2. Create edges to similar nodes with confidence scores
-    await Promise.all(
-      args.similarNodeIds.map((nodeId, i) =>
-        ctx.db.insert('edges', {
-          fromNodeId: draftNodeId,
-          toNodeId: nodeId,
-          edgeType: 'suggested',
-          source: 'processor',
-          verified: false,
-          confidence: args.similarNodeScores[i],
-          createdAt: now,
-        }),
-      ),
-    );
-
-    // 3. Create edges from explicit mentions
-    await Promise.all(
-      args.explicitMentionNodeIds.map((nodeId) =>
-        ctx.db.insert('edges', {
-          fromNodeId: draftNodeId,
-          toNodeId: nodeId,
-          edgeType: 'suggested',
-          source: 'processor',
-          verified: false,
-          createdAt: now,
-        }),
-      ),
-    );
-
-    // 4. Create suggestion row
-    await ctx.db.insert('suggestions', {
-      captureId: args.captureId,
-      suggestorUserId: args.agentUserId,
-      suggestedNodeId: draftNodeId,
-      status: 'pending',
-      createdAt: now,
-    });
-
-    // 5. Set capture state to ready
-    await ctx.db.patch('captures', args.captureId, {
-      captureState: 'ready',
-      updatedAt: now,
-    });
+    await saveEmbeddingResult_(ctx, args);
   },
 });
 

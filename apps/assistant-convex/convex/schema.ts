@@ -41,6 +41,7 @@ export const nodeFields = {
   archivedAt: v.optional(v.number()),
   sourceCaptureId: v.optional(v.id('captures')),
   embedding: v.optional(v.array(v.float64())),
+  nodeKind: v.optional(v.literal('virtual')),
 };
 
 export const edgeFields = {
@@ -54,6 +55,7 @@ export const edgeFields = {
     v.literal('suggested'),
     v.literal('reference'),
     v.literal('related'),
+    v.literal('categorized_as'),
   ),
   source: v.union(v.literal('user'), v.literal('processor')),
   verified: v.boolean(),
@@ -74,6 +76,51 @@ export const suggestionFields = {
   ),
   createdAt: v.number(),
   processedAt: v.optional(v.number()),
+};
+
+export const nodeDocumentFields = {
+  nodeId: v.id('nodes'),
+  version: v.number(),
+  title: v.string(),
+  content: v.string(),
+  generatedAt: v.number(),
+  generatedFromEdgesUpTo: v.number(),
+  isEdited: v.boolean(),
+  ownerUserId: v.id('users'),
+};
+
+export const toolRequestFields = {
+  description: v.string(),
+  domain: v.optional(v.string()),
+  frequency: v.number(),
+  status: v.union(
+    v.literal('open'),
+    v.literal('implemented'),
+    v.literal('dismissed'),
+  ),
+  createdAt: v.number(),
+  ownerUserId: v.id('users'),
+};
+
+export const linkMetadataFields = {
+  captureId: v.id('captures'),
+  url: v.string(),
+  canonicalUrl: v.optional(v.string()),
+  domain: v.string(),
+  title: v.optional(v.string()),
+  description: v.optional(v.string()),
+  faviconUrl: v.optional(v.string()),
+  ogImageUrl: v.optional(v.string()),
+  // TODO: is this needed?
+  ogImageStorageId: v.optional(v.id('_storage')),
+  contentSnippet: v.optional(v.string()),
+  fetchedAt: v.number(),
+  fetchStatus: v.union(
+    v.literal('success'),
+    v.literal('partial'),
+    v.literal('failed'),
+  ),
+  ownerUserId: v.id('users'),
 };
 
 export default defineSchema({
@@ -103,6 +150,8 @@ export default defineSchema({
       'updatedAt',
     ])
     .index('by_owner_archivedAt', ['ownerUserId', 'archivedAt'])
+    .index('by_owner_nodeKind', ['ownerUserId', 'nodeKind'])
+    .index('by_owner_nodeKind_title', ['ownerUserId', 'nodeKind', 'title'])
     .searchIndex('search_nodes', {
       searchField: 'searchText',
       filterFields: ['ownerUserId', 'archivedAt', 'publishedAt'],
@@ -115,6 +164,7 @@ export default defineSchema({
 
   edges: defineTable(edgeFields)
     .index('by_edge_pair', ['fromNodeId', 'toNodeId'])
+    .index('by_to_node', ['toNodeId'])
     .index('by_archivedAt_from_node', ['archivedAt', 'fromNodeId'])
     .index('by_archivedAt_to_node', ['archivedAt', 'toNodeId'])
     .index('by_publishedAt_archivedAt_from_node', [
@@ -133,21 +183,23 @@ export default defineSchema({
     .index('by_suggestor', ['suggestorUserId'])
     .index('by_capture_status', ['captureId', 'status']),
 
-  topics: defineTable({
-    label: v.string(),
-    ownerUserId: v.id('users'),
-    isUserDefined: v.boolean(),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  }).index('by_owner', ['ownerUserId']),
+  nodeDocuments: defineTable(nodeDocumentFields).index('by_node_version', [
+    'nodeId',
+    'version',
+  ]),
 
-  nodeTopics: defineTable({
-    nodeId: v.id('nodes'),
-    topicId: v.id('topics'),
-    confidence: v.optional(v.number()),
-    source: v.union(v.literal('cluster'), v.literal('user')),
-    createdAt: v.number(),
-  })
-    .index('by_node', ['nodeId'])
-    .index('by_topic', ['topicId']),
+  linkMetadata: defineTable(linkMetadataFields)
+    .index('by_capture', ['captureId'])
+    .index('by_url', ['url'])
+    .index('by_owner', ['ownerUserId'])
+    .index('by_domain_owner', ['domain', 'ownerUserId'])
+    .searchIndex('search_link_title', {
+      searchField: 'title',
+      filterFields: ['domain', 'ownerUserId'],
+    }),
+
+  toolRequests: defineTable(toolRequestFields).index('by_owner_status', [
+    'ownerUserId',
+    'status',
+  ]),
 });

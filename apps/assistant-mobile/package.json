@@ -6,8 +6,8 @@
   "main": "./src/index.ts",
   "imports": {
     "#assets/*": "./assets/*",
-    "#*": "./src/*",
-    "#.rnstorybook/*": "./.rnstorybook/*"
+    "#.rnstorybook/*": "./.rnstorybook/*",
+    "#*": "./src/*"
   },
   "scripts": {
     "android": "expo run:android",

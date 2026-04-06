@@ -2,6 +2,8 @@ import { google } from '@ai-sdk/google';
 import { openrouter } from '@openrouter/ai-sdk-provider';
 import { embed, generateText } from 'ai';
 
+import { retryWithModelFallback } from '#lib/retryWithModelFallback.ts';
+
 const EMBEDDING_MODEL = google.embeddingModel('gemini-embedding-2-preview');
 
 // 👀 Needs Verification
@@ -48,13 +50,6 @@ const TITLE_MODELS = [
   google('gemini-3-flash-preview'),
 ];
 
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 1000;
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 // 👀 Needs Verification
 export async function generateTitle(
   rawContent: string,
@@ -67,34 +62,21 @@ export async function generateTitle(
     similarNodes,
   );
 
-  for (const provider of TITLE_MODELS) {
-    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-      try {
-        // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-        const { text } = await generateText({
-          model: provider,
-          system: TITLE_PROMPT,
-          prompt: userPrompt,
-          maxOutputTokens: 100,
-        });
-        const title = text.trim();
-        if (title.length > 0) return title;
-      } catch (error) {
-        console.error(
-          `Title generation failed (${provider.modelId}, attempt ${attempt + 1}/${MAX_RETRIES}):`,
-          error,
-        );
-        if (attempt < MAX_RETRIES - 1) {
-          // eslint-disable-next-line no-await-in-loop -- sequential retry with backoff is intentional
-          await sleep(BASE_DELAY_MS * 2 ** attempt);
-        }
-      }
-    }
-    console.warn(
-      `All retries exhausted for ${provider.modelId}, trying next provider`,
-    );
-  }
+  const result = await retryWithModelFallback({
+    models: TITLE_MODELS,
+    label: 'Title generation',
+    fn: async (model) => {
+      const { text } = await generateText({
+        model,
+        system: TITLE_PROMPT,
+        prompt: userPrompt,
+        maxOutputTokens: 100,
+      });
+      const title = text.trim();
+      return title.length > 0 ? title : undefined;
+    },
+  });
 
   // Fallback: derive title from raw content
-  return rawContent.slice(0, 80).trim();
+  return result ?? rawContent.slice(0, 80).trim();
 }

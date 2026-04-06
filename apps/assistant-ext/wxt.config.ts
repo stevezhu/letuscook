@@ -2,7 +2,7 @@
 /// <reference types="wxt-turbo" />
 
 import { productName } from '@workspace/constants';
-import { defineConfig } from 'wxt';
+import { defineConfig, type WxtViteConfig } from 'wxt';
 
 import { name as packageName } from './package.json';
 import viteConfig from './vite.config.ts';
@@ -23,5 +23,6 @@ export default defineConfig({
     packageName,
     copyFiles: ['SOURCE_CODE_REVIEW.md'],
   },
-  vite: () => viteConfig,
+  // TODO: can the cast be removed?
+  vite: () => viteConfig as WxtViteConfig,
 });

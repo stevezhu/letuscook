@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 
-import { getDocOwnedByCurrentUser } from '#convex/model/users.ts';
-import { authQuery } from '#convex/utils/customFunctions.ts';
+import { authQuery } from '#model/customFunctions.ts';
+import { getDocOwnedByCurrentUser } from '#model/users.ts';
 
 export const getSuggestion = authQuery({
   args: { captureId: v.id('captures') },

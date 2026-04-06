@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
 
-import { getCurrentUser } from '#convex/model/users.ts';
-import { authQuery } from '#convex/utils/customFunctions.ts';
+import { authQuery } from '#model/customFunctions.ts';
+import { getCurrentUser } from '#model/users.ts';
 
 export const searchGlobal = authQuery({
   args: { query: v.string() },
