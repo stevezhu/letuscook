@@ -4,28 +4,28 @@ packages:
 
 catalog:
   '@chromatic-com/storybook': ^5.1.1
-  '@storybook/addon-a11y': ^10.3.3
-  '@storybook/addon-docs': ^10.3.3
-  '@storybook/addon-onboarding': ^10.3.3
+  '@storybook/addon-a11y': ^10.3.4
+  '@storybook/addon-docs': ^10.3.4
+  '@storybook/addon-onboarding': ^10.3.4
   '@storybook/addon-ondevice-actions': ^10.3.1
   '@storybook/addon-ondevice-controls': ^10.3.1
   '@storybook/react-native': ^10.3.1
-  '@storybook/react-vite': ^10.3.3
+  '@storybook/react-vite': ^10.3.4
   '@stzhu/eslint-config': ^0.10.0
-  '@stzhu/prettier-plugin-tsconfig': ^0.7.1
+  '@stzhu/prettier-plugin-tsconfig': ^0.7.3
   '@stzhu/tsconfig': ^0.3.0
-  '@types/node': ^25.5.0
+  '@types/node': ^25.5.2
   '@types/react': ^19.2.14
   '@types/react-dom': ^19.2.3
-  electron: ^41.1.0
+  electron: ^41.1.1
   eslint: ^9.39.4
-  hono: ^4.12.9
+  hono: ^4.12.11
   react: ^19.2.4
   react-dom: ^19.2.4
-  storybook: ^10.3.3
+  storybook: ^10.3.4
   tailwindcss: ^4.2.2
   typescript: ^5.9.3
-  vite: ^7.3.1
+  vite: ^7.3.2
   vitest: ^4.1.2
 
 onlyBuiltDependencies:
