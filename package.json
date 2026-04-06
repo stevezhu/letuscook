@@ -25,7 +25,7 @@
     "es-toolkit": "^1.45.1",
     "oxfmt": "^0.43.0",
     "oxlint": "^1.58.0",
-    "oxlint-tsgolint": "^0.18.1",
+    "oxlint-tsgolint": "^0.20.0",
     "prettier": "^3.8.1",
     "rulesync": "^7.27.1",
     "syncpack": "^14.3.0",
