@@ -15,7 +15,6 @@ import { EntityNotFoundError } from '#lib/errors.ts';
 import { pickOptional } from '#lib/helpers.ts';
 import { retryWithModelFallback } from '#lib/retryWithModelFallback.ts';
 import { authMutation, authQuery } from '#model/customFunctions.ts';
-import { saveGeneratedDocument as saveGeneratedDocument_ } from '#model/nodeDocuments.ts';
 import {
   getNodeActivityForDocument as getNodeActivityForDocument_,
   getNodeForDocumentGeneration as getNodeForDocumentGeneration_,
@@ -268,7 +267,7 @@ export const saveGeneratedDocument = internalMutation({
   ]),
   returns: v.id('nodeDocuments'),
   handler: async (ctx, args) => {
-    return saveGeneratedDocument_(ctx, args);
+    return ctx.db.insert('nodeDocuments', { ...args, isEdited: false });
   },
 });
 
