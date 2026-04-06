@@ -1,14 +1,10 @@
-import { Id } from '#convex/_generated/dataModel.js';
+import { Doc } from '#convex/_generated/dataModel.js';
 import { MutationCtx } from '#convex/_generated/server.js';
 
 // 👀 Needs Verification
 export async function logToolRequest(
   ctx: MutationCtx,
-  args: {
-    description: string;
-    domain?: string;
-    ownerUserId: Id<'users'>;
-  },
+  args: Pick<Doc<'toolRequests'>, 'description' | 'domain' | 'ownerUserId'>,
 ) {
   const existing = await ctx.db
     .query('toolRequests')

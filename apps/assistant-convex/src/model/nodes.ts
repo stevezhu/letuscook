@@ -1,4 +1,4 @@
-import { Id } from '#convex/_generated/dataModel.js';
+import { Doc, Id } from '#convex/_generated/dataModel.js';
 import { MutationCtx, QueryCtx } from '#convex/_generated/server.js';
 
 // 👀 Needs Verification
@@ -28,10 +28,7 @@ export async function findNodesByTitle(
 // 👀 Needs Verification
 export async function createVirtualNode(
   ctx: MutationCtx,
-  args: {
-    title: string;
-    ownerUserId: Id<'users'>;
-  },
+  args: Pick<Doc<'nodes'>, 'title' | 'ownerUserId'>,
 ) {
   // Dedup: return existing virtual node with the same title for this owner
   const existing = await ctx.db
