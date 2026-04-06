@@ -59,6 +59,7 @@ The branch had 37 files changed (+3187/-512) across capture ingestion, graph-bas
 - Commit: `1f98d31`
 
 ### Deferred items
+
 - N+1 query in `getRegularNodesWithEdgeCounts` — tracked in `.agent-logbook/plans/2026-04-03_003829Z_claudecode_fix-n-plus-one-queries.md`
 - N+2 query in `getNodeActivity` — same plan
 - `getDomainList` unbounded collect — same plan
