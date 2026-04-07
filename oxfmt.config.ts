@@ -45,6 +45,7 @@ export default defineConfig<OxfmtConfig>({
         trailingComma: 'none',
       },
     },
-    ...workspaceOverrides,
+    // XXX: disable on CI because the CI format output seems to be different when the tailwind config is present
+    ...(process.env.CI === 'true' ? [] : workspaceOverrides),
   ],
 });
