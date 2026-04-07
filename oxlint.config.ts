@@ -5,7 +5,11 @@ import { defineConfig, type OxlintConfig } from 'oxlint';
 const vitestName = 'vitest-eslint';
 
 export default defineConfig<OxlintConfig>({
-  ignorePatterns: ['storybook.requires.ts', 'packages/shadcn/src/**'],
+  ignorePatterns: [
+    'storybook.requires.ts',
+    'packages/shadcn/src/**',
+    'packages/rn-reusables/src/**',
+  ],
   categories: {
     correctness: 'error',
     perf: 'error',
