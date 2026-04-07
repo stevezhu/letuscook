@@ -1,3 +1,15 @@
+---
+date: 2026-04-07T18:31:49Z
+type: research
+status: done
+agent: claudecode
+models: [claude-opus-4-6, claude-haiku-4-5-20251001]
+branch: fix/p0-auth-crash-stale-captures
+sessionId: 2fcbf0a2-977e-49a0-8c79-b43205d87888
+tags: [capture, ingestion, e2e-testing, maestro, ios]
+relatedPlan: plans/2026-04-01_204152Z_claudecode_capture-ingestion-improvements-plan.md
+---
+
 # Capture Ingestion E2E Test Findings
 
 **Date:** 2026-04-07
@@ -7,6 +19,7 @@
 ## Test Summary
 
 Submitted 7 captures across various link types:
+
 - GitHub repos: `anthropics/claude-code`, `facebook/react`, `vercel/next.js`, `vercel/ai`
 - Blog post: `blog.google/technology/ai/google-gemini-ai-update-december-2024/`
 - Blocked domains: `x.com/AnthropicAI/status/...`, `reddit.com/r/programming/...`
@@ -32,6 +45,7 @@ All LLM calls (concept identification, title generation) fail with `RESOURCE_EXH
 
 **5. Title generation quality is poor**
 Generated titles are useless:
+
 - `https://github.com/vercel/ai` -> `"Vercel"` (should be "Vercel AI SDK")
 - `https://reddit.com/.../rust_2024_edition_is_here/` -> `Reddit: "` (truncated with stray quote)
 - Titles are based only on raw URL text, not on fetched page metadata (title, description, OG tags)
@@ -84,3 +98,33 @@ When `createCapture` fails (e.g., due to auth), the text field retains the conte
 7. Persist capture type selection across submissions (P2)
 8. Surface link metadata preview in review screen (P2)
 9. Add concept/hub node browsing to Knowledge tab (P2)
+
+## Session Stats
+
+```
+claudecode Session Stats: 2fcbf0a2-977e-49a0-8c79-b43205d87888
+========================================
+Models Used:  Main: claude-opus-4-6
+              Subagents: claude-haiku-4-5-20251001
+----------------------------------------
+MAIN SESSION:
+  Input Tokens         252
+  Output Tokens        22,853
+  Cache Creation Input 422,735
+  Cache Read Input     16,067,110
+----------------------------------------
+SUBAGENTS (1 total):
+  Input Tokens         544
+  Output Tokens        6,499
+  Cache Creation Input 198,078
+  Cache Read Input     2,606,000
+----------------------------------------
+TOTAL USAGE:
+  Total Input Tokens   796
+  Total Output Tokens  29,352
+  Total Cache Creation 620,813
+  Total Cache Read     18,673,110
+----------------------------------------
+GRAND TOTAL TOKENS:  19,324,071
+========================================
+```
