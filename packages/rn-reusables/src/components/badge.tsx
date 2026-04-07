@@ -2,7 +2,7 @@ import * as Slot from '@rn-primitives/slot';
 import { TextClassContext } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, View, ViewProps } from 'react-native';
+import { Platform, View, type ViewProps } from 'react-native';
 
 const badgeVariants = cva(
   cn(
