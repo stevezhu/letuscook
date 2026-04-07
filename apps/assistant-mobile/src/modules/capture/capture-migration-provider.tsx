@@ -59,9 +59,9 @@ function MigrationWatcher({ children }: { children: ReactNode }) {
     <>
       {/* Show a non-blocking banner at the top while migrating */}
       {migration.isPending && (
-        <View className="bg-muted absolute top-safe right-0 left-0 z-50 flex-row items-center justify-center gap-2 px-4 py-2">
+        <View className="absolute top-safe right-0 left-0 z-50 flex-row items-center justify-center gap-2 bg-muted px-4 py-2">
           <ActivityIndicator size="small" />
-          <Text className="text-muted-foreground text-sm">
+          <Text className="text-sm text-muted-foreground">
             Syncing {captures.length} captures…
           </Text>
         </View>
