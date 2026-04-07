@@ -32,15 +32,15 @@ function HomeScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustsScrollIndicatorInsets={true}
-      className="flex-1 bg-background"
+      className="bg-background flex-1"
       contentContainerClassName="p-6"
     >
       <View className="flex-col gap-8">
         <View className="flex-col gap-2">
-          <Text className="text-lg font-medium text-muted-foreground">
+          <Text className="text-muted-foreground text-lg font-medium">
             Welcome back,
           </Text>
-          <Text className="text-4xl font-bold tracking-tight text-foreground">
+          <Text className="text-foreground text-4xl font-bold tracking-tight">
             {user?.firstName ?? 'Guest'}
           </Text>
         </View>
@@ -62,12 +62,12 @@ function HomeScreen() {
         )}
 
         <View className="flex-col gap-4">
-          <Text className="text-xl font-semibold text-foreground">
+          <Text className="text-foreground text-xl font-semibold">
             Recent Activity
           </Text>
           <Card>
             <CardContent className="flex-col items-center justify-center gap-2 py-10">
-              <Text className="text-center text-muted-foreground">
+              <Text className="text-muted-foreground text-center">
                 No recent activity to show.
               </Text>
             </CardContent>
@@ -75,22 +75,22 @@ function HomeScreen() {
         </View>
 
         <View className="flex-col gap-4">
-          <Text className="text-xl font-semibold text-foreground">
+          <Text className="text-foreground text-xl font-semibold">
             Quick Actions
           </Text>
           <View className="flex-row flex-wrap gap-4">
             <Card className="min-w-[140px] flex-1">
               <CardHeader className="gap-2">
-                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
-                  <Text className="font-bold text-primary">+</Text>
+                <View className="bg-primary/10 size-10 items-center justify-center rounded-full">
+                  <Text className="text-primary font-bold">+</Text>
                 </View>
                 <CardTitle className="text-base">New Task</CardTitle>
               </CardHeader>
             </Card>
             <Card className="min-w-[140px] flex-1">
               <CardHeader className="gap-2">
-                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
-                  <Text className="font-bold text-primary">📄</Text>
+                <View className="bg-primary/10 size-10 items-center justify-center rounded-full">
+                  <Text className="text-primary font-bold">📄</Text>
                 </View>
                 <CardTitle className="text-base">Draft Doc</CardTitle>
               </CardHeader>
