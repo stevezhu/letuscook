@@ -1,5 +1,7 @@
+import { TextClassContext } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import type { LucideIcon, LucideProps } from 'lucide-react-native';
+import * as React from 'react';
 import { withUniwind } from 'uniwind';
 
 type IconProps = LucideProps & {
@@ -30,22 +32,26 @@ const StyledIcon = withUniwind(IconImpl, {
  * individually.
  *
  * @example
+ *   ```tsx
  *   import { ArrowRight } from 'lucide-react-native';
  *   import { Icon } from '@/registry/uniwind/registry/components/ui/icon';
  *
  *   <Icon as={ArrowRight} className="text-red-500 size-4" />;
+ *   ```;
  *
  * @param {LucideIcon} as - The Lucide icon component to render.
  * @param {string} className - Utility classes to style the icon using Uniwind.
  * @param {number} size - Icon size (overrides the size class).
  * @param {...LucideProps} ...props - Additional Lucide icon props passed to the
  *   "as" icon.
+ * @component
  */
 function Icon({ as: IconComponent, className, ...props }: IconProps) {
+  const textClass = React.useContext(TextClassContext);
   return (
     <StyledIcon
       as={IconComponent}
-      className={cn('text-foreground size-5', className)}
+      className={cn('text-foreground size-5', textClass, className)}
       {...props}
     />
   );

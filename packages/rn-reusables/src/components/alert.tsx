@@ -6,7 +6,7 @@ import {
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import type { LucideIcon } from 'lucide-react-native';
 import * as React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { View } from 'react-native';
 
 function Alert({
   className,
@@ -15,12 +15,11 @@ function Alert({
   icon,
   iconClassName,
   ...props
-}: ViewProps &
-  React.RefAttributes<View> & {
-    icon: LucideIcon;
-    variant?: 'default' | 'destructive';
-    iconClassName?: string;
-  }) {
+}: React.ComponentProps<typeof View> & {
+  icon: LucideIcon;
+  variant?: 'default' | 'destructive';
+  iconClassName?: string;
+}) {
   return (
     <TextClassContext.Provider
       value={cn(
@@ -56,7 +55,7 @@ function Alert({
 function AlertTitle({
   className,
   ...props
-}: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+}: React.ComponentProps<typeof Text>) {
   return (
     <Text
       className={cn(
@@ -71,7 +70,7 @@ function AlertTitle({
 function AlertDescription({
   className,
   ...props
-}: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+}: React.ComponentProps<typeof Text>) {
   const textClass = React.useContext(TextClassContext);
   return (
     <Text

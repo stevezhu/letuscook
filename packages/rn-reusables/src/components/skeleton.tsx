@@ -1,6 +1,5 @@
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import * as React from 'react';
-import { useEffectEvent } from 'react';
 import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -11,17 +10,11 @@ import Animated, {
 
 const duration = 1000;
 
-function Skeleton({
-  className,
-  ...props
-}: React.ComponentProps<typeof View> & React.RefAttributes<View>) {
+function Skeleton({ className, ...props }: React.ComponentProps<typeof View>) {
   const sv = useSharedValue(1);
-  const setSv = useEffectEvent(() => {
-    sv.value = withRepeat(withTiming(0.5, { duration }), -1, true);
-  });
 
   React.useEffect(() => {
-    setSv();
+    sv.value = withRepeat(withTiming(0.5, { duration }), -1, true);
   }, []);
 
   const style = useAnimatedStyle(

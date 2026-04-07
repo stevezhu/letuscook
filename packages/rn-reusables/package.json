@@ -1,6 +1,5 @@
 {
   "name": "@workspace/rn-reusables",
-  "version": "0.0.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -13,7 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "rn-reusables:add-all": "pnpm dlx @react-native-reusables/cli@latest add --all --overwrite",
-    "rn-reusables:update-patches": "git diff src > patches/src.diff",
+    "rn-reusables:update-patches": "git diff --no-color src > patches/src.diff",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
