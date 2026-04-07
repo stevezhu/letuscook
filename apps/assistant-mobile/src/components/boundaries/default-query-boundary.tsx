@@ -1,7 +1,7 @@
 import { type ReactNode, Suspense } from 'react';
 
-import { DefaultActivityView } from '#components/default-activity-view.tsx';
-import { QueryErrorBoundary } from '#components/query-error-boundary.tsx';
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
+import { QueryErrorBoundary } from '#components/boundaries/query-error-boundary.tsx';
 
 export type DefaultQueryBoundaryProps = {
   children: ReactNode;

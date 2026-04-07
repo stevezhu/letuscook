@@ -1,6 +1,6 @@
 import { ReactNode, Suspense } from 'react';
 
-import { DefaultActivityView } from '#components/default-activity-view.tsx';
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
 
 export type DefaultSuspenseProps = {
   children: ReactNode;
