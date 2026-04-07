@@ -8,7 +8,7 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
-import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function AccountTab() {

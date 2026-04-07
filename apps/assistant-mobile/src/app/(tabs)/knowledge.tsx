@@ -6,7 +6,7 @@ import { api } from 'assistant-convex/convex/_generated/api';
 import { type Href, useRouter } from 'expo-router';
 import { FlatList, Pressable, View } from 'react-native';
 
-import { DefaultQueryBoundary } from '#components/default-query-boundary.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function KnowledgeTab() {

@@ -20,7 +20,7 @@ import {
   View,
 } from 'react-native';
 
-import { DefaultQueryBoundary } from '#components/default-query-boundary.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function NodeDetailRoute() {

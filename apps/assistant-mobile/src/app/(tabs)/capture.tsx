@@ -6,7 +6,7 @@ import { KeyboardGestureArea } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 
-import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
 import { StyledKeyboardStickyView } from '#components/styled.ts';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import {

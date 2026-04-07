@@ -7,7 +7,7 @@ import { type Href, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { SectionList, ActivityIndicator, View } from 'react-native';
 
-import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import { InboxItemRow } from '#modules/inbox/components/inbox-item-row.tsx';
 import { useInboxCaptures } from '#modules/inbox/use-inbox-captures.ts';
