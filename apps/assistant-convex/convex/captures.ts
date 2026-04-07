@@ -469,6 +469,8 @@ export const unarchiveCapture = authMutation({
   },
 });
 
+const STALE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+
 export const retryProcessing = authMutation({
   args: { captureId: v.id('captures') },
   returns: v.null(),
@@ -481,12 +483,14 @@ export const retryProcessing = authMutation({
     if (!capture) {
       throw new ConvexError('Capture not found');
     }
-    if (capture.captureState !== 'failed') {
-      throw new EntityNotFoundError({
-        tableName: 'captures',
-        argName: 'captureId',
-        argValue: args.captureId,
-      });
+
+    const isFailed = capture.captureState === 'failed';
+    const isStaleProcessing =
+      capture.captureState === 'processing' &&
+      Date.now() - capture.updatedAt > STALE_THRESHOLD_MS;
+
+    if (!isFailed && !isStaleProcessing) {
+      throw new ConvexError('Capture is not eligible for retry');
     }
 
     const now = Date.now();
@@ -497,6 +501,35 @@ export const retryProcessing = authMutation({
 
     await ctx.scheduler.runAfter(0, internal.captures.processCapture, {
       captureId: args.captureId,
+    });
+
+    return null;
+  },
+});
+
+export const discardCapture = authMutation({
+  args: { captureId: v.id('captures') },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const capture = await getDocOwnedByCurrentUser(
+      ctx,
+      'captures',
+      args.captureId,
+    );
+    if (!capture) {
+      throw new ConvexError('Capture not found');
+    }
+    if (
+      capture.captureState !== 'processing' &&
+      capture.captureState !== 'failed'
+    ) {
+      throw new ConvexError('Capture cannot be discarded in this state');
+    }
+
+    const now = Date.now();
+    await ctx.db.patch('captures', args.captureId, {
+      archivedAt: now,
+      updatedAt: now,
     });
 
     return null;

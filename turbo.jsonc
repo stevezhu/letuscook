@@ -44,5 +44,8 @@
       "dependsOn": ["^build", "codegen"]
     }
   },
+  "futureFlags": {
+    "affectedUsingTaskInputs": true
+  },
   "ui": "tui"
 }

@@ -20,11 +20,12 @@ import {
   View,
 } from 'react-native';
 
-import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function NodeDetailRoute() {
   const { nodeId } = useLocalSearchParams<{ nodeId: string }>();
+  const router = useRouter();
   const { user } = useAuth();
 
   if (!user) {
@@ -39,9 +40,9 @@ export default function NodeDetailRoute() {
           presentation: 'modal',
         }}
       />
-      <DefaultSuspense>
+      <DefaultQueryBoundary onGoBack={() => router.back()}>
         <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
-      </DefaultSuspense>
+      </DefaultQueryBoundary>
     </View>
   );
 }

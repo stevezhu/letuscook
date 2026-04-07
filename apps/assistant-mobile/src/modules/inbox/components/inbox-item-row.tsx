@@ -37,7 +37,7 @@ export function InboxItemRow({
       </Text>
 
       <View className="mt-2 flex-row items-center gap-2">
-        <StatePill state={item.captureState} />
+        <StatePill state={item.captureState} isStale={item.isStale} />
         {isReady && item.suggestor && (
           <View className="rounded-sm bg-blue-50 px-2 py-0.5">
             <Text className="text-xs text-blue-600">

@@ -7,7 +7,7 @@ import React from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import StorybookUIRoot from '#.rnstorybook/index.ts';
-import { DefaultActivityView } from '#components/default-activity-view.tsx';
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
 import { LoginScreen } from '#components/login-screen.tsx';
 import { AppAuthProvider } from '#components/providers/app-auth-provider.tsx';
 import { AppReactQueryDevtools } from '#components/providers/app-react-query-devtools.tsx';

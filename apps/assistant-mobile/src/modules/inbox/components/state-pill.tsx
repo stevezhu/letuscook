@@ -27,8 +27,23 @@ const stateConfig: Record<
   },
 };
 
-export function StatePill({ state }: { state: CaptureState }) {
-  const config = stateConfig[state];
+const staleProcessingConfig = {
+  label: 'Stuck',
+  bg: 'bg-amber-100',
+  text: 'text-amber-700',
+};
+
+export function StatePill({
+  state,
+  isStale,
+}: {
+  state: CaptureState;
+  isStale?: boolean;
+}) {
+  const config =
+    state === 'processing' && isStale
+      ? staleProcessingConfig
+      : stateConfig[state];
   return (
     <View className={`rounded-full px-2 py-0.5 ${config.bg} `}>
       <Text className={`text-xs font-medium ${config.text} `}>

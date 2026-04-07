@@ -10,7 +10,6 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
     "rn-reusables:add-all": "pnpm dlx @react-native-reusables/cli@latest add --all --overwrite",
     "rn-reusables:update-patches": "git diff --no-color src > patches/src.diff",
     "typecheck": "tsc --noEmit"

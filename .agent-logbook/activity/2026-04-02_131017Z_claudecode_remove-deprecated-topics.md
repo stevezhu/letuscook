@@ -22,7 +22,7 @@ Deleted the `topics` and `nodeTopics` schema tables plus all associated code (`t
 
 ## Context
 
-The plan (`docs/plans/memoized-brewing-balloon.md`, Phase 3, Option A) calls for eliminating the `topics` and `nodeTopics` tables in favor of a pure graph model where organizing concepts are regular nodes with `nodeKind: 'virtual'` connected via `categorized_as` edges. The replacement system (`nodeLinker.ts`, schema changes for `nodeKind` and `categorized_as`) was already fully implemented in prior sessions. The old topics code was dead weight with zero frontend references.
+The plan (`plans/2026-04-01_204152Z_claudecode_capture-ingestion-improvements-plan.md`, Phase 3, Option A) calls for eliminating the `topics` and `nodeTopics` tables in favor of a pure graph model where organizing concepts are regular nodes with `nodeKind: 'virtual'` connected via `categorized_as` edges. The replacement system (`nodeLinker.ts`, schema changes for `nodeKind` and `categorized_as`) was already fully implemented in prior sessions. The old topics code was dead weight with zero frontend references.
 
 ## Work Performed
 

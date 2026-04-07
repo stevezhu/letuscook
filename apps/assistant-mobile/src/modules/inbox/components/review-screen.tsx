@@ -17,7 +17,7 @@ import {
   View,
 } from 'react-native';
 
-import type { CaptureState } from '../inbox-types.ts';
+import { type CaptureState, isStaleCapture } from '../inbox-types.ts';
 import { StatePill } from './state-pill.tsx';
 
 export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
@@ -80,6 +80,11 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
 
   const { mutate: retryProcessing } = useMutation({
     mutationFn: useConvexMutation(api.captures.retryProcessing),
+  });
+
+  const { mutate: discardCapture } = useMutation({
+    mutationFn: useConvexMutation(api.captures.discardCapture),
+    onSuccess: () => router.back(),
   });
 
   const isSaving = acceptPending || organizePending;
@@ -211,13 +216,35 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
           </View>
         )}
 
-        {capture.captureState === 'failed' && (
-          <Button
-            variant="outline"
-            onPress={() => retryProcessing({ captureId })}
-          >
-            <Text>Retry processing</Text>
-          </Button>
+        {(capture.captureState === 'failed' ||
+          isStaleCapture(capture.captureState, capture.updatedAt)) && (
+          <View className="gap-2">
+            <Button
+              variant="outline"
+              onPress={() => retryProcessing({ captureId })}
+            >
+              <Text>Retry processing</Text>
+            </Button>
+            <Button
+              variant="outline"
+              onPress={() =>
+                Alert.alert(
+                  'Discard capture',
+                  'This capture will be archived. You cannot undo this.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Discard',
+                      style: 'destructive',
+                      onPress: () => discardCapture({ captureId }),
+                    },
+                  ],
+                )
+              }
+            >
+              <Text>Discard</Text>
+            </Button>
+          </View>
         )}
       </ScrollView>
 

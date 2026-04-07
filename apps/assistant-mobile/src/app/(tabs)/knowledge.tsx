@@ -6,7 +6,7 @@ import { api } from 'assistant-convex/convex/_generated/api';
 import { type Href, useRouter } from 'expo-router';
 import { FlatList, Pressable, View } from 'react-native';
 
-import { DefaultSuspense } from '#components/default-suspense.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function KnowledgeTab() {
@@ -36,9 +36,9 @@ export default function KnowledgeTab() {
   }
 
   return (
-    <DefaultSuspense>
+    <DefaultQueryBoundary>
       <KnowledgeScreen />
-    </DefaultSuspense>
+    </DefaultQueryBoundary>
   );
 }
 
