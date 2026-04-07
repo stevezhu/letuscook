@@ -6,5 +6,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "uniwind-types.d.ts"
-  ]
+  ],
+  "compilerOptions": { "paths": { "@workspace/rn-reusables/*": ["./src/*"] } }
 }

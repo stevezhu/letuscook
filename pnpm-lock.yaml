@@ -1022,7 +1022,7 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react:
-        specifier: ^1.0.0
+        specifier: ^1.7.0
         version: 1.7.0(@types/react@19.2.14)(react@19.2.4)
       next-themes:
         specifier: ^0.4.6

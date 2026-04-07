@@ -2,7 +2,7 @@ import * as Slot from '@rn-primitives/slot';
 import { TextClassContext } from '@workspace/rn-reusables/components/text';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, View, type ViewProps } from 'react-native';
+import { Platform, View } from 'react-native';
 
 const badgeVariants = cva(
   cn(
@@ -51,10 +51,9 @@ const badgeTextVariants = cva('text-xs font-medium', {
   },
 });
 
-type BadgeProps = ViewProps &
-  React.RefAttributes<View> & {
-    asChild?: boolean;
-  } & VariantProps<typeof badgeVariants>;
+type BadgeProps = React.ComponentProps<typeof View> & {
+  asChild?: boolean;
+} & VariantProps<typeof badgeVariants>;
 
 function Badge({ className, variant, asChild, ...props }: BadgeProps) {
   const Component = asChild ? Slot.View : View;
