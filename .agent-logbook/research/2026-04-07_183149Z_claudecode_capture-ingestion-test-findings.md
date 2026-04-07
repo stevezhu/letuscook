@@ -14,7 +14,7 @@ relatedPlan: plans/2026-04-01_204152Z_claudecode_capture-ingestion-improvements-
 
 **Date:** 2026-04-07
 **Method:** Manual E2E testing via Maestro + iOS Simulator (iPhone 17 Pro, iOS 26.2)
-**Plan:** `docs/plans/memoized-brewing-balloon.md`
+**Plan:** `plans/2026-04-01_204152Z_claudecode_capture-ingestion-improvements-plan.md`
 
 ## Test Summary
 
