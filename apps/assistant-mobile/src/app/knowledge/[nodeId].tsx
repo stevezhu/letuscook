@@ -66,7 +66,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
   if (!data) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-muted-foreground text-base">Node not found</Text>
+        <Text className="text-base text-muted-foreground">Node not found</Text>
       </View>
     );
   }
@@ -94,20 +94,20 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        className="bg-background flex-1"
+        className="flex-1 bg-background"
         contentContainerClassName="p-4 gap-6"
       >
         <View className="gap-2">
-          <Text className="text-foreground text-2xl font-bold">
+          <Text className="text-2xl font-bold text-foreground">
             {node.title}
           </Text>
-          <Text className="text-foreground text-base">{node.content}</Text>
+          <Text className="text-base text-foreground">{node.content}</Text>
         </View>
 
         {/* Activity Feed */}
         {activityData && activityData.length > 0 && (
           <View className="gap-2">
-            <Text className="text-muted-foreground text-xs font-semibold uppercase">
+            <Text className="text-xs font-semibold text-muted-foreground uppercase">
               Activity
             </Text>
             {activityData.map((item) => (
@@ -118,7 +118,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
 
         {outgoing.length > 0 && (
           <View className="gap-2">
-            <Text className="text-muted-foreground text-xs font-semibold uppercase">
+            <Text className="text-xs font-semibold text-muted-foreground uppercase">
               Outgoing Connections
             </Text>
             {outgoing.map((entry) => (
@@ -139,7 +139,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
 
         {incoming.length > 0 && (
           <View className="gap-2">
-            <Text className="text-muted-foreground text-xs font-semibold uppercase">
+            <Text className="text-xs font-semibold text-muted-foreground uppercase">
               Incoming Connections
             </Text>
             {incoming.map((entry) => (
@@ -161,17 +161,17 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
         {outgoing.length === 0 &&
           incoming.length === 0 &&
           (!activityData || activityData.length === 0) && (
-            <Text className="text-muted-foreground text-sm">
+            <Text className="text-sm text-muted-foreground">
               No connections yet
             </Text>
           )}
       </ScrollView>
 
       {/* Add thought input bar */}
-      <View className="border-border bg-background border-t px-4 py-3">
+      <View className="border-t border-border bg-background px-4 py-3">
         <View className="flex-row items-center gap-2">
           <TextInput
-            className="border-border bg-muted text-foreground flex-1 rounded-lg border px-3 py-2 text-base"
+            className="flex-1 rounded-lg border border-border bg-muted px-3 py-2 text-base text-foreground"
             placeholder="Add a thought..."
             placeholderTextColor="hsl(var(--muted-foreground))"
             value={thought}
@@ -182,11 +182,11 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
             editable={!isPending}
           />
           <Pressable
-            className="bg-primary rounded-lg px-4 py-2 disabled:opacity-50"
+            className="rounded-lg bg-primary px-4 py-2 disabled:opacity-50"
             onPress={handleSubmitThought}
             disabled={!thought.trim() || isPending}
           >
-            <Text className="text-primary-foreground text-sm font-medium">
+            <Text className="text-sm font-medium text-primary-foreground">
               {isPending ? '...' : 'Send'}
             </Text>
           </Pressable>
@@ -234,9 +234,9 @@ function ActivityItem({ item }: { item: ActivityItemData }) {
   });
 
   return (
-    <View className="border-border gap-2 rounded-lg border px-3 py-3">
+    <View className="gap-2 rounded-lg border border-border px-3 py-3">
       <View className="flex-row items-center justify-between gap-2">
-        <Text className="text-foreground flex-1 text-base font-medium">
+        <Text className="flex-1 text-base font-medium text-foreground">
           {item.node.title}
         </Text>
         <EdgeTypeBadge edgeType={item.edge.edgeType} />
@@ -244,32 +244,32 @@ function ActivityItem({ item }: { item: ActivityItemData }) {
 
       {item.linkMetadata ? (
         <View className="gap-1">
-          <Text className="text-muted-foreground text-xs font-medium">
+          <Text className="text-xs font-medium text-muted-foreground">
             {item.linkMetadata.domain}
           </Text>
           {item.linkMetadata.description && (
-            <Text className="text-foreground text-sm" numberOfLines={2}>
+            <Text className="text-sm text-foreground" numberOfLines={2}>
               {item.linkMetadata.description}
             </Text>
           )}
         </View>
       ) : (
         item.capture && (
-          <Text className="text-muted-foreground text-sm" numberOfLines={2}>
+          <Text className="text-sm text-muted-foreground" numberOfLines={2}>
             {item.capture.rawContent}
           </Text>
         )
       )}
 
-      <Text className="text-muted-foreground text-xs">{dateStr}</Text>
+      <Text className="text-xs text-muted-foreground">{dateStr}</Text>
     </View>
   );
 }
 
 function EdgeTypeBadge({ edgeType }: { edgeType: string }) {
   return (
-    <View className="bg-secondary rounded-full px-2 py-0.5">
-      <Text className="text-secondary-foreground text-xs">{edgeType}</Text>
+    <View className="rounded-full bg-secondary px-2 py-0.5">
+      <Text className="text-xs text-secondary-foreground">{edgeType}</Text>
     </View>
   );
 }
@@ -292,8 +292,8 @@ function EdgeRow({
 
   if (linkedNode.type === 'private') {
     return (
-      <View className="border-border rounded-lg border px-3 py-2">
-        <Text className="text-muted-foreground text-sm italic">
+      <View className="rounded-lg border border-border px-3 py-2">
+        <Text className="text-sm text-muted-foreground italic">
           Private node
         </Text>
       </View>
@@ -302,16 +302,16 @@ function EdgeRow({
 
   return (
     <Pressable
-      className="border-border rounded-lg border px-3 py-2"
+      className="rounded-lg border border-border px-3 py-2"
       onPress={onPress}
     >
-      <Text className="text-foreground text-base font-medium">
+      <Text className="text-base font-medium text-foreground">
         {linkedNode.title}
       </Text>
       <View className="mt-1 flex-row gap-2">
-        <Text className="text-muted-foreground text-xs">{edgeType}</Text>
+        <Text className="text-xs text-muted-foreground">{edgeType}</Text>
         {label && (
-          <Text className="text-muted-foreground text-xs">{label}</Text>
+          <Text className="text-xs text-muted-foreground">{label}</Text>
         )}
       </View>
     </Pressable>

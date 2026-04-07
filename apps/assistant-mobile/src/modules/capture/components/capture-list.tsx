@@ -42,13 +42,13 @@ function CaptureItemSpread({
       >
         <Text className="text-primary">{item.rawContent}</Text>
         <Text
-          className="bg-muted text-muted-foreground self-start rounded-full px-2 py-0.5 text-xs capitalize"
+          className="self-start rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground capitalize"
           variant="muted"
         >
           {item.captureType}
         </Text>
       </StyledGlassView>
-      <Text className="text-muted-foreground mt-2 text-xs">
+      <Text className="mt-2 text-xs text-muted-foreground">
         {formatRelativeTime(item.capturedAt)}
       </Text>
     </View>

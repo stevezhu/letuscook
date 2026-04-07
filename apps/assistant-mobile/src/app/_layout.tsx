@@ -7,12 +7,15 @@ import React from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import StorybookUIRoot from '#.rnstorybook/index.ts';
+import { DefaultActivityView } from '#components/default-activity-view.tsx';
+import { LoginScreen } from '#components/login-screen.tsx';
 import { AppAuthProvider } from '#components/providers/app-auth-provider.tsx';
 import { AppReactQueryDevtools } from '#components/providers/app-react-query-devtools.tsx';
 import { AppSafeAreaProvider } from '#components/providers/app-safe-area-provider.tsx';
 import { AppThemeProvider } from '#components/providers/app-theme-provider.tsx';
 import { CONVEX_URL, WORKOS_CLIENT_ID } from '#constants/env.ts';
 import { AuthKitClient } from '#modules/auth/expo/auth-kit-client.ts';
+import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import { CaptureMigrationProvider } from '#modules/capture/capture-migration-provider.tsx';
 
 const convex = new ConvexReactClient(CONVEX_URL, {
@@ -64,6 +67,16 @@ function RootLayout() {
 }
 
 function RootLayoutContent() {
+  const { isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return <DefaultActivityView />;
+  }
+
+  if (!user) {
+    return <LoginScreen />;
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen
