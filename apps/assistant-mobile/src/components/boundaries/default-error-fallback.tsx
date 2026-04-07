@@ -1,37 +1,43 @@
 import { Button } from '@workspace/rn-reusables/components/button';
 import { Text } from '@workspace/rn-reusables/components/text';
-import type { FallbackProps } from 'react-error-boundary';
 import { View } from 'react-native';
 
-export type DefaultErrorFallbackProps = FallbackProps & {
+export type DefaultErrorFallbackProps = {
+  message?: string;
   onGoBack?: () => void;
+  onRetry?: () => void;
 };
 
 export function DefaultErrorFallback({
-  error,
-  resetErrorBoundary,
+  message,
   onGoBack,
+  onRetry,
 }: DefaultErrorFallbackProps) {
   return (
     <View className="flex-1 items-center justify-center gap-4 p-8">
       <Text className="text-center text-base text-muted-foreground">
         Something went wrong
       </Text>
-      <Text
-        className="text-center text-sm text-muted-foreground"
-        numberOfLines={3}
-      >
-        {error instanceof Error ? error.message : String(error)}
-      </Text>
+      {message && (
+        <Text
+          className="text-center text-sm text-muted-foreground"
+          // TODO: handle all lengths of messages
+          numberOfLines={10}
+        >
+          {message}
+        </Text>
+      )}
       <View className="flex-row gap-3">
         {onGoBack && (
           <Button variant="outline" onPress={onGoBack}>
             <Text>Go back</Text>
           </Button>
         )}
-        <Button onPress={resetErrorBoundary}>
-          <Text>Try again</Text>
-        </Button>
+        {onRetry && (
+          <Button onPress={onRetry}>
+            <Text>Try again</Text>
+          </Button>
+        )}
       </View>
     </View>
   );

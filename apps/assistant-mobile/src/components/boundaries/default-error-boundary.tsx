@@ -14,8 +14,12 @@ export function DefaultErrorBoundary({
 }: DefaultErrorBoundaryProps) {
   return (
     <ErrorBoundary
-      FallbackComponent={(props) => (
-        <DefaultErrorFallback {...props} onGoBack={onGoBack} />
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <DefaultErrorFallback
+          message={error instanceof Error ? error.message : String(error)}
+          onGoBack={onGoBack}
+          onRetry={resetErrorBoundary}
+        />
       )}
     >
       {children}
