@@ -26,6 +26,9 @@ export function InboxItemRow({
   rejectPending?: boolean;
 }) {
   const isReady = item.captureState === 'ready';
+  const isStale =
+    item.captureState === 'processing' &&
+    Date.now() - item.updatedAt > 5 * 60 * 1000;
 
   return (
     <Pressable
@@ -37,7 +40,7 @@ export function InboxItemRow({
       </Text>
 
       <View className="mt-2 flex-row items-center gap-2">
-        <StatePill state={item.captureState} />
+        <StatePill state={item.captureState} isStale={isStale} />
         {isReady && item.suggestor && (
           <View className="rounded-sm bg-blue-50 px-2 py-0.5">
             <Text className="text-xs text-blue-600">

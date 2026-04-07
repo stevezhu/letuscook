@@ -13,6 +13,7 @@ export type InboxItem = {
   rawContent: string;
   captureType: string;
   capturedAt: number;
+  updatedAt: number;
   captureState: CaptureState;
   /**
    * Only present for server-backed captures

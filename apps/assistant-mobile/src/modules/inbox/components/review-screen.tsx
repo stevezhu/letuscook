@@ -82,6 +82,11 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
     mutationFn: useConvexMutation(api.captures.retryProcessing),
   });
 
+  const { mutate: discardCapture } = useMutation({
+    mutationFn: useConvexMutation(api.captures.discardCapture),
+    onSuccess: () => router.back(),
+  });
+
   const isSaving = acceptPending || organizePending;
 
   const handleSave = useCallback(() => {
@@ -211,13 +216,36 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
           </View>
         )}
 
-        {capture.captureState === 'failed' && (
-          <Button
-            variant="outline"
-            onPress={() => retryProcessing({ captureId })}
-          >
-            <Text>Retry processing</Text>
-          </Button>
+        {(capture.captureState === 'failed' ||
+          (capture.captureState === 'processing' &&
+            Date.now() - capture.updatedAt > 5 * 60 * 1000)) && (
+          <View className="gap-2">
+            <Button
+              variant="outline"
+              onPress={() => retryProcessing({ captureId })}
+            >
+              <Text>Retry processing</Text>
+            </Button>
+            <Button
+              variant="outline"
+              onPress={() =>
+                Alert.alert(
+                  'Discard capture',
+                  'This capture will be archived. You cannot undo this.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Discard',
+                      style: 'destructive',
+                      onPress: () => discardCapture({ captureId }),
+                    },
+                  ],
+                )
+              }
+            >
+              <Text>Discard</Text>
+            </Button>
+          </View>
         )}
       </ScrollView>
 

@@ -44,6 +44,11 @@ export class AuthKitClient {
    * WorkOS client instance.
    */
   private workos: WorkOS;
+  /**
+   * In-flight refresh promise to prevent concurrent refresh token usage. WorkOS
+   * refresh tokens are single-use, so parallel refreshes would fail.
+   */
+  private refreshPromise: Promise<StoredSession | null> | null = null;
 
   constructor({
     sessionKey,
@@ -77,15 +82,8 @@ export class AuthKitClient {
   }
 
   async getAccessToken(): Promise<string | null> {
-    const sessionData = await SecureStore.getItemAsync(this.sessionKey);
-    if (!sessionData) return null;
-
-    try {
-      const session: StoredSession = JSON.parse(sessionData);
-      return session.accessToken;
-    } catch {
-      return null;
-    }
+    const session = await this.ensureFreshSession();
+    return session?.accessToken ?? null;
   }
 
   /**
@@ -180,40 +178,64 @@ export class AuthKitClient {
    * Get current user, refreshing token if expired.
    */
   async getUser(): Promise<User | null> {
+    const session = await this.ensureFreshSession();
+    return session?.user ?? null;
+  }
+
+  /**
+   * Read stored session and refresh the access token if expired. Uses a
+   * concurrency guard so parallel callers share one refresh request (WorkOS
+   * refresh tokens are single-use).
+   */
+  private async ensureFreshSession(): Promise<StoredSession | null> {
     const sessionData = await SecureStore.getItemAsync(this.sessionKey);
     if (!sessionData) return null;
 
-    const session: StoredSession = JSON.parse(sessionData);
-
-    // Check if token is expired (with 10 second buffer)
-    const payload = parseJwtPayload(session.accessToken);
-    const exp = payload['exp'] as number;
-    const isExpired = Date.now() > exp * 1000 - 10000;
-
-    if (isExpired) {
-      try {
-        const refreshed =
-          await this.workos.userManagement.authenticateWithRefreshToken({
-            refreshToken: session.refreshToken,
-          });
-
-        const newSession: StoredSession = {
-          accessToken: refreshed.accessToken,
-          refreshToken: refreshed.refreshToken,
-          user: toUser(refreshed.user),
-        };
-        await SecureStore.setItemAsync(
-          this.sessionKey,
-          JSON.stringify(newSession),
-        );
-        return newSession.user;
-      } catch {
-        // Refresh failed - clear session and return null
-        await this.clearSession();
-        return null;
-      }
+    let session: StoredSession;
+    try {
+      session = JSON.parse(sessionData);
+    } catch {
+      return null;
     }
 
-    return session.user;
+    const payload = parseJwtPayload(session.accessToken);
+    const exp = payload['exp'] as number;
+    const isExpired = Date.now() > exp * 1000 - 10_000;
+
+    if (!isExpired) return session;
+
+    // Deduplicate concurrent refresh attempts
+    if (this.refreshPromise) return this.refreshPromise;
+
+    this.refreshPromise = this.refreshSession(session).finally(() => {
+      this.refreshPromise = null;
+    });
+
+    return this.refreshPromise;
+  }
+
+  private async refreshSession(
+    session: StoredSession,
+  ): Promise<StoredSession | null> {
+    try {
+      const refreshed =
+        await this.workos.userManagement.authenticateWithRefreshToken({
+          refreshToken: session.refreshToken,
+        });
+
+      const newSession: StoredSession = {
+        accessToken: refreshed.accessToken,
+        refreshToken: refreshed.refreshToken,
+        user: toUser(refreshed.user),
+      };
+      await SecureStore.setItemAsync(
+        this.sessionKey,
+        JSON.stringify(newSession),
+      );
+      return newSession;
+    } catch {
+      await this.clearSession();
+      return null;
+    }
   }
 }

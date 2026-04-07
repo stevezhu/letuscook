@@ -26,6 +26,7 @@ export function useInboxCaptures(): {
     rawContent: entry.capture.rawContent,
     captureType: entry.capture.captureType,
     capturedAt: entry.capture.capturedAt,
+    updatedAt: entry.capture.updatedAt,
     captureState: entry.capture.captureState,
     captureId: entry.capture._id,
     suggestion: entry.suggestion,
@@ -37,6 +38,7 @@ export function useInboxCaptures(): {
     rawContent: c.rawContent,
     captureType: c.captureType,
     capturedAt: c.capturedAt,
+    updatedAt: c.capturedAt,
     captureState: 'offline' as const,
   }));
 
