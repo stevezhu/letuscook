@@ -1,3 +1,27 @@
+---
+date: 2026-04-07T18:41:26Z
+type: plan
+status: done
+agent: claudecode
+models: [claude-opus-4-6, claude-haiku-4-5-20251001]
+branch: fix/p0-auth-crash-stale-captures
+sessionId: b92bbc6a-28bc-4022-b063-6fd62186f454
+tags: [auth, error-boundary, inbox, capture-pipeline]
+filesModified:
+  - apps/assistant-mobile/src/modules/auth/expo/auth-kit-client.ts
+  - apps/assistant-mobile/src/components/query-error-boundary.tsx
+  - apps/assistant-mobile/src/components/default-query-boundary.tsx
+  - apps/assistant-mobile/src/app/knowledge/[nodeId].tsx
+  - apps/assistant-mobile/src/app/(tabs)/knowledge.tsx
+  - apps/assistant-convex/convex/captures.ts
+  - apps/assistant-mobile/src/modules/inbox/inbox-types.ts
+  - apps/assistant-mobile/src/modules/inbox/use-inbox-captures.ts
+  - apps/assistant-mobile/src/modules/inbox/components/state-pill.tsx
+  - apps/assistant-mobile/src/modules/inbox/components/inbox-item-row.tsx
+  - apps/assistant-mobile/src/modules/inbox/components/review-screen.tsx
+relatedPlan: docs/plans/capture-ingestion-test-findings.md
+---
+
 # Fix P0 Issues from Capture Ingestion Testing
 
 ## Context
@@ -110,3 +134,33 @@ No changes needed to `auth-provider.tsx` — it already delegates to `authClient
 2. **Error boundary:** Temporarily throw in a `useSuspenseQuery` handler → confirm error boundary shows retry/go-back UI instead of red screen. Confirm "Go back" dismisses the modal cleanly.
 3. **Stale captures:** Create a capture, manually set its `updatedAt` to 10 minutes ago in the Convex dashboard. Confirm "Stuck" amber pill shows in inbox. Confirm retry and discard buttons work in review screen.
 4. **Run lint + tests:** `pnpm -w run lint` and `pnpm -w run test`
+
+## Session Stats
+
+```
+claudecode Session Stats: b92bbc6a-28bc-4022-b063-6fd62186f454
+========================================
+Models Used:  Main: claude-opus-4-6
+              Subagents: claude-haiku-4-5-20251001, claude-opus-4-6
+----------------------------------------
+MAIN SESSION:
+  Input Tokens         18,441
+  Output Tokens        24,177
+  Cache Creation Input 355,378
+  Cache Read Input     13,267,821
+----------------------------------------
+SUBAGENTS (4 total):
+  Input Tokens         1,949
+  Output Tokens        23,892
+  Cache Creation Input 642,499
+  Cache Read Input     7,152,819
+----------------------------------------
+TOTAL USAGE:
+  Total Input Tokens   20,390
+  Total Output Tokens  48,069
+  Total Cache Creation 997,877
+  Total Cache Read     20,420,640
+----------------------------------------
+GRAND TOTAL TOKENS:  21,486,976
+========================================
+```
