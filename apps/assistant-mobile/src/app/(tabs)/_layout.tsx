@@ -1,18 +1,6 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
-import { ActivityIndicator, View } from 'react-native';
-
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function TabsLayout() {
-  const { isLoading, user } = useAuth();
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
   return (
     <NativeTabs backgroundColor="red">
       <NativeTabs.Trigger name="index">
@@ -35,12 +23,10 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>Knowledge</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="book.fill" md="menu_book" />
       </NativeTabs.Trigger>
-      {user !== null && (
-        <NativeTabs.Trigger name="account">
-          <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
-          <NativeTabs.Trigger.Icon sf="person.fill" md="person" />
-        </NativeTabs.Trigger>
-      )}
+      <NativeTabs.Trigger name="account">
+        <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="person.fill" md="person" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="search" role="search">
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
