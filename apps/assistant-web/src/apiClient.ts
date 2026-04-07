@@ -1,4 +1,4 @@
-import { ApiClient } from '@workspace/assistant-app';
+import type { ApiClient } from '@workspace/assistant-app';
 import type { AppType } from 'assistant-server/types';
 import { hc } from 'hono/client';
 

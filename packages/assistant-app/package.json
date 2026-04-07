@@ -8,6 +8,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./ApiClient": "./src/api/ApiClient.ts",
     "./main.css": "./src/main.css"
   },
   "scripts": {
