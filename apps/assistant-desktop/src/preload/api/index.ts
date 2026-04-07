@@ -1,7 +1,7 @@
 import { IpcEmitter } from '@electron-toolkit/typed-ipc/renderer';
-import type { ApiClient } from '@workspace/assistant-app';
+import type { ApiClient } from '@workspace/assistant-app/ApiClient';
 
-import { IpcEvents } from '#preload/IpcEvents.ts';
+import type { IpcEvents } from '#preload/IpcEvents.ts';
 
 const emitter = new IpcEmitter<IpcEvents>();
 

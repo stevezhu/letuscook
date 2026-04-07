@@ -13,6 +13,7 @@ export default defineConfig(
     },
   },
   react.configs.recommended,
+  react.configs.reactRefreshTanstackRouterOverride,
   tailwind.configs.recommended,
   {
     settings: {

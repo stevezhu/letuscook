@@ -30,9 +30,9 @@ export function InboxItemRow({
   return (
     <Pressable
       onPress={onPress}
-      className="border-b border-border px-4 py-3 active:bg-muted/50"
+      className="border-border active:bg-muted/50 border-b px-4 py-3"
     >
-      <Text className="text-sm text-foreground" numberOfLines={2}>
+      <Text className="text-foreground text-sm" numberOfLines={2}>
         {item.rawContent}
       </Text>
 
@@ -45,7 +45,7 @@ export function InboxItemRow({
             </Text>
           </View>
         )}
-        <Text className="ml-auto text-xs text-muted-foreground">
+        <Text className="text-muted-foreground ml-auto text-xs">
           {formatTime(item.capturedAt)}
         </Text>
       </View>
@@ -63,7 +63,7 @@ export function InboxItemRow({
             <Text className="text-sm font-semibold text-white">Accept</Text>
           </Button>
           <Button
-            className="flex-1 bg-muted"
+            className="bg-muted flex-1"
             variant="secondary"
             onPress={(e) => {
               e.stopPropagation();
@@ -71,7 +71,7 @@ export function InboxItemRow({
             }}
             disabled={acceptPending || rejectPending}
           >
-            <Text className="text-sm font-semibold text-muted-foreground">
+            <Text className="text-muted-foreground text-sm font-semibold">
               Reject
             </Text>
           </Button>

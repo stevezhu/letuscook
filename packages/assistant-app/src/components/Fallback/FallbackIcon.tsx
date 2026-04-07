@@ -1,5 +1,5 @@
 import { cn } from '@workspace/shadcn/lib/utils';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 const VARIANT_CLASSES = {
   default: 'bg-muted/50',

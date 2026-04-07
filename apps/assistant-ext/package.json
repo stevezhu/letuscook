@@ -43,6 +43,6 @@
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "wxt-turbo": "^0.1.0"
+    "wxt-turbo": "^0.2.0"
   }
 }

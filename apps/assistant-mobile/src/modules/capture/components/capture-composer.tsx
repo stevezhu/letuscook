@@ -94,7 +94,7 @@ export function CaptureComposerControls({
       />
       <Button
         size="icon"
-        className="rounded-full disabled:bg-muted"
+        className="disabled:bg-muted rounded-full"
         disabled={!canSend}
         accessibilityLabel="Send capture"
         onPress={async () => {

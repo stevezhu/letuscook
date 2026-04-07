@@ -26,7 +26,7 @@
     "hono": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.30.3",
+    "@cloudflare/vite-plugin": "^1.31.0",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/tsconfig": "catalog:",
     "@types/node": "catalog:",
@@ -35,6 +35,6 @@
     "shx": "^0.4.0",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "wrangler": "^4.79.0"
+    "wrangler": "^4.80.0"
   }
 }
