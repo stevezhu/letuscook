@@ -1,10 +1,22 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { findWorkspacePackagesNoCheck } from '@pnpm/find-workspace-packages';
 import { defineConfig, type OxfmtConfig } from 'oxfmt';
 
+const workspaceProjects = await findWorkspacePackagesNoCheck('.');
+const workspaceOverrides = await Promise.all(
+  workspaceProjects
+    .filter(
+      (pkg) => pkg.dir !== '.' && existsSync(join(pkg.dir, 'oxfmt.config.ts')),
+    )
+    .map(async (pkg) => ({
+      files: [`${pkg.dir}/**`],
+      options: (await import(`./${pkg.dir}/oxfmt.config.ts`)).default,
+    })),
+);
+
 export default defineConfig<OxfmtConfig>({
-  sortImports: {},
-  sortPackageJson: {
-    sortScripts: true,
-  },
   ignorePatterns: [
     '.vite/',
     'migrations/',
@@ -14,6 +26,16 @@ export default defineConfig<OxfmtConfig>({
     'uniwind-types.d.ts',
     'storybook.requires.ts',
   ],
+  printWidth: 80,
+  singleQuote: true,
+  endOfLine: 'lf',
+  jsdoc: {
+    commentLineStrategy: 'multiline',
+  },
+  sortImports: {},
+  sortPackageJson: {
+    sortScripts: true,
+  },
   overrides: [
     {
       files: ['*.jsonc'],
@@ -23,23 +45,6 @@ export default defineConfig<OxfmtConfig>({
         trailingComma: 'none',
       },
     },
-    ...(process.env.CI === 'true'
-      ? []
-      : [
-          {
-            files: ['apps/assistant-mobile/**'],
-            options: {
-              sortTailwindcss: {
-                stylesheet: 'apps/assistant-mobile/src/main.css',
-              },
-            },
-          },
-        ]),
+    ...workspaceOverrides,
   ],
-  printWidth: 80,
-  singleQuote: true,
-  endOfLine: 'lf',
-  jsdoc: {
-    commentLineStrategy: 'multiline',
-  },
 });

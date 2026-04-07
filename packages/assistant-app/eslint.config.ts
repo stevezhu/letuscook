@@ -14,7 +14,7 @@ export default defineConfig(
   },
   react.configs.recommended,
   react.configs.reactRefreshTanstackRouterOverride,
-  tailwind.configs.recommended,
+  tailwind.configs.correctness,
   {
     settings: {
       'better-tailwindcss': {

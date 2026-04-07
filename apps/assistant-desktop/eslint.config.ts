@@ -11,7 +11,7 @@ export default defineConfig(
     },
   },
   react.configs.recommended,
-  tailwind.configs.recommended,
+  tailwind.configs.correctness,
   {
     settings: {
       'better-tailwindcss': {
