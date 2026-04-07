@@ -56,10 +56,7 @@ export function ErrorFallback({
           }}
           variant="ghost"
           size="sm"
-          className={`
-            text-xs font-normal text-muted-foreground
-            hover:text-foreground
-          `}
+          className="text-xs font-normal text-muted-foreground hover:text-foreground"
         >
           {showDetails ? 'Hide' : 'Show'} error details
         </Button>
@@ -67,22 +64,13 @@ export function ErrorFallback({
         {showDetails && (
           <Card className="gap-1 p-4 text-left">
             <CardHeader className="px-0">
-              <CardTitle
-                className={`
-                  text-xs font-medium tracking-wide text-muted-foreground
-                  uppercase
-                `}
-              >
+              <CardTitle className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Error Details
               </CardTitle>
             </CardHeader>
             <CardContent className="px-0">
               <div className="rounded-sm bg-muted p-3">
-                <pre
-                  className={`
-                    text-xs wrap-break-word whitespace-pre-wrap text-foreground
-                  `}
-                >
+                <pre className="text-xs wrap-break-word whitespace-pre-wrap text-foreground">
                   {error instanceof Error ? error.message : String(error)}
                 </pre>
               </div>
