@@ -6,7 +6,7 @@ import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import { useGuestCaptureStore } from '#modules/capture/use-guest-capture-store.ts';
 
 import type { InboxItem, InboxSection } from './inbox-types.ts';
-import { groupByDate } from './inbox-types.ts';
+import { groupByDate, isStaleCapture } from './inbox-types.ts';
 
 export function useInboxCaptures(): {
   sections: InboxSection[];
@@ -28,6 +28,10 @@ export function useInboxCaptures(): {
     capturedAt: entry.capture.capturedAt,
     updatedAt: entry.capture.updatedAt,
     captureState: entry.capture.captureState,
+    isStale: isStaleCapture(
+      entry.capture.captureState,
+      entry.capture.updatedAt,
+    ),
     captureId: entry.capture._id,
     suggestion: entry.suggestion,
     suggestor: entry.suggestor,
@@ -40,6 +44,7 @@ export function useInboxCaptures(): {
     capturedAt: c.capturedAt,
     updatedAt: c.capturedAt,
     captureState: 'offline' as const,
+    isStale: false,
   }));
 
   const allItems = [...serverItems, ...guestItems].sort(

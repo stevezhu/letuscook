@@ -17,7 +17,7 @@ import {
   View,
 } from 'react-native';
 
-import type { CaptureState } from '../inbox-types.ts';
+import { type CaptureState, isStaleCapture } from '../inbox-types.ts';
 import { StatePill } from './state-pill.tsx';
 
 export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
@@ -217,8 +217,7 @@ export function ReviewScreen({ captureId }: { captureId: Id<'captures'> }) {
         )}
 
         {(capture.captureState === 'failed' ||
-          (capture.captureState === 'processing' &&
-            Date.now() - capture.updatedAt > 5 * 60 * 1000)) && (
+          isStaleCapture(capture.captureState, capture.updatedAt)) && (
           <View className="gap-2">
             <Button
               variant="outline"

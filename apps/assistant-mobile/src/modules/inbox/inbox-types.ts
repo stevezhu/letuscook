@@ -8,6 +8,18 @@ export type CaptureState =
   | 'needs_manual'
   | 'processed';
 
+export const STALE_CAPTURE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+
+export function isStaleCapture(
+  captureState: CaptureState,
+  updatedAt: number,
+): boolean {
+  return (
+    captureState === 'processing' &&
+    Date.now() - updatedAt > STALE_CAPTURE_THRESHOLD_MS
+  );
+}
+
 export type InboxItem = {
   id: string;
   rawContent: string;
@@ -15,6 +27,7 @@ export type InboxItem = {
   capturedAt: number;
   updatedAt: number;
   captureState: CaptureState;
+  isStale: boolean;
   /**
    * Only present for server-backed captures
    */
