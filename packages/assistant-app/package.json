@@ -20,9 +20,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.87.1",
+    "@tanstack/react-router": "^1.131.35",
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
-    "lucide-react": "^1.7.0"
+    "lucide-react": "^1.7.0",
+    "react": "catalog:"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "catalog:",
@@ -36,10 +39,13 @@
     "@tanstack/eslint-plugin-query": "^5.96.2",
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@tanstack/router-cli": "^1.166.25",
+    "@types/react": "catalog:",
     "@vitejs/plugin-react": "^5.2.0",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.58.0",
     "storybook": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:"
   },
   "peerDependencies": {

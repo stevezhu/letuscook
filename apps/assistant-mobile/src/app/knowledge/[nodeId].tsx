@@ -169,7 +169,7 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
       </ScrollView>
 
       {/* Add thought input bar */}
-      <View className="border-t border-border bg-background px-4 py-3">
+      <View className="border-t border-border bg-background px-4 py-3 pb-safe">
         <View className="flex-row items-center gap-2">
           <TextInput
             className="flex-1 rounded-lg border border-border bg-muted px-3 py-2 text-base text-foreground"

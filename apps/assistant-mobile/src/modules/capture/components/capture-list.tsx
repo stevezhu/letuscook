@@ -4,9 +4,8 @@ import {
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
 import { Text } from '@workspace/rn-reusables/components/text';
+import { useMemo } from 'react';
 import { View } from 'react-native';
-
-import { StyledGlassView } from '#components/styled.ts';
 
 /**
  * Shared shape for rendering a capture item.
@@ -18,41 +17,68 @@ export type CaptureItemData = {
   captureType: string;
 };
 
-export function CaptureList(props: LegendListProps<CaptureItemData>) {
+type TimeHeader = { type: 'header'; id: string; label: string };
+type CaptureRow = { type: 'item' } & CaptureItemData;
+type ListRow = TimeHeader | CaptureRow;
+
+export function CaptureList({
+  data,
+  ...props
+}: Omit<LegendListProps<ListRow>, 'data'> & {
+  data: CaptureItemData[] | undefined;
+}) {
+  const rows = useMemo(() => groupByTime(data ?? []), [data]);
+
   return (
-    <LegendList<CaptureItemData>
-      renderItem={(props) => <CaptureItemSpread {...props} />}
-      keyExtractor={(item) => item.id}
+    <LegendList<ListRow>
+      data={rows}
+      renderItem={(props) => <ListRowItem {...props} />}
+      keyExtractor={(row) => row.id}
       recycleItems
-      ItemSeparatorComponent={() => <View className="h-4" />}
-      contentContainerClassName="p-4"
+      ItemSeparatorComponent={() => <View className="h-2" />}
+      contentContainerClassName="px-3 py-2"
       {...props}
     />
   );
 }
 
-function CaptureItemSpread({
-  item,
-}: LegendListRenderItemProps<CaptureItemData>) {
-  return (
-    <View>
-      <StyledGlassView
-        isInteractive
-        className="flex-col gap-2 rounded-lg rounded-bl-none px-4 py-3"
-      >
-        <Text className="text-primary">{item.rawContent}</Text>
-        <Text
-          className="self-start rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground capitalize"
-          variant="muted"
-        >
-          {item.captureType}
+function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
+  if (item.type === 'header') {
+    return (
+      <View className="items-center py-1">
+        <Text className="text-[10px]" variant="muted">
+          {item.label}
         </Text>
-      </StyledGlassView>
-      <Text className="mt-2 text-xs text-muted-foreground">
-        {formatRelativeTime(item.capturedAt)}
+      </View>
+    );
+  }
+
+  return (
+    <View className="max-w-[85%] flex-row items-end gap-2 self-end">
+      <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
+        {item.captureType}
       </Text>
+      <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
+        <Text className="text-primary">{item.rawContent}</Text>
+      </View>
     </View>
   );
+}
+
+function groupByTime(items: CaptureItemData[]): ListRow[] {
+  const rows: ListRow[] = [];
+  let lastLabel: string | undefined;
+
+  for (const item of items) {
+    const label = formatRelativeTime(item.capturedAt);
+    if (label !== lastLabel) {
+      rows.push({ type: 'header', id: `header-${label}`, label });
+      lastLabel = label;
+    }
+    rows.push({ type: 'item', ...item });
+  }
+
+  return rows;
 }
 
 const relativeTimeFormat = new Intl.RelativeTimeFormat('en', {
