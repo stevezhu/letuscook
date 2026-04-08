@@ -1,4 +1,3 @@
-import { Host, ContextMenu, Button as SwiftUIButton } from '@expo/ui/swift-ui';
 import {
   LegendList,
   LegendListProps,
@@ -8,6 +7,8 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
 import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
+
+import { CaptureListContextMenu } from './capture-list-context-menu.ios.tsx';
 
 /**
  * Shared shape for rendering a capture item.
@@ -29,7 +30,7 @@ export function CaptureList({
   ...props
 }: Omit<LegendListProps<ListRow>, 'data'> & {
   data: CaptureItemData[] | undefined;
-  onDelete?: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
@@ -37,7 +38,7 @@ export function CaptureList({
     (renderProps: LegendListRenderItemProps<ListRow>) => (
       <ListRowItem
         {...renderProps}
-        onDelete={() => onDelete?.(renderProps.item.id)}
+        onDelete={() => onDelete(renderProps.item.id)}
       />
     ),
     [onDelete],
@@ -60,7 +61,7 @@ function ListRowItem({
   item,
   onDelete,
 }: LegendListRenderItemProps<ListRow> & {
-  onDelete?: () => void;
+  onDelete: () => void;
 }) {
   if (item.type === 'header') {
     return (
@@ -77,32 +78,16 @@ function ListRowItem({
       <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
-      <Host matchContents>
-        <ContextMenu>
-          <ContextMenu.Trigger>
-            <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
-              <Text className="text-primary">{item.rawContent}</Text>
-            </View>
-          </ContextMenu.Trigger>
-          <ContextMenu.Items>
-            <SwiftUIButton
-              label="Copy"
-              systemImage="doc.on.doc"
-              onPress={() => {
-                void Clipboard.setStringAsync(item.rawContent);
-              }}
-            />
-            {onDelete && (
-              <SwiftUIButton
-                label="Delete"
-                systemImage="trash"
-                role="destructive"
-                onPress={onDelete}
-              />
-            )}
-          </ContextMenu.Items>
-        </ContextMenu>
-      </Host>
+      <CaptureListContextMenu
+        onCopy={() => {
+          void Clipboard.setStringAsync(item.rawContent);
+        }}
+        onDelete={onDelete}
+      >
+        <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
+          <Text className="text-primary">{item.rawContent}</Text>
+        </View>
+      </CaptureListContextMenu>
     </View>
   );
 }
