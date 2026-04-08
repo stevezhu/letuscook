@@ -54,11 +54,13 @@ function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
   }
 
   return (
-    <View className="max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-xs bg-muted px-3 py-2">
-      <Text className="text-primary">{item.rawContent}</Text>
-      <Text className="text-[10px] capitalize" variant="muted">
+    <View className="max-w-[85%] flex-row items-end gap-2 self-end">
+      <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
+      <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
+        <Text className="text-primary">{item.rawContent}</Text>
+      </View>
     </View>
   );
 }
