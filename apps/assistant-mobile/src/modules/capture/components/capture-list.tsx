@@ -24,8 +24,8 @@ export function CaptureList(props: LegendListProps<CaptureItemData>) {
       renderItem={(props) => <CaptureItemSpread {...props} />}
       keyExtractor={(item) => item.id}
       recycleItems
-      ItemSeparatorComponent={() => <View className="h-4" />}
-      contentContainerClassName="p-4"
+      ItemSeparatorComponent={() => <View className="h-2" />}
+      contentContainerClassName="px-3 py-2"
       {...props}
     />
   );
@@ -35,23 +35,23 @@ function CaptureItemSpread({
   item,
 }: LegendListRenderItemProps<CaptureItemData>) {
   return (
-    <View>
-      <StyledGlassView
-        isInteractive
-        className="flex-col gap-2 rounded-lg rounded-bl-none px-4 py-3"
-      >
-        <Text className="text-primary">{item.rawContent}</Text>
+    <StyledGlassView
+      isInteractive
+      className="max-w-[85%] flex-col gap-1 self-start rounded-lg rounded-bl-none px-3 py-2"
+    >
+      <Text className="text-primary">{item.rawContent}</Text>
+      <View className="flex-row items-center justify-between gap-3">
         <Text
-          className="self-start rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground capitalize"
+          className="text-[10px] text-muted-foreground capitalize"
           variant="muted"
         >
           {item.captureType}
         </Text>
-      </StyledGlassView>
-      <Text className="mt-2 text-xs text-muted-foreground">
-        {formatRelativeTime(item.capturedAt)}
-      </Text>
-    </View>
+        <Text className="text-[10px] text-muted-foreground">
+          {formatRelativeTime(item.capturedAt)}
+        </Text>
+      </View>
+    </StyledGlassView>
   );
 }
 

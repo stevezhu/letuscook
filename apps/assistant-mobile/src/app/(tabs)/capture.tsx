@@ -72,7 +72,7 @@ function CaptureScreen() {
     >
       <CaptureList
         data={items}
-        estimatedItemSize={80}
+        estimatedItemSize={60}
         contentContainerStyle={{
           paddingBottom: TEXT_HEIGHT + spacing * 2,
         }}
