@@ -1,10 +1,12 @@
+import { Host, ContextMenu, Button as SwiftUIButton } from '@expo/ui/swift-ui';
 import {
   LegendList,
   LegendListProps,
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
 import { Text } from '@workspace/rn-reusables/components/text';
-import { useMemo } from 'react';
+import * as Clipboard from 'expo-clipboard';
+import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 
 /**
@@ -23,16 +25,25 @@ type ListRow = TimeHeader | CaptureRow;
 
 export function CaptureList({
   data,
+  onDelete,
   ...props
 }: Omit<LegendListProps<ListRow>, 'data'> & {
   data: CaptureItemData[] | undefined;
+  onDelete?: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
+
+  const renderItem = useCallback(
+    (renderProps: LegendListRenderItemProps<ListRow>) => (
+      <ListRowItem {...renderProps} onDelete={onDelete} />
+    ),
+    [onDelete],
+  );
 
   return (
     <LegendList<ListRow>
       data={rows}
-      renderItem={(props) => <ListRowItem {...props} />}
+      renderItem={renderItem}
       keyExtractor={(row) => row.id}
       recycleItems
       ItemSeparatorComponent={() => <View className="h-2" />}
@@ -42,7 +53,12 @@ export function CaptureList({
   );
 }
 
-function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
+function ListRowItem({
+  item,
+  onDelete,
+}: LegendListRenderItemProps<ListRow> & {
+  onDelete?: (id: string) => void;
+}) {
   if (item.type === 'header') {
     return (
       <View className="items-center py-1">
@@ -58,9 +74,32 @@ function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
       <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
-      <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
-        <Text className="text-primary">{item.rawContent}</Text>
-      </View>
+      <Host matchContents>
+        <ContextMenu>
+          <ContextMenu.Trigger>
+            <View className="bg-muted shrink rounded-lg rounded-br-xs px-3 py-2">
+              <Text className="text-primary">{item.rawContent}</Text>
+            </View>
+          </ContextMenu.Trigger>
+          <ContextMenu.Items>
+            <SwiftUIButton
+              label="Copy"
+              systemImage="doc.on.doc"
+              onPress={() => {
+                void Clipboard.setStringAsync(item.rawContent);
+              }}
+            />
+            {onDelete && (
+              <SwiftUIButton
+                label="Delete"
+                systemImage="trash"
+                role="destructive"
+                onPress={() => onDelete(item.id)}
+              />
+            )}
+          </ContextMenu.Items>
+        </ContextMenu>
+      </Host>
     </View>
   );
 }
