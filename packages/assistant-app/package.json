@@ -35,11 +35,17 @@
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/eslint-plugin-query": "^5.96.2",
     "@tanstack/eslint-plugin-router": "^1.161.6",
+    "@tanstack/react-query": "^5.87.1",
+    "@tanstack/react-router": "^1.131.35",
     "@tanstack/router-cli": "^1.166.25",
+    "@types/react": "catalog:",
     "@vitejs/plugin-react": "^5.2.0",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.58.0",
+    "react": "catalog:",
     "storybook": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
     "vite": "catalog:"
   },
   "peerDependencies": {
