@@ -19,7 +19,8 @@
       "skills": ["skill-creator", "doc-coauthoring"]
     },
     {
-      "source": "coreyhaines31/marketingskills"
+      "source": "coreyhaines31/marketingskills",
+      "skills": []
     },
     {
       "source": "expo/skills:plugins/expo/skills",
@@ -70,6 +71,10 @@
     },
     {
       "source": "pbakaus/impeccable:source/skills"
+    },
+    {
+      "source": "manaflow-ai/cmux",
+      "skills": ["cmux"]
     }
   ]
 }

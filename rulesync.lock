@@ -1,10 +1,16 @@
 {
   "lockfileVersion": 1,
   "sources": {
+    "coreyhaines31/marketingskills": {
+      "requestedRef": "main",
+      "resolvedRef": "2c7c108bd53efc35e3408ad9cd6f0921686e8205",
+      "resolvedAt": "2026-04-08T15:40:21.326Z",
+      "skills": {}
+    },
     "antfu/skills": {
       "requestedRef": "main",
       "resolvedRef": "c35a5588a5158b5b404a14fb10469b2b6dc1952b",
-      "resolvedAt": "2026-04-03T19:30:38.016Z",
+      "resolvedAt": "2026-04-08T15:42:35.516Z",
       "skills": {
         "pnpm": {
           "integrity": "sha256-4c071c7abc636e3fbba9ff3b7248d7abae31a9062c7435baf37651b430815de3"
@@ -23,7 +29,7 @@
     "anthropics/skills": {
       "requestedRef": "main",
       "resolvedRef": "98669c11ca63e9c81c11501e1437e5c47b556621",
-      "resolvedAt": "2026-04-03T19:30:42.891Z",
+      "resolvedAt": "2026-04-08T15:42:39.902Z",
       "skills": {
         "doc-coauthoring": {
           "integrity": "sha256-fd8325cb199c45d53792e9fbc144d72832900c77aa31bc3b781099d5cbe81266"
@@ -33,119 +39,10 @@
         }
       }
     },
-    "coreyhaines31/marketingskills": {
-      "requestedRef": "main",
-      "resolvedRef": "7c8c087486c29290b982820d719e1c4a556c0053",
-      "resolvedAt": "2026-04-03T19:31:15.750Z",
-      "skills": {
-        "ab-test-setup": {
-          "integrity": "sha256-7f8a3201004d515e4665639d789e5d4031ab7f903ae3ddfeeb07762777d9b512"
-        },
-        "ad-creative": {
-          "integrity": "sha256-0d5339fdce1388537b6d6fd50b49b3972757edf5953b71a2ac5c342ed2ebc866"
-        },
-        "ai-seo": {
-          "integrity": "sha256-6103cc9ce7d221a25ffdfd4ef72cf42dc9a06e104a89b2c93be0a2f40d2cd02c"
-        },
-        "analytics-tracking": {
-          "integrity": "sha256-757d45338d686b7717a4bd66f24f78167e0cc81ea32ff58d8487afd6a3519e0b"
-        },
-        "churn-prevention": {
-          "integrity": "sha256-c7f601d93a607ca30920293f2127ba1cfdbf176e28e69f345c2817be1a764c3a"
-        },
-        "cold-email": {
-          "integrity": "sha256-a02e3342c0b671f8031fb86117b12ae1d5630257302c0633e2ea08719a7886f0"
-        },
-        "competitor-alternatives": {
-          "integrity": "sha256-564479067ff0d64545b2715069ec8fab3d08c47038d2c7cadff5e082730b5cf9"
-        },
-        "content-strategy": {
-          "integrity": "sha256-31efc0e2fb525adced80079f00b535b6259d3c24c612de65f8f1f74d58800191"
-        },
-        "copy-editing": {
-          "integrity": "sha256-24b45df01a2f771e2d6be32877f39756712d23bbf76d6c4c04d9b1e60bf3c812"
-        },
-        "copywriting": {
-          "integrity": "sha256-d8074b4718afad4cfcda115a1003dab5b814ceea7a4a58768ca432429624ee9b"
-        },
-        "customer-research": {
-          "integrity": "sha256-482dba4cad946b43ac5cd3c086a7b9fc38f5201ff017386f42f2e949d42f3523"
-        },
-        "email-sequence": {
-          "integrity": "sha256-7d5472522c26c7dfdc85813d258b9ed0947b5ff3ffbff0b5e40489ad4e806cbc"
-        },
-        "form-cro": {
-          "integrity": "sha256-04bde943082e8d5631958efea2d1496d87f7fecb8692a9f4441cc6fe6d58b950"
-        },
-        "free-tool-strategy": {
-          "integrity": "sha256-b4962df51a049d461d2a4f99e1d620e90b9b7c0ef3a8e3e097033af5f34b0b4a"
-        },
-        "launch-strategy": {
-          "integrity": "sha256-a5cad6611915df5b4bd45e656e3113a3736f7fd06dd88280f554561dd0762515"
-        },
-        "lead-magnets": {
-          "integrity": "sha256-c7a51c86534bd80c54ea16e02f86b530b71bd144f045e8f06c475929d410202b"
-        },
-        "marketing-ideas": {
-          "integrity": "sha256-e615a56e025620d6bd112feedc5c18d9e0b6c36873907f330661ff73cc1e4fa2"
-        },
-        "marketing-psychology": {
-          "integrity": "sha256-0cb6c8a63cc02ce446f4f1372c91844f745e487b06a55513e5b35caaf5e040d4"
-        },
-        "onboarding-cro": {
-          "integrity": "sha256-99f4eca4807c285239a9918d22062a3b447eefb6c54f923ab03d9f967eadec8f"
-        },
-        "page-cro": {
-          "integrity": "sha256-cb8d4afe44bf52e8c3eb0bf8bab8fdce88af436964fd7ef828327c07b84379f2"
-        },
-        "paid-ads": {
-          "integrity": "sha256-b6ae92f8b4171b6c7eddba650bbe2ade3c39f7cebca2327b0f84afeef2e1db47"
-        },
-        "paywall-upgrade-cro": {
-          "integrity": "sha256-f817eaaefe55809bd2427a4b468db2e2da758dc24818b44d0b67f84ba00c8e94"
-        },
-        "popup-cro": {
-          "integrity": "sha256-cd622ad0377b8ad2f208cd7edccb602a220e756587746fab19473e251426e188"
-        },
-        "pricing-strategy": {
-          "integrity": "sha256-7567c252a1b76aeaa695afb56e353ee841051810072ce6ef9d4d2111ad613eaa"
-        },
-        "product-marketing-context": {
-          "integrity": "sha256-c2929bf4c4f104cbd59ce34cbdc4b5911eb72ead065f1b674bffa8f28002c3eb"
-        },
-        "programmatic-seo": {
-          "integrity": "sha256-b2729730d4da6fcd4bcaa2ba5f94169b30dbe28f67ed246bc91d00990d473324"
-        },
-        "referral-program": {
-          "integrity": "sha256-603a492b1ddaefb60deb5d6a9fa10afe36cd32c25954678cf417f2d247dbd8b7"
-        },
-        "revops": {
-          "integrity": "sha256-31f876e284450eb9bb1cd49b80bc39d058862818d77645bf118b7715494b1c9e"
-        },
-        "sales-enablement": {
-          "integrity": "sha256-14a53d91b5093e55b2a64307b1178ff2cf5c1c33d2484378787cef1e5fc7a0b3"
-        },
-        "schema-markup": {
-          "integrity": "sha256-c615859aa70d2ddc7dc847a1d40c12a70b20844248a91370cfc0ea514ac3be76"
-        },
-        "seo-audit": {
-          "integrity": "sha256-921d1523a3309702787a83b9c44ccf2536a6f86674adfe5800b00c39f1ae50a6"
-        },
-        "signup-flow-cro": {
-          "integrity": "sha256-24b8dcc04b2a1959ae9be70e8af09188403f5e6a162c77afb615eb45ac479df3"
-        },
-        "site-architecture": {
-          "integrity": "sha256-5ae06d389f0a23cc10388404956c29bb2526416810be2b01c0e3246b8d788d02"
-        },
-        "social-content": {
-          "integrity": "sha256-db74774a9d9568d38b22e4dce0c8d8cf8553e81c04a8bd1c7826d696b4b18f56"
-        }
-      }
-    },
     "expo/skills:plugins/expo/skills": {
       "requestedRef": "main",
       "resolvedRef": "cef67e4da5200eba0934f3af09a98364447f5364",
-      "resolvedAt": "2026-04-03T19:31:19.817Z",
+      "resolvedAt": "2026-04-08T15:42:43.739Z",
       "skills": {
         "building-native-ui": {
           "integrity": "sha256-860b96caf314d600a9df2bbac10c9288a562d340719fedc0546c7e362da64814"
@@ -158,7 +55,7 @@
     "google-labs-code/stitch-skills": {
       "requestedRef": "main",
       "resolvedRef": "6c0cbdb909b7d256c8b9b3854c8c8f87aab2c140",
-      "resolvedAt": "2026-04-03T19:31:21.608Z",
+      "resolvedAt": "2026-04-08T15:42:44.788Z",
       "skills": {
         "design-md": {
           "integrity": "sha256-bee75bd0e412811b5c1b778a2b79c191257afce42c1cf1d18f68388c0c7c065b"
@@ -168,7 +65,7 @@
     "charl-kruger/mdrip": {
       "requestedRef": "main",
       "resolvedRef": "3bc11285b4c6c3a498e1d4eeebe17dde447bebf2",
-      "resolvedAt": "2026-04-03T19:31:22.934Z",
+      "resolvedAt": "2026-04-08T15:42:45.835Z",
       "skills": {
         "mdrip": {
           "integrity": "sha256-74078e7e7778c0a3145fc9c90e1df44409ea20702e2f6bea664fc7404711f9b6"
@@ -177,8 +74,8 @@
     },
     "obra/superpowers": {
       "requestedRef": "main",
-      "resolvedRef": "b7a8f76985f1e93e75dd2f2a3b424dc731bd9d37",
-      "resolvedAt": "2026-04-03T19:31:33.882Z",
+      "resolvedRef": "917e5f53b16b115b70a3a355ed5f4993b9f8b73d",
+      "resolvedAt": "2026-04-08T15:42:57.014Z",
       "skills": {
         "brainstorming": {
           "integrity": "sha256-6c56ebb1a12c6e4e9e9745ef1391adda1212c0eea6509eb718beb4ac748e23e7"
@@ -227,7 +124,7 @@
     "pproenca/dot-skills:skills/.experimental": {
       "requestedRef": "master",
       "resolvedRef": "ae3ab254389cf29c6ab208c35ae0d5d3107f1f2b",
-      "resolvedAt": "2026-04-03T19:32:02.898Z",
+      "resolvedAt": "2026-04-08T15:43:27.016Z",
       "skills": {
         "expo-react-native-coder": {
           "integrity": "sha256-aa8ebddc3dfbeaa938786d0c31319655e4d6be7681d740f6a055d423badcd285"
@@ -243,7 +140,7 @@
     "stevezhu/skills": {
       "requestedRef": "main",
       "resolvedRef": "0b0fa71c957c6503be17978a2c79d618bcec32fe",
-      "resolvedAt": "2026-04-03T19:32:04.751Z",
+      "resolvedAt": "2026-04-08T15:43:28.579Z",
       "skills": {
         "agent-logbook": {
           "integrity": "sha256-6b136b99a10e3899fe9aabe14113daa2b70d2830e0a25b1fd70d6edcd8ad69c7"
@@ -253,7 +150,7 @@
     "vercel-labs/agent-skills": {
       "requestedRef": "main",
       "resolvedRef": "73140fc5b3a214ad3222bcf557b397b3c02d11c1",
-      "resolvedAt": "2026-04-03T19:32:06.249Z",
+      "resolvedAt": "2026-04-08T15:43:29.352Z",
       "skills": {
         "web-design-guidelines": {
           "integrity": "sha256-f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
@@ -262,8 +159,8 @@
     },
     "vercel-labs/skills": {
       "requestedRef": "main",
-      "resolvedRef": "eb336564413f4dc518511536da725e80c5e8a76a",
-      "resolvedAt": "2026-04-03T19:32:07.550Z",
+      "resolvedRef": "df0579f85cb8a360473c921e1343359006100d3c",
+      "resolvedAt": "2026-04-08T15:43:30.031Z",
       "skills": {
         "find-skills": {
           "integrity": "sha256-9e1c8b3103f92fa8092568a44fe64858de7c5c9dc65ce4bea8f168080e889cfd"
@@ -272,18 +169,18 @@
     },
     "vercel/turborepo": {
       "requestedRef": "main",
-      "resolvedRef": "b7d89a4605146baab1311ede0c660adafdef5d12",
-      "resolvedAt": "2026-04-03T19:32:13.633Z",
+      "resolvedRef": "5563b8e902f0d6dc0307d955f3d5bdb084187eaa",
+      "resolvedAt": "2026-04-08T15:43:35.669Z",
       "skills": {
         "turborepo": {
-          "integrity": "sha256-8941746a010948d4251798bd9703230b8841ab7efe988a0815022e870368b481"
+          "integrity": "sha256-3e4a4f187f4064de1aee81f1000f18729a3f6f361f55774c05e7a3025f8a194b"
         }
       }
     },
     "waynesutton/convexskills": {
       "requestedRef": "main",
       "resolvedRef": "8ef49c96675f760dd5569c0588c1abb04cd989dd",
-      "resolvedAt": "2026-04-03T19:32:29.492Z",
+      "resolvedAt": "2026-04-08T15:43:51.147Z",
       "skills": {
         "avoid-feature-creep": {
           "integrity": "sha256-57fcdf1f0d46cacc573ceebae152fbb251346fe1f99c899b5fbc436270d47afc"
@@ -332,7 +229,7 @@
     "pbakaus/impeccable:source/skills": {
       "requestedRef": "main",
       "resolvedRef": "3a4fc70f0e17fccb22565d37e868f8e2f3e73bdd",
-      "resolvedAt": "2026-04-03T19:32:38.198Z",
+      "resolvedAt": "2026-04-08T15:44:00.984Z",
       "skills": {
         "adapt": {
           "integrity": "sha256-449fbf3bf7127e5e3f8543c60fe0ba3a359cf665c31433f3abd79f518bd5a0c9"
@@ -396,6 +293,16 @@
         },
         "typeset": {
           "integrity": "sha256-2d692f1bbcea3c4f06e0c9c947954f17815a922b9fce7161497b6199b41eabf2"
+        }
+      }
+    },
+    "manaflow-ai/cmux": {
+      "requestedRef": "main",
+      "resolvedRef": "34fcc42f08d017888646ff8d2d2323f58733e18f",
+      "resolvedAt": "2026-04-08T15:44:02.538Z",
+      "skills": {
+        "cmux": {
+          "integrity": "sha256-4a394bfb406063b53f902e11ca8f4106d20d90c9afa6ff7b66b67899464676eb"
         }
       }
     }
