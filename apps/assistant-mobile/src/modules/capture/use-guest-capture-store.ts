@@ -106,6 +106,19 @@ export function useGuestCaptureStore() {
   });
 
   /**
+   * Removes a single guest capture by ID.
+   */
+  const removeGuestCapture = useMutation({
+    mutationFn: async (id: string) => {
+      const current = await loadCaptures();
+      await saveCaptures(current.filter((c) => c.id !== id));
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+  });
+
+  /**
    * Clears all local captures, typically called after a successful migration to
    * Convex.
    */
@@ -118,5 +131,5 @@ export function useGuestCaptureStore() {
     },
   });
 
-  return { captures, addGuestCapture, clearGuestCaptures };
+  return { captures, addGuestCapture, removeGuestCapture, clearGuestCaptures };
 }
