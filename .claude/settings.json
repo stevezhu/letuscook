@@ -7,18 +7,12 @@
       "Read(credentials/)"
     ]
   },
-  "hooks": {
-    "Notification": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\" sound name \"Glass\"'",
-            "timeout": 10
-          }
-        ]
-      }
-    ]
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "filesystem": {
+      "allowWrite": ["~/.proto"]
+    }
   },
   "plansDirectory": "docs/plans"
 }
