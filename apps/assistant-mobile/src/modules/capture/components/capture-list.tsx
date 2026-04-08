@@ -77,7 +77,7 @@ function ListRowItem({
       <Host matchContents>
         <ContextMenu>
           <ContextMenu.Trigger>
-            <View className="bg-muted shrink rounded-lg rounded-br-xs px-3 py-2">
+            <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
               <Text className="text-primary">{item.rawContent}</Text>
             </View>
           </ContextMenu.Trigger>
