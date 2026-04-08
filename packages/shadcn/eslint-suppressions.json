@@ -31,9 +31,6 @@
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
     },
-    "@typescript-eslint/no-unnecessary-type-arguments": {
-      "count": 1
-    },
     "@typescript-eslint/no-unsafe-argument": {
       "count": 1
     },
