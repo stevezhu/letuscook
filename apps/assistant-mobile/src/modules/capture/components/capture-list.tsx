@@ -6,7 +6,7 @@ import {
 import { Text } from '@workspace/rn-reusables/components/text';
 import { View } from 'react-native';
 
-import { StyledGlassView } from '#components/styled.ts';
+
 
 /**
  * Shared shape for rendering a capture item.
@@ -35,10 +35,7 @@ function CaptureItemSpread({
   item,
 }: LegendListRenderItemProps<CaptureItemData>) {
   return (
-    <StyledGlassView
-      isInteractive
-      className="max-w-[85%] flex-col gap-1 self-start rounded-lg rounded-bl-none px-3 py-2"
-    >
+    <View className="max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-none bg-muted px-3 py-2">
       <Text className="text-primary">{item.rawContent}</Text>
       <View className="flex-row items-center justify-between gap-3">
         <Text
@@ -51,7 +48,7 @@ function CaptureItemSpread({
           {formatRelativeTime(item.capturedAt)}
         </Text>
       </View>
-    </StyledGlassView>
+    </View>
   );
 }
 
