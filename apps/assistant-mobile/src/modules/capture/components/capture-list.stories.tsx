@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react-native';
+import { fn } from 'storybook/test';
 
 import { CaptureList, type CaptureItemData } from './capture-list.js';
 
@@ -32,6 +33,9 @@ const MOCK_CAPTURES: CaptureItemData[] = [
 const meta = {
   component: CaptureList,
   tags: ['autodocs'],
+  args: {
+    onArchive: fn(),
+  },
   parameters: {
     layout: 'fullscreen',
   },
