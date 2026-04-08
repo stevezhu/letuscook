@@ -50,7 +50,7 @@ function CaptureScreen() {
     mutationFn: useConvexMutation(api.captures.archiveCapture),
   });
 
-  const handleDelete = useCallback(
+  const handleArchive = useCallback(
     (id: string) => {
       if (user) {
         archiveCapture({ captureId: id as Id<'captures'> });
@@ -89,7 +89,7 @@ function CaptureScreen() {
     >
       <CaptureList
         data={items}
-        onDelete={handleDelete}
+        onArchive={handleArchive}
         estimatedItemSize={60}
         contentContainerStyle={{
           paddingBottom: TEXT_HEIGHT + spacing * 2,

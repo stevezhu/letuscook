@@ -3,13 +3,13 @@ import { ReactNode } from 'react';
 
 export type CaptureListContextMenuProps = {
   onCopy: () => void;
-  onDelete: () => void;
+  onArchive: () => void;
   children: ReactNode;
 };
 
 export function CaptureListContextMenu({
   onCopy,
-  onDelete,
+  onArchive,
   children,
 }: CaptureListContextMenuProps) {
   return (
@@ -23,10 +23,9 @@ export function CaptureListContextMenu({
             onPress={onCopy}
           />
           <SwiftUIButton
-            label="Delete"
-            systemImage="trash"
-            role="destructive"
-            onPress={onDelete}
+            label="Archive"
+            systemImage="archivebox"
+            onPress={onArchive}
           />
         </ContextMenu.Items>
       </ContextMenu>

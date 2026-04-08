@@ -26,11 +26,11 @@ type ListRow = TimeHeader | CaptureRow;
 
 export function CaptureList({
   data,
-  onDelete,
+  onArchive,
   ...props
 }: Omit<LegendListProps<ListRow>, 'data'> & {
   data: CaptureItemData[] | undefined;
-  onDelete: (id: string) => void;
+  onArchive: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
@@ -38,10 +38,10 @@ export function CaptureList({
     (renderProps: LegendListRenderItemProps<ListRow>) => (
       <ListRowItem
         {...renderProps}
-        onDelete={() => onDelete(renderProps.item.id)}
+        onArchive={() => onArchive(renderProps.item.id)}
       />
     ),
-    [onDelete],
+    [onArchive],
   );
 
   return (
@@ -59,9 +59,9 @@ export function CaptureList({
 
 function ListRowItem({
   item,
-  onDelete,
+  onArchive,
 }: LegendListRenderItemProps<ListRow> & {
-  onDelete: () => void;
+  onArchive: () => void;
 }) {
   if (item.type === 'header') {
     return (
@@ -82,7 +82,7 @@ function ListRowItem({
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}
-        onDelete={onDelete}
+        onArchive={onArchive}
       >
         <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
           <Text className="text-primary">{item.rawContent}</Text>
