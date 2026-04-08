@@ -35,7 +35,10 @@ export function CaptureList({
 
   const renderItem = useCallback(
     (renderProps: LegendListRenderItemProps<ListRow>) => (
-      <ListRowItem {...renderProps} onDelete={onDelete} />
+      <ListRowItem
+        {...renderProps}
+        onDelete={() => onDelete?.(renderProps.item.id)}
+      />
     ),
     [onDelete],
   );
@@ -57,7 +60,7 @@ function ListRowItem({
   item,
   onDelete,
 }: LegendListRenderItemProps<ListRow> & {
-  onDelete?: (id: string) => void;
+  onDelete?: () => void;
 }) {
   if (item.type === 'header') {
     return (
@@ -94,7 +97,7 @@ function ListRowItem({
                 label="Delete"
                 systemImage="trash"
                 role="destructive"
-                onPress={() => onDelete(item.id)}
+                onPress={onDelete}
               />
             )}
           </ContextMenu.Items>
