@@ -9,13 +9,13 @@ export function LoginScreen() {
   const { signIn } = useAuth();
 
   return (
-    <View className="bg-background flex-1 items-center justify-center p-6">
+    <View className="flex-1 items-center justify-center bg-background p-6">
       <View className="flex-col items-center gap-8">
         <View className="flex-col items-center gap-2">
-          <Text className="text-foreground text-4xl font-bold tracking-tight">
+          <Text className="text-4xl font-bold tracking-tight text-foreground">
             {productName}
           </Text>
-          <Text className="text-muted-foreground text-center text-lg">
+          <Text className="text-center text-lg text-muted-foreground">
             Sign in to get started.
           </Text>
         </View>
