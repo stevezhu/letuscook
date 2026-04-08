@@ -14,9 +14,9 @@ export default function KnowledgeTab() {
 
   if (!user) {
     return (
-      <View className="flex-1 bg-background p-safe">
-        <View className="flex-row items-center justify-between border-b border-border px-4 py-2">
-          <Text className="text-sm text-muted-foreground">
+      <View className="bg-background flex-1 p-safe">
+        <View className="border-border flex-row items-center justify-between border-b px-4 py-2">
+          <Text className="text-muted-foreground text-sm">
             Sign in to view your knowledge base
           </Text>
           <Button variant="outline" size="sm" onPress={signIn}>
@@ -24,10 +24,10 @@ export default function KnowledgeTab() {
           </Button>
         </View>
         <View className="flex-1 items-center justify-center p-8">
-          <Text className="text-center text-base text-muted-foreground">
+          <Text className="text-muted-foreground text-center text-base">
             No knowledge items yet
           </Text>
-          <Text className="mt-2 text-center text-sm text-muted-foreground">
+          <Text className="text-muted-foreground mt-2 text-center text-sm">
             Accepted captures will appear here as nodes
           </Text>
         </View>
@@ -51,10 +51,10 @@ function KnowledgeScreen() {
   if (data.length === 0) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <Text className="text-center text-base text-muted-foreground">
+        <Text className="text-muted-foreground text-center text-base">
           No knowledge items yet
         </Text>
-        <Text className="mt-2 text-center text-sm text-muted-foreground">
+        <Text className="text-muted-foreground mt-2 text-center text-sm">
           Accepted captures will appear here as nodes
         </Text>
       </View>
@@ -62,7 +62,7 @@ function KnowledgeScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background p-safe">
+    <View className="bg-background flex-1 p-safe">
       <FlatList
         contentInsetAdjustmentBehavior="automatic"
         automaticallyAdjustsScrollIndicatorInsets={true}
@@ -70,13 +70,13 @@ function KnowledgeScreen() {
         keyExtractor={(item) => item.node._id}
         renderItem={({ item }) => (
           <Pressable
-            className="border-b border-border px-4 py-3"
+            className="border-border border-b px-4 py-3"
             onPress={() => router.push(`/knowledge/${item.node._id}` as Href)}
           >
-            <Text className="text-base font-medium text-foreground">
+            <Text className="text-foreground text-base font-medium">
               {item.node.title}
             </Text>
-            <Text className="mt-1 text-sm text-muted-foreground">
+            <Text className="text-muted-foreground mt-1 text-sm">
               {item.edgeCount}{' '}
               {item.edgeCount === 1 ? 'connection' : 'connections'}
             </Text>

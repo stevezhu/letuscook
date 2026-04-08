@@ -6,8 +6,6 @@ import {
 import { Text } from '@workspace/rn-reusables/components/text';
 import { View } from 'react-native';
 
-
-
 /**
  * Shared shape for rendering a capture item.
  */
@@ -35,16 +33,16 @@ function CaptureItemSpread({
   item,
 }: LegendListRenderItemProps<CaptureItemData>) {
   return (
-    <View className="max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-none bg-muted px-3 py-2">
+    <View className="bg-muted max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-none px-3 py-2">
       <Text className="text-primary">{item.rawContent}</Text>
       <View className="flex-row items-center justify-between gap-3">
         <Text
-          className="text-[10px] text-muted-foreground capitalize"
+          className="text-muted-foreground text-[10px] capitalize"
           variant="muted"
         >
           {item.captureType}
         </Text>
-        <Text className="text-[10px] text-muted-foreground">
+        <Text className="text-muted-foreground text-[10px]">
           {formatRelativeTime(item.capturedAt)}
         </Text>
       </View>
