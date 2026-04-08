@@ -33,7 +33,7 @@ function CaptureItemSpread({
   item,
 }: LegendListRenderItemProps<CaptureItemData>) {
   return (
-    <View className="bg-muted max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-none px-3 py-2">
+    <View className="bg-muted max-w-[85%] flex-col gap-1 self-end rounded-lg rounded-br-xs px-3 py-2">
       <Text className="text-primary">{item.rawContent}</Text>
       <View className="flex-row items-center justify-between gap-3">
         <Text
