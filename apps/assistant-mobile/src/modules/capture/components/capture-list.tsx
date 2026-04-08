@@ -79,6 +79,7 @@ function ListRowItem({
         {item.captureType}
       </Text>
       <CaptureListContextMenu
+        className="shrink"
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}
