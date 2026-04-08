@@ -85,7 +85,7 @@ function ListRowItem({
         }}
         onArchive={onArchive}
       >
-        <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
+        <View className="rounded-lg rounded-br-xs bg-muted px-3 py-2">
           <Text className="text-primary">{item.rawContent}</Text>
         </View>
       </CaptureListContextMenu>
