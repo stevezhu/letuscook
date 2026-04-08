@@ -4,8 +4,11 @@ import {
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
 import { Text } from '@workspace/rn-reusables/components/text';
-import { useMemo } from 'react';
+import * as Clipboard from 'expo-clipboard';
+import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
+
+import { CaptureListContextMenu } from './capture-list-context-menu.ios.tsx';
 
 /**
  * Shared shape for rendering a capture item.
@@ -23,16 +26,28 @@ type ListRow = TimeHeader | CaptureRow;
 
 export function CaptureList({
   data,
+  onArchive,
   ...props
 }: Omit<LegendListProps<ListRow>, 'data'> & {
   data: CaptureItemData[] | undefined;
+  onArchive: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
+
+  const renderItem = useCallback(
+    (renderProps: LegendListRenderItemProps<ListRow>) => (
+      <ListRowItem
+        {...renderProps}
+        onArchive={() => onArchive(renderProps.item.id)}
+      />
+    ),
+    [onArchive],
+  );
 
   return (
     <LegendList<ListRow>
       data={rows}
-      renderItem={(props) => <ListRowItem {...props} />}
+      renderItem={renderItem}
       keyExtractor={(row) => row.id}
       recycleItems
       ItemSeparatorComponent={() => <View className="h-2" />}
@@ -42,7 +57,12 @@ export function CaptureList({
   );
 }
 
-function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
+function ListRowItem({
+  item,
+  onArchive,
+}: LegendListRenderItemProps<ListRow> & {
+  onArchive: () => void;
+}) {
   if (item.type === 'header') {
     return (
       <View className="items-center py-1">
@@ -58,9 +78,17 @@ function ListRowItem({ item }: LegendListRenderItemProps<ListRow>) {
       <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
-      <View className="shrink rounded-lg rounded-br-xs bg-muted px-3 py-2">
-        <Text className="text-primary">{item.rawContent}</Text>
-      </View>
+      <CaptureListContextMenu
+        className="shrink"
+        onCopy={() => {
+          void Clipboard.setStringAsync(item.rawContent);
+        }}
+        onArchive={onArchive}
+      >
+        <View className="rounded-lg rounded-br-xs bg-muted px-3 py-2">
+          <Text className="text-primary">{item.rawContent}</Text>
+        </View>
+      </CaptureListContextMenu>
     </View>
   );
 }

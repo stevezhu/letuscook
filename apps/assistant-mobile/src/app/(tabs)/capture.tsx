@@ -1,7 +1,8 @@
-import { convexQuery } from '@convex-dev/react-query';
-import { useQuery } from '@tanstack/react-query';
+import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
-import { useId, useMemo, useState } from 'react';
+import type { Id } from 'assistant-convex/convex/_generated/dataModel';
+import { useCallback, useId, useMemo, useState } from 'react';
 import { KeyboardGestureArea } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
@@ -42,7 +43,23 @@ function CaptureScreen() {
   const { data: serverCaptures } = useQuery(
     convexQuery(api.captures.getRecentCaptures, user ? { limit: 20 } : 'skip'),
   );
-  const { captures: guestCaptures } = useGuestCaptureStore();
+  const { captures: guestCaptures, removeGuestCapture } =
+    useGuestCaptureStore();
+
+  const { mutate: archiveCapture } = useMutation({
+    mutationFn: useConvexMutation(api.captures.archiveCapture),
+  });
+
+  const handleArchive = useCallback(
+    (id: string) => {
+      if (user) {
+        archiveCapture({ captureId: id as Id<'captures'> });
+      } else {
+        removeGuestCapture.mutate(id);
+      }
+    },
+    [user, archiveCapture, removeGuestCapture],
+  );
 
   const items: CaptureItemData[] = useMemo(() => {
     if (user) {
@@ -72,6 +89,7 @@ function CaptureScreen() {
     >
       <CaptureList
         data={items}
+        onArchive={handleArchive}
         estimatedItemSize={60}
         contentContainerStyle={{
           paddingBottom: TEXT_HEIGHT + spacing * 2,
