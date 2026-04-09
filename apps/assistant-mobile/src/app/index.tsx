@@ -6,10 +6,7 @@ import { ScrollViewProps, View } from 'react-native';
 import { KeyboardChatScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import styles, {
-  contentContainerStyle,
-  invertedContentContainerStyle,
-} from '#components/kbd/styles.ts';
+import styles, { MARGIN, TEXT_INPUT_HEIGHT } from '#components/kbd/styles.ts';
 
 const DUMMY_DATA = Array.from({ length: 100 }, (_, index) => ({
   id: index.toString(),
@@ -19,19 +16,17 @@ const DUMMY_DATA = Array.from({ length: 100 }, (_, index) => ({
 export default function Index() {
   const { top, bottom } = useSafeAreaInsets();
 
-  const inverted = false;
-
   const memoList = useCallback(
     (props: ScrollViewProps) => (
       <KeyboardChatScrollView
         automaticallyAdjustContentInsets={false}
-        contentContainerStyle={
-          inverted ? invertedContentContainerStyle : contentContainerStyle
-        }
+        contentContainerStyle={{
+          paddingBottom: TEXT_INPUT_HEIGHT + MARGIN,
+        }}
         contentInsetAdjustmentBehavior="never"
         keyboardDismissMode="interactive"
         // NOTE: ok this is why the scroll view scrolls down when the input is focused, but why?
-        // if I set it to the never the issue doesn't happen
+        // if i set it to never, it doesn't scroll down when the input is focused
         keyboardLiftBehavior="always"
         {...props}
       />
@@ -42,10 +37,10 @@ export default function Index() {
   const content = (
     <>
       <FlashList
-        contentContainerStyle={
-          inverted ? invertedContentContainerStyle : contentContainerStyle
-        }
-        contentInset={{ top, bottom }}
+        contentContainerStyle={{
+          paddingBottom: TEXT_INPUT_HEIGHT + MARGIN + bottom,
+        }}
+        // contentInset={{ top, bottom }}
         maintainVisibleContentPosition={{
           startRenderingFromBottom: true,
         }}
@@ -55,7 +50,7 @@ export default function Index() {
         renderScrollComponent={memoList}
       />
       <View className="absolute w-full pb-safe">
-        <Input />
+        <Input placeholder="Enter your message..." />
       </View>
     </>
   );
