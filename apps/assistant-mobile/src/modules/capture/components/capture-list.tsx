@@ -3,6 +3,12 @@ import {
   LegendListProps,
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
+import {
+  FlashList,
+  FlashListProps,
+  ListRenderItem,
+  ListRenderItemInfo,
+} from '@shopify/flash-list';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
 import { useCallback, useMemo } from 'react';
@@ -37,7 +43,7 @@ export function CaptureList({
   const renderItem = useCallback(
     (renderProps: LegendListRenderItemProps<ListRow>) => (
       <ListRowItem
-        {...renderProps}
+        item={renderProps.item}
         onArchive={() => onArchive(renderProps.item.id)}
       />
     ),
@@ -57,10 +63,43 @@ export function CaptureList({
   );
 }
 
+export function FlashListCaptureList({
+  data,
+  onArchive,
+}: Omit<FlashListProps<ListRow>, 'data' | 'renderItem'> & {
+  data: CaptureItemData[] | undefined;
+  onArchive: (id: string) => void;
+}) {
+  const rows = useMemo(() => groupByTime(data ?? []), [data]);
+  const renderItem = useCallback(
+    (renderProps: ListRenderItemInfo<ListRow>) => {
+      console.log('renderProps', renderProps.item);
+      return (
+        <ListRowItem
+          item={renderProps.item}
+          onArchive={() => onArchive(renderProps.item.id)}
+        />
+      );
+    },
+    [onArchive],
+  );
+
+  console.log(rows);
+
+  return (
+    <FlashList
+      data={rows}
+      keyExtractor={(row) => row.id}
+      renderItem={renderItem}
+    />
+  );
+}
+
 function ListRowItem({
   item,
   onArchive,
-}: LegendListRenderItemProps<ListRow> & {
+}: {
+  item: ListRow;
   onArchive: () => void;
 }) {
   if (item.type === 'header') {
@@ -86,7 +125,7 @@ function ListRowItem({
         onArchive={onArchive}
       >
         <View className="rounded-lg rounded-br-xs bg-muted px-3 py-2">
-          <Text className="text-primary">{item.rawContent}</Text>
+          <Text className="text-primary">hello</Text>
         </View>
       </CaptureListContextMenu>
     </View>
