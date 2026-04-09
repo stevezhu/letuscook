@@ -25,7 +25,7 @@
     "@vitest/eslint-plugin": "^1.6.14",
     "concurrently": "^9.2.1",
     "es-toolkit": "^1.45.1",
-    "oxfmt": "^0.43.0",
+    "oxfmt": ">=0.43.0 < 1.0.0",
     "oxlint": "^1.58.0",
     "oxlint-tsgolint": "^0.20.0",
     "prettier": "^3.8.1",
