@@ -3,15 +3,9 @@ import {
   LegendListProps,
   LegendListRenderItemProps,
 } from '@legendapp/list/react-native';
-import {
-  FlashList,
-  FlashListProps,
-  ListRenderItem,
-  ListRenderItemInfo,
-} from '@shopify/flash-list';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 
 import { CaptureListContextMenu } from './capture-list-context-menu.ios.tsx';
@@ -30,6 +24,7 @@ type TimeHeader = { type: 'header'; id: string; label: string };
 type CaptureRow = { type: 'item' } & CaptureItemData;
 type ListRow = TimeHeader | CaptureRow;
 
+// 👀 Needs Verification
 export function CaptureList({
   data,
   onArchive,
@@ -41,39 +36,7 @@ export function CaptureList({
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
   const renderItem = useCallback(
-    (renderProps: LegendListRenderItemProps<ListRow>) => (
-      <ListRowItem
-        item={renderProps.item}
-        onArchive={() => onArchive(renderProps.item.id)}
-      />
-    ),
-    [onArchive],
-  );
-
-  return (
-    <LegendList<ListRow>
-      data={rows}
-      renderItem={renderItem}
-      keyExtractor={(row) => row.id}
-      recycleItems
-      ItemSeparatorComponent={() => <View className="h-2" />}
-      contentContainerClassName="px-3 py-2"
-      {...props}
-    />
-  );
-}
-
-export function FlashListCaptureList({
-  data,
-  onArchive,
-}: Omit<FlashListProps<ListRow>, 'data' | 'renderItem'> & {
-  data: CaptureItemData[] | undefined;
-  onArchive: (id: string) => void;
-}) {
-  const rows = useMemo(() => groupByTime(data ?? []), [data]);
-  const renderItem = useCallback(
-    (renderProps: ListRenderItemInfo<ListRow>) => {
-      console.log('renderProps', renderProps.item);
+    (renderProps: LegendListRenderItemProps<ListRow>) => {
       return (
         <ListRowItem
           item={renderProps.item}
@@ -84,13 +47,15 @@ export function FlashListCaptureList({
     [onArchive],
   );
 
-  console.log(rows);
-
   return (
-    <FlashList
+    <LegendList<ListRow>
       data={rows}
-      keyExtractor={(row) => row.id}
       renderItem={renderItem}
+      keyExtractor={(row) => row.id}
+      recycleItems={false}
+      ItemSeparatorComponent={() => <View className="h-2" />}
+      contentContainerClassName="px-3 py-2"
+      {...props}
     />
   );
 }
@@ -114,18 +79,17 @@ function ListRowItem({
 
   return (
     <View className="max-w-[85%] flex-row items-end gap-2 self-end">
-      <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
+      <Text className="pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
       <CaptureListContextMenu
-        className="shrink"
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}
         onArchive={onArchive}
       >
         <View className="rounded-lg rounded-br-xs bg-muted px-3 py-2">
-          <Text className="text-primary">hello</Text>
+          <Text className="text-primary">{item.rawContent}</Text>
         </View>
       </CaptureListContextMenu>
     </View>

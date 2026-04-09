@@ -18,7 +18,7 @@ export function CaptureListContextMenu({
   children,
 }: CaptureListContextMenuProps) {
   return (
-    <StyledHost matchContents className={className}>
+    <StyledHost matchContents ignoreSafeArea="all" className={className}>
       <ContextMenu>
         <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
         <ContextMenu.Items>
