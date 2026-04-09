@@ -1,8 +1,6 @@
-import { Stack } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabsLayout() {
-  // return <Stack screenOptions={{ headerShown: false }} />;
   return (
     <NativeTabs backgroundColor="red" minimizeBehavior="onScrollDown">
       <NativeTabs.Trigger name="index" disableAutomaticContentInsets>

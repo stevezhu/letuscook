@@ -5,7 +5,7 @@ import {
 } from '@legendapp/list/react-native';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 
 import { CaptureListContextMenu } from './capture-list-context-menu.ios.tsx';
