@@ -1,10 +1,18 @@
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
+import type { FlashListRef } from '@shopify/flash-list';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import type { Id } from 'assistant-convex/convex/_generated/dataModel';
 import { useIncomingShare } from 'expo-sharing';
 import { useSetAtom } from 'jotai';
-import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ScrollViewProps } from 'react-native';
 import {
   KeyboardChatScrollView,
@@ -29,6 +37,7 @@ import {
 import {
   CaptureItemData,
   CaptureList,
+  type CaptureListRow,
 } from '#modules/capture/components/capture-list.tsx';
 import { useCaptureSubmit } from '#modules/capture/use-capture-submit.ts';
 import { useGuestCaptureStore } from '#modules/capture/use-guest-capture-store.ts';
@@ -50,6 +59,8 @@ const TEXT_HEIGHT = 101;
 
 // 👀 Needs Verification
 function CaptureScreen() {
+  const listRef = useRef<FlashListRef<CaptureListRow>>(null);
+  const shouldScrollToEnd = useRef(false);
   const textInputNativeId = useId();
   const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
   const { top, bottom } = useSafeAreaInsets();
@@ -80,22 +91,35 @@ function CaptureScreen() {
 
   const items: CaptureItemData[] = useMemo(() => {
     if (user) {
-      return (serverCaptures ?? []).map((c) => ({
+      return (serverCaptures?.reverse() ?? []).map((c) => ({
         id: c._id,
         rawContent: c.rawContent,
         capturedAt: c.capturedAt,
         captureType: c.captureType,
       }));
     }
-    return [...guestCaptures]
-      .sort((a, b) => b.capturedAt - a.capturedAt)
-      .map((c) => ({
-        id: c.id,
-        rawContent: c.rawContent,
-        capturedAt: c.capturedAt,
-        captureType: c.captureType,
-      }));
+    return (
+      guestCaptures
+        .slice()
+        // TODO: verify that this is correct
+        .sort((a, b) => a.capturedAt - b.capturedAt)
+        .map((c) => ({
+          id: c.id,
+          rawContent: c.rawContent,
+          capturedAt: c.capturedAt,
+          captureType: c.captureType,
+        }))
+    );
   }, [user, serverCaptures, guestCaptures]);
+
+  useEffect(() => {
+    if (shouldScrollToEnd.current) {
+      shouldScrollToEnd.current = false;
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToEnd({ animated: true });
+      });
+    }
+  }, [items]);
 
   // Use blankSpace for safe area bottom instead of contentInset.bottom
   // to avoid double-counting when the keyboard covers the safe area.
@@ -132,6 +156,7 @@ function CaptureScreen() {
       textInputNativeID={textInputNativeId}
     >
       <CaptureList
+        ref={listRef}
         data={items}
         onArchive={handleArchive}
         contentInset={{ top }}
@@ -151,7 +176,6 @@ function CaptureScreen() {
           isPending={isPending}
           onLayout={(e) => {
             const { height } = e.nativeEvent.layout;
-            console.log('set', height, Math.max(height - TEXT_HEIGHT, 0));
             extraContentPadding.value = withTiming(
               Math.max(height - spacing * 4, 0),
               {
@@ -166,6 +190,7 @@ function CaptureScreen() {
           <CaptureComposerControls
             onSubmit={async ({ value, captureType }) => {
               await submit(value, captureType);
+              shouldScrollToEnd.current = true;
             }}
           />
         </CaptureComposer>

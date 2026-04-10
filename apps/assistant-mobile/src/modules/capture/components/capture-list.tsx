@@ -1,11 +1,12 @@
 import {
   FlashList,
-  FlashListProps,
-  ListRenderItemInfo,
+  type FlashListProps,
+  type FlashListRef,
+  type ListRenderItemInfo,
 } from '@shopify/flash-list';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
-import { useCallback, useMemo } from 'react';
+import { type Ref, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 
 import { CaptureListContextMenu } from './capture-list-context-menu.ios.tsx';
@@ -24,14 +25,18 @@ type TimeHeader = { type: 'header'; id: string; label: string };
 type CaptureRow = { type: 'item' } & CaptureItemData;
 type ListRow = TimeHeader | CaptureRow;
 
+export type { ListRow as CaptureListRow };
+
 // 👀 Needs Verification
 export function CaptureList({
   data,
   onArchive,
+  ref,
   ...props
 }: Omit<FlashListProps<ListRow>, 'data' | 'renderItem'> & {
   data: CaptureItemData[] | undefined;
   onArchive: (id: string) => void;
+  ref?: Ref<FlashListRef<ListRow>>;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
@@ -49,6 +54,7 @@ export function CaptureList({
 
   return (
     <FlashList
+      ref={ref}
       data={rows}
       renderItem={renderItem}
       keyExtractor={(row) => row.id}
@@ -81,13 +87,16 @@ function ListRowItem({
   }
 
   return (
-    <View className="max-w-[85%] flex-row items-end gap-2 self-end">
-      <Text className="pb-0.5 text-[10px] capitalize" variant="muted">
+    <View className="w-full flex-row items-end gap-2 self-end">
+      <Text
+        className="gb-0.5 grow text-right text-[10px] capitalize"
+        variant="muted"
+      >
         {item.captureType}
       </Text>
       <CaptureListContextMenu
         // this is needed to prevent the item from overflowing to the right
-        className="shrink"
+        className="grow-0"
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}
