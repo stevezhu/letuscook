@@ -1,3 +1,20 @@
+---
+date: 2026-04-10T18:27:14Z
+type: plan
+status: done
+agent: claudecode
+models: [claude-opus-4-6, claude-haiku-4-5-20251001]
+branch: feat/share-to-app
+sessionId: 9bbfdeeb-6a12-4d77-a96d-fc87dd09ad6c
+tags: [share-extension, ios, expo-sharing, capture]
+filesModified:
+  - apps/assistant-mobile/app.config.ts
+  - apps/assistant-mobile/package.json
+  - apps/assistant-mobile/src/app/+native-intent.ts
+  - apps/assistant-mobile/src/app/(tabs)/capture.tsx
+  - apps/assistant-mobile/src/modules/capture/components/capture-composer.tsx
+---
+
 # Share to App — iOS Share Extension
 
 ## Context
@@ -84,7 +101,6 @@ This file intercepts incoming share URLs and redirects to the capture tab:
 ```ts
 export async function redirectSystemPath({
   path,
-  initial,
 }: {
   path: string;
   initial: boolean;
@@ -107,11 +123,6 @@ export async function redirectSystemPath({
 Export `textAtom` and `captureTypeAtom` so they can be set from within the Jotai Provider scope:
 
 ```ts
-// Change from:
-const textAtom = atom('');
-const captureTypeAtom = atom<CaptureType>('text');
-
-// To:
 export const textAtom = atom('');
 export const captureTypeAtom = atom<CaptureType>('text');
 ```
@@ -138,11 +149,10 @@ function CaptureComposerSharedContent() {
     if (resolvedSharedPayloads.length === 0) return;
 
     const payload = resolvedSharedPayloads[0];
-    const content = payload?.contentUri ?? payload?.value ?? '';
+    const content = payload?.contentUri ?? '';
     if (!content) return;
 
     setText(content);
-    // Auto-select 'link' type if it's a URL
     if (content.startsWith('http://') || content.startsWith('https://')) {
       setCaptureType('link');
     }
@@ -205,3 +215,37 @@ cd apps/assistant-mobile
 6. Repeat from Reddit (share a post link), X (share a tweet), Threads (share a post)
 7. Test cold start: force-quit the app, share from Safari, verify app opens to capture tab with URL prefilled
 8. Test while logged out: share from Safari, log in, navigate to capture tab, verify URL appears
+
+## References
+
+- [Expo Sharing docs](https://docs.expo.dev/versions/latest/sdk/sharing/index.md)
+
+## Session Stats
+
+```
+claudecode Session Stats: 9bbfdeeb-6a12-4d77-a96d-fc87dd09ad6c
+========================================
+Models Used:  Main: claude-opus-4-6
+              Subagents: claude-haiku-4-5-20251001, claude-opus-4-6
+----------------------------------------
+MAIN SESSION:
+  Input Tokens         5,615
+  Output Tokens        48,531
+  Cache Creation Input 264,425
+  Cache Read Input     5,291,591
+----------------------------------------
+SUBAGENTS (3 total):
+  Input Tokens         10,828
+  Output Tokens        20,238
+  Cache Creation Input 509,862
+  Cache Read Input     5,900,839
+----------------------------------------
+TOTAL USAGE:
+  Total Input Tokens   16,443
+  Total Output Tokens  68,769
+  Total Cache Creation 774,287
+  Total Cache Read     11,192,430
+----------------------------------------
+GRAND TOTAL TOKENS:  12,051,929
+========================================
+```
