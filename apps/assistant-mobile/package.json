@@ -93,7 +93,7 @@
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@jest/globals": "^29.7.0",
-    "@react-native/metro-config": "~0.83.4",
+    "@react-native/metro-config": "~0.85.0",
     "@rnx-kit/metro-config": "^2.2.4",
     "@storybook/addon-ondevice-actions": "catalog:",
     "@storybook/addon-ondevice-controls": "catalog:",
