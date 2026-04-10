@@ -55,6 +55,16 @@ The `settings.local.json` had accumulated many one-off permission entries from p
 - Destructive commands are blocked at the hook level rather than relying on per-command permission granularity
 - Hook is team-shared via `settings.json`
 
+## Follow-up: Replaced guard-destructive hook with safety-net plugin (2026-04-10)
+
+Replaced the custom `guard-destructive.sh` hook with the `safety-net` plugin from the `cc-marketplace`. The plugin provides the same destructive command guardrails with better coverage (e.g., catches separated flags like `rm -r -f`, long-form flags like `--recursive --force`) and is externally maintained.
+
+**Changes:**
+
+- Deleted `.claude/hooks/guard-destructive.sh`
+- Removed custom hook config from `.claude/settings.json`
+- Added `"enabledPlugins": { "safety-net@cc-marketplace": true }` to `.claude/settings.json`
+
 ## Session Stats
 
 ```
