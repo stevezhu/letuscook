@@ -18,7 +18,7 @@ const mockClearSharedPayloads = jest.fn();
 const mockUseIncomingShare = jest.fn<() => UseIncomingShareResult>();
 
 jest.mock('expo-sharing', () => ({
-  useIncomingShare: (...args: unknown[]) => mockUseIncomingShare(...args),
+  useIncomingShare: mockUseIncomingShare,
 }));
 
 // ---------------------------------------------------------------------------
