@@ -1,8 +1,8 @@
 import {
-  LegendList,
-  LegendListProps,
-  LegendListRenderItemProps,
-} from '@legendapp/list/react-native';
+  FlashList,
+  FlashListProps,
+  ListRenderItemInfo,
+} from '@shopify/flash-list';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
 import { useCallback, useMemo } from 'react';
@@ -24,34 +24,40 @@ type TimeHeader = { type: 'header'; id: string; label: string };
 type CaptureRow = { type: 'item' } & CaptureItemData;
 type ListRow = TimeHeader | CaptureRow;
 
+// 👀 Needs Verification
 export function CaptureList({
   data,
   onArchive,
   ...props
-}: Omit<LegendListProps<ListRow>, 'data'> & {
+}: Omit<FlashListProps<ListRow>, 'data' | 'renderItem'> & {
   data: CaptureItemData[] | undefined;
   onArchive: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
   const renderItem = useCallback(
-    (renderProps: LegendListRenderItemProps<ListRow>) => (
-      <ListRowItem
-        {...renderProps}
-        onArchive={() => onArchive(renderProps.item.id)}
-      />
-    ),
+    (renderProps: ListRenderItemInfo<ListRow>) => {
+      return (
+        <ListRowItem
+          item={renderProps.item}
+          onArchive={() => onArchive(renderProps.item.id)}
+        />
+      );
+    },
     [onArchive],
   );
 
   return (
-    <LegendList<ListRow>
+    <FlashList
       data={rows}
       renderItem={renderItem}
       keyExtractor={(row) => row.id}
-      recycleItems
       ItemSeparatorComponent={() => <View className="h-2" />}
       contentContainerClassName="px-3 py-2"
+      maintainVisibleContentPosition={{
+        // use flashlist because this is more consistent than legendlist so far
+        startRenderingFromBottom: true,
+      }}
       {...props}
     />
   );
@@ -60,7 +66,8 @@ export function CaptureList({
 function ListRowItem({
   item,
   onArchive,
-}: LegendListRenderItemProps<ListRow> & {
+}: {
+  item: ListRow;
   onArchive: () => void;
 }) {
   if (item.type === 'header') {
@@ -75,11 +82,10 @@ function ListRowItem({
 
   return (
     <View className="max-w-[85%] flex-row items-end gap-2 self-end">
-      <Text className="shrink-0 pb-0.5 text-[10px] capitalize" variant="muted">
+      <Text className="pb-0.5 text-[10px] capitalize" variant="muted">
         {item.captureType}
       </Text>
       <CaptureListContextMenu
-        className="shrink"
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}

@@ -2,13 +2,20 @@ import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import type { Id } from 'assistant-convex/convex/_generated/dataModel';
-import { useCallback, useId, useMemo, useState } from 'react';
-import { KeyboardGestureArea } from 'react-native-keyboard-controller';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import { ScrollViewProps } from 'react-native';
+import {
+  KeyboardChatScrollView,
+  KeyboardGestureArea,
+} from 'react-native-keyboard-controller';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 
-import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { StyledKeyboardStickyView } from '#components/styled.ts';
+import { useHasActivated } from '#hooks/use-has-activated.ts';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
 import {
   CaptureComposer,
@@ -23,10 +30,15 @@ import { useCaptureSubmit } from '#modules/capture/use-capture-submit.ts';
 import { useGuestCaptureStore } from '#modules/capture/use-guest-capture-store.ts';
 
 export default function CaptureTab() {
+  const hasActivated = useHasActivated();
+  if (!hasActivated) {
+    return <DefaultActivityView />;
+  }
+
   return (
-    <DefaultSuspense>
+    <DefaultQueryBoundary>
       <CaptureScreen />
-    </DefaultSuspense>
+    </DefaultQueryBoundary>
   );
 }
 
@@ -36,8 +48,9 @@ const TEXT_HEIGHT = 101;
 function CaptureScreen() {
   const textInputNativeId = useId();
   const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
-  const { bottom } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const spacing = useCSSVariable('--spacing') as number;
+  const textInputMargin = TEXT_HEIGHT + spacing * 4;
   const { submit, isPending } = useCaptureSubmit();
   const { user } = useAuth();
   const { data: serverCaptures } = useQuery(
@@ -80,6 +93,33 @@ function CaptureScreen() {
       }));
   }, [user, serverCaptures, guestCaptures]);
 
+  // Use blankSpace for safe area bottom instead of contentInset.bottom
+  // to avoid double-counting when the keyboard covers the safe area.
+  const blankSpace = useSharedValue(bottom);
+  useEffect(() => {
+    blankSpace.value = bottom;
+  }, [bottom, blankSpace]);
+
+  const extraContentPadding = useSharedValue(0);
+
+  const renderScrollComponent = useCallback(
+    (props: ScrollViewProps) => (
+      <KeyboardChatScrollView
+        keyboardLiftBehavior="always"
+        extraContentPadding={extraContentPadding}
+        blankSpace={blankSpace}
+        {...props}
+      />
+    ),
+    [extraContentPadding, blankSpace],
+  );
+
+  // TODO: might be able to be removed
+  const hasActivated = useHasActivated();
+  if (!hasActivated) {
+    return <DefaultActivityView />;
+  }
+
   return (
     <KeyboardGestureArea
       interpolator="ios"
@@ -90,10 +130,10 @@ function CaptureScreen() {
       <CaptureList
         data={items}
         onArchive={handleArchive}
-        estimatedItemSize={60}
-        contentContainerStyle={{
-          paddingBottom: TEXT_HEIGHT + spacing * 2,
-        }}
+        contentInset={{ top }}
+        scrollIndicatorInsets={{ bottom: spacing * 4 }}
+        contentContainerStyle={{ paddingBottom: textInputMargin }}
+        renderScrollComponent={renderScrollComponent}
       />
       <StyledKeyboardStickyView
         className="absolute w-full px-2"
@@ -106,7 +146,15 @@ function CaptureScreen() {
         <CaptureComposer
           isPending={isPending}
           onLayout={(e) => {
-            setInputHeight(e.nativeEvent.layout.height);
+            const { height } = e.nativeEvent.layout;
+            console.log('set', height, Math.max(height - TEXT_HEIGHT, 0));
+            extraContentPadding.value = withTiming(
+              Math.max(height - spacing * 4, 0),
+              {
+                duration: 0,
+              },
+            );
+            setInputHeight(height);
           }}
         >
           <CaptureComposerTextInput />
