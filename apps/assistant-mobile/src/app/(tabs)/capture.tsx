@@ -2,8 +2,6 @@ import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import type { Id } from 'assistant-convex/convex/_generated/dataModel';
-import { useIncomingShare } from 'expo-sharing';
-import { useSetAtom } from 'jotai';
 import {
   useCallback,
   useEffect,
@@ -26,12 +24,11 @@ import { DefaultQueryBoundary } from '#components/boundaries/default-query-bound
 import { StyledKeyboardStickyView } from '#components/styled.ts';
 import { useHasActivated } from '#hooks/use-has-activated.ts';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { CaptureComposerSharedContent } from '#modules/capture/components/capture-composer-shared-content.tsx';
 import {
   CaptureComposer,
   CaptureComposerControls,
   CaptureComposerTextInput,
-  captureTypeAtom,
-  textAtom,
 } from '#modules/capture/components/capture-composer.tsx';
 import {
   CaptureItemData,
@@ -114,9 +111,7 @@ function CaptureScreen() {
   useEffect(() => {
     if (shouldScrollToEnd.current) {
       shouldScrollToEnd.current = false;
-      requestAnimationFrame(() => {
-        listRef.current?.scrollToEnd({ animated: true });
-      });
+      listRef.current?.scrollToEnd({ animated: true });
     }
   }, [items]);
 
@@ -196,30 +191,4 @@ function CaptureScreen() {
       </StyledKeyboardStickyView>
     </KeyboardGestureArea>
   );
-}
-
-/**
- * Reads incoming share payloads and prefills the capture composer. Must be
- * rendered inside `<CaptureComposer>` (within its Jotai Provider scope).
- */
-function CaptureComposerSharedContent() {
-  const { resolvedSharedPayloads, clearSharedPayloads } = useIncomingShare();
-  const setText = useSetAtom(textAtom);
-  const setCaptureType = useSetAtom(captureTypeAtom);
-
-  useEffect(() => {
-    if (resolvedSharedPayloads.length === 0) return;
-
-    const payload = resolvedSharedPayloads[0];
-    const content = payload?.contentUri ?? '';
-    if (!content) return;
-
-    setText(content);
-    if (content.startsWith('http://') || content.startsWith('https://')) {
-      setCaptureType('link');
-    }
-    clearSharedPayloads();
-  }, [resolvedSharedPayloads, setText, setCaptureType, clearSharedPayloads]);
-
-  return null;
 }

@@ -56,6 +56,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             supportsText: true,
           },
         },
+        // TODO: test android share-to-app
+        android: {
+          enabled: true,
+          singleShareMimeTypes: ['text/plain', 'text/*'],
+        },
       },
     ],
   ],
