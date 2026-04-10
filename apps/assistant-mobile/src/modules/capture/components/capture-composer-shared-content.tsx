@@ -1,8 +1,33 @@
+import type { ResolvedSharePayload } from 'expo-sharing';
 import { useIncomingShare } from 'expo-sharing';
 import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
+import type { CaptureType } from '../guest-capture-types.js';
 import { captureTypeAtom, captureTextAtom } from './capture-composer.tsx';
+
+function extractContent(p: ResolvedSharePayload): string {
+  switch (p.contentType) {
+    case 'website':
+      return p.contentUri;
+    case 'text':
+      return p.value;
+    // TODO: handle media/file types when capture supports attachments
+    case 'audio':
+    case 'image':
+    case 'video':
+    case 'file':
+    case undefined:
+      return '';
+  }
+}
+
+function detectCaptureType(payloads: ResolvedSharePayload[]): CaptureType {
+  if (payloads.every((p) => p.contentType === 'website')) {
+    return 'link';
+  }
+  return 'text';
+}
 
 /**
  * Reads incoming share payloads and prefills the capture composer. Must be
@@ -15,20 +40,13 @@ export function CaptureComposerSharedContent() {
   const setCaptureType = useSetAtom(captureTypeAtom);
 
   useEffect(() => {
-    // TODO: test multiple shared payloads and add tests
-    const contents = resolvedSharedPayloads
-      .map((p) => p.contentUri ?? '')
-      .filter(Boolean);
+    if (resolvedSharedPayloads.length === 0) return;
+
+    const contents = resolvedSharedPayloads.map(extractContent).filter(Boolean);
     if (contents.length === 0) return;
 
     setCaptureText(contents.join('\n'));
-    // TODO: this logic is duplicated in convex captures logic
-    // apps/assistant-convex/convex/captures.ts
-    if (
-      contents.some((c) => c.startsWith('http://') || c.startsWith('https://'))
-    ) {
-      setCaptureType('link');
-    }
+    setCaptureType(detectCaptureType(resolvedSharedPayloads));
     clearSharedPayloads();
   }, [
     resolvedSharedPayloads,
