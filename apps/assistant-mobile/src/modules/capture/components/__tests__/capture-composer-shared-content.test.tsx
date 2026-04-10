@@ -15,18 +15,10 @@ import { CaptureComposerSharedContent } from '../capture-composer-shared-content
 // ---------------------------------------------------------------------------
 
 const mockClearSharedPayloads = jest.fn();
-
-let mockShareResult: UseIncomingShareResult = {
-  sharedPayloads: [],
-  resolvedSharedPayloads: [],
-  clearSharedPayloads: mockClearSharedPayloads,
-  isResolving: false,
-  error: null,
-  refreshSharePayloads: jest.fn(),
-};
+const mockUseIncomingShare = jest.fn<() => UseIncomingShareResult>();
 
 jest.mock('expo-sharing', () => ({
-  useIncomingShare: () => mockShareResult,
+  useIncomingShare: (...args: unknown[]) => mockUseIncomingShare(...args),
 }));
 
 // ---------------------------------------------------------------------------
@@ -49,6 +41,17 @@ function makePayload(
   } as ResolvedSharePayload;
 }
 
+function mockResolvedPayloads(payloads: ResolvedSharePayload[]) {
+  mockUseIncomingShare.mockReturnValue({
+    sharedPayloads: [],
+    resolvedSharedPayloads: payloads,
+    clearSharedPayloads: mockClearSharedPayloads,
+    isResolving: false,
+    error: null,
+    refreshSharePayloads: jest.fn(),
+  });
+}
+
 async function renderWithStore() {
   const store = createStore();
   await render(
@@ -66,14 +69,14 @@ async function renderWithStore() {
 describe('CaptureComposerSharedContent', () => {
   beforeEach(() => {
     mockClearSharedPayloads.mockClear();
-    mockShareResult = {
+    mockUseIncomingShare.mockReturnValue({
       sharedPayloads: [],
       resolvedSharedPayloads: [],
       clearSharedPayloads: mockClearSharedPayloads,
       isResolving: false,
       error: null,
       refreshSharePayloads: jest.fn(),
-    };
+    });
   });
 
   test('does nothing when there are no shared payloads', async () => {
@@ -85,9 +88,9 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('sets text from a text share payload', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({ contentType: 'text', value: 'Hello world' }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -99,12 +102,12 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('sets link type and uses contentUri for a website share', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({
         contentType: 'website',
         contentUri: 'https://example.com',
       }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -116,10 +119,10 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('joins multiple payloads with newlines', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({ contentType: 'text', value: 'Line 1' }),
       makePayload({ contentType: 'text', value: 'Line 2' }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -130,7 +133,7 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('detects link type when all payloads are websites', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({
         contentType: 'website',
         contentUri: 'https://a.com',
@@ -139,7 +142,7 @@ describe('CaptureComposerSharedContent', () => {
         contentType: 'website',
         contentUri: 'https://b.com',
       }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -150,13 +153,13 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('detects text type when payloads are mixed', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({
         contentType: 'website',
         contentUri: 'https://a.com',
       }),
       makePayload({ contentType: 'text', value: 'some note' }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -167,13 +170,13 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('skips payloads with unsupported content types', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({
         contentType: 'image',
         contentUri: 'file://img.png',
       }),
       makePayload({ contentType: 'text', value: 'caption' }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
@@ -185,7 +188,7 @@ describe('CaptureComposerSharedContent', () => {
   });
 
   test('does nothing when all payloads extract to empty strings', async () => {
-    mockShareResult.resolvedSharedPayloads = [
+    mockResolvedPayloads([
       makePayload({
         contentType: 'image',
         contentUri: 'file://img.png',
@@ -194,7 +197,7 @@ describe('CaptureComposerSharedContent', () => {
         contentType: 'audio',
         contentUri: 'file://audio.mp3',
       }),
-    ];
+    ]);
 
     const store = await renderWithStore();
 
