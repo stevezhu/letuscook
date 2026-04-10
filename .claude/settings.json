@@ -14,5 +14,19 @@
       "allowWrite": ["~/.proto"]
     }
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/guard-destructive.sh",
+            "statusMessage": "Checking for destructive commands..."
+          }
+        ]
+      }
+    ]
+  },
   "plansDirectory": "docs/plans"
 }
