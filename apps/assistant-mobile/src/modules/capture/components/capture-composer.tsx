@@ -16,9 +16,9 @@ const CaptureComposerContext = createContext<{ isPending: boolean }>({
   isPending: false,
 });
 
-const textAtom = atom('');
+export const textAtom = atom('');
 const trimmedTextAtom = atom((get) => get(textAtom).trim());
-const captureTypeAtom = atom<CaptureType>('text');
+export const captureTypeAtom = atom<CaptureType>('text');
 
 export type CaptureComposerProps = GlassViewProps & {
   isPending: boolean;

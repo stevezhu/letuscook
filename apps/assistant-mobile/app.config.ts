@@ -45,6 +45,19 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-web-browser',
+    [
+      'expo-sharing',
+      {
+        ios: {
+          enabled: true,
+          activationRule: {
+            supportsWebUrlWithMaxCount: 1,
+            supportsWebPageWithMaxCount: 1,
+            supportsText: true,
+          },
+        },
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,
