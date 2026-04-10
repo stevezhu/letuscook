@@ -2,7 +2,7 @@ import { useIncomingShare } from 'expo-sharing';
 import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
-import { captureTypeAtom, textAtom } from './capture-composer.tsx';
+import { captureTypeAtom, captureTextAtom } from './capture-composer.tsx';
 
 /**
  * Reads incoming share payloads and prefills the capture composer. Must be
@@ -11,22 +11,31 @@ import { captureTypeAtom, textAtom } from './capture-composer.tsx';
 export function CaptureComposerSharedContent() {
   // TODO: handle isResolving=true state and error state
   const { resolvedSharedPayloads, clearSharedPayloads } = useIncomingShare();
-  const setText = useSetAtom(textAtom);
+  const setCaptureText = useSetAtom(captureTextAtom);
   const setCaptureType = useSetAtom(captureTypeAtom);
 
   useEffect(() => {
-    if (resolvedSharedPayloads.length === 0) return;
+    // TODO: test multiple shared payloads and add tests
+    const contents = resolvedSharedPayloads
+      .map((p) => p.contentUri ?? '')
+      .filter(Boolean);
+    if (contents.length === 0) return;
 
-    const payload = resolvedSharedPayloads[0];
-    const content = payload?.contentUri ?? '';
-    if (!content) return;
-
-    setText(content);
-    if (content.startsWith('http://') || content.startsWith('https://')) {
+    setCaptureText(contents.join('\n'));
+    // TODO: this logic is duplicated in convex captures logic
+    // apps/assistant-convex/convex/captures.ts
+    if (
+      contents.some((c) => c.startsWith('http://') || c.startsWith('https://'))
+    ) {
       setCaptureType('link');
     }
     clearSharedPayloads();
-  }, [resolvedSharedPayloads, setText, setCaptureType, clearSharedPayloads]);
+  }, [
+    resolvedSharedPayloads,
+    setCaptureText,
+    setCaptureType,
+    clearSharedPayloads,
+  ]);
 
   return null;
 }

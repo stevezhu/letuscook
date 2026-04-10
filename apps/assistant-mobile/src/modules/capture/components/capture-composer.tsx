@@ -16,8 +16,8 @@ const CaptureComposerContext = createContext<{ isPending: boolean }>({
   isPending: false,
 });
 
-export const textAtom = atom('');
-const trimmedTextAtom = atom((get) => get(textAtom).trim());
+export const captureTextAtom = atom('');
+const trimmedCaptureTextAtom = atom((get) => get(captureTextAtom).trim());
 export const captureTypeAtom = atom<CaptureType>('text');
 
 export type CaptureComposerProps = GlassViewProps & {
@@ -52,7 +52,7 @@ export function CaptureComposerTextInput({
   className,
   ...props
 }: CaptureComposerTextInputProps) {
-  const [text, setText] = useAtom(textAtom);
+  const [text, setText] = useAtom(captureTextAtom);
   return (
     <TextInput
       multiline
@@ -81,8 +81,8 @@ export function CaptureComposerControls({
   onSubmit,
 }: CaptureComposerControlsProps) {
   const { isPending } = use(CaptureComposerContext);
-  const setText = useSetAtom(textAtom);
-  const trimmedText = useAtomValue(trimmedTextAtom);
+  const setText = useSetAtom(captureTextAtom);
+  const trimmedText = useAtomValue(trimmedCaptureTextAtom);
   const [captureType, setCaptureType] = useAtom(captureTypeAtom);
 
   const canSend = !isPending && trimmedText.length > 0;
