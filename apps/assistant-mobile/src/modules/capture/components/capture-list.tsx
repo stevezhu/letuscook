@@ -1,8 +1,8 @@
 import {
-  LegendList,
-  LegendListProps,
-  LegendListRenderItemProps,
-} from '@legendapp/list/react-native';
+  FlashList,
+  FlashListProps,
+  ListRenderItemInfo,
+} from '@shopify/flash-list';
 import { Text } from '@workspace/rn-reusables/components/text';
 import * as Clipboard from 'expo-clipboard';
 import { useCallback, useMemo } from 'react';
@@ -29,14 +29,14 @@ export function CaptureList({
   data,
   onArchive,
   ...props
-}: Omit<LegendListProps<ListRow>, 'data'> & {
+}: Omit<FlashListProps<ListRow>, 'data' | 'renderItem'> & {
   data: CaptureItemData[] | undefined;
   onArchive: (id: string) => void;
 }) {
   const rows = useMemo(() => groupByTime(data ?? []), [data]);
 
   const renderItem = useCallback(
-    (renderProps: LegendListRenderItemProps<ListRow>) => {
+    (renderProps: ListRenderItemInfo<ListRow>) => {
       return (
         <ListRowItem
           item={renderProps.item}
@@ -48,13 +48,16 @@ export function CaptureList({
   );
 
   return (
-    <LegendList<ListRow>
+    <FlashList
       data={rows}
       renderItem={renderItem}
       keyExtractor={(row) => row.id}
-      recycleItems={false}
       ItemSeparatorComponent={() => <View className="h-2" />}
       contentContainerClassName="px-3 py-2"
+      maintainVisibleContentPosition={{
+        // use flashlist because this is more consistent than legendlist so far
+        startRenderingFromBottom: true,
+      }}
       {...props}
     />
   );

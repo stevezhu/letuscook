@@ -8,7 +8,7 @@ import {
   KeyboardChatScrollView,
   KeyboardGestureArea,
 } from 'react-native-keyboard-controller';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 
@@ -50,6 +50,7 @@ function CaptureScreen() {
   const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
   const { top, bottom } = useSafeAreaInsets();
   const spacing = useCSSVariable('--spacing') as number;
+  const textInputMargin = TEXT_HEIGHT + spacing * 4;
   const { submit, isPending } = useCaptureSubmit();
   const { user } = useAuth();
   const { data: serverCaptures } = useQuery(
@@ -113,6 +114,12 @@ function CaptureScreen() {
     [extraContentPadding, blankSpace],
   );
 
+  // TODO: might be able to be removed
+  const hasActivated = useHasActivated();
+  if (!hasActivated) {
+    return <DefaultActivityView />;
+  }
+
   return (
     <KeyboardGestureArea
       interpolator="ios"
@@ -124,9 +131,8 @@ function CaptureScreen() {
         data={items}
         onArchive={handleArchive}
         contentInset={{ top }}
-        contentContainerStyle={{
-          paddingBottom: TEXT_HEIGHT + spacing * 4,
-        }}
+        scrollIndicatorInsets={{ bottom: spacing * 4 }}
+        contentContainerStyle={{ paddingBottom: textInputMargin }}
         renderScrollComponent={renderScrollComponent}
       />
       <StyledKeyboardStickyView
@@ -140,7 +146,15 @@ function CaptureScreen() {
         <CaptureComposer
           isPending={isPending}
           onLayout={(e) => {
-            setInputHeight(e.nativeEvent.layout.height);
+            const { height } = e.nativeEvent.layout;
+            console.log('set', height, Math.max(height - TEXT_HEIGHT, 0));
+            extraContentPadding.value = withTiming(
+              Math.max(height - spacing * 4, 0),
+              {
+                duration: 0,
+              },
+            );
+            setInputHeight(height);
           }}
         >
           <CaptureComposerTextInput />
