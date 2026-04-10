@@ -3,6 +3,7 @@ import type { Config } from 'jest';
 // Reference: https://kulshekhar.github.io/ts-jest/docs/guides/react-native
 const configOverrides: Config = {
   resolver: 'ts-jest-resolver',
+  setupFilesAfterEnv: ['./jest-setup.ts'],
   // Reference: https://docs.expo.dev/develop/unit-testing/#additional-configuration-for-using-transformignorepatterns
   transformIgnorePatterns: [
     `node_modules/(?!(?:.pnpm/)?(${[
@@ -17,6 +18,9 @@ const configOverrides: Config = {
       'native-base',
       'react-native-svg',
       '@rn-primitives',
+      'uniwind',
+      'react-native-worklets',
+      'react-native-reanimated',
     ].join('|')}))`,
   ],
 };

@@ -11,6 +11,11 @@ filesModified:
   - apps/assistant-mobile/src/app/(tabs)/capture.tsx
   - apps/assistant-mobile/src/modules/capture/components/capture-list.tsx
   - apps/assistant-mobile/src/modules/capture/components/capture-composer-shared-content.tsx
+  - apps/assistant-mobile/src/modules/capture/components/capture-composer-atoms.ts
+  - apps/assistant-mobile/src/modules/capture/components/capture-composer.tsx
+  - apps/assistant-mobile/src/modules/capture/components/__tests__/capture-composer-shared-content.test.tsx
+  - apps/assistant-mobile/jest.config.ts
+  - apps/assistant-mobile/jest-setup.ts
   - apps/assistant-mobile/app.config.ts
 relatedPlan: plans/quizzical-tumbling-hopcroft.md
 ---
@@ -44,6 +49,11 @@ The `feat/share-to-app` branch adds iOS share extension support via `expo-sharin
 
 5. **Updated PR #73 description** to include the fixes from this session.
 
+6. **Unit tests for `CaptureComposerSharedContent`** (follow-up session):
+   - **Extracted `capture-composer-atoms.ts`**: Moved `captureTextAtom` and `captureTypeAtom` out of `capture-composer.tsx` into a lightweight file with no UI dependencies. This avoids pulling in reanimated/keyboard-controller/uniwind when testing shared content handling. `trimmedCaptureTextAtom` stays in `capture-composer.tsx` as it's a derived atom only used there.
+   - **Jest setup for reanimated**: Created `jest-setup.ts` following the [official reanimated testing guide](https://docs.swmansion.com/react-native-reanimated/docs/guides/testing/) — mocks `react-native-worklets` via its provided mock and calls `setUpTests()`. Updated `jest.config.ts` with `setupFilesAfterEnv` and added `uniwind`, `react-native-worklets`, `react-native-reanimated` to `transformIgnorePatterns`.
+   - **8 test cases** covering: no-op on empty payloads, text extraction from `value`, website extraction from `contentUri`, multi-payload join with `\n`, all-website → `'link'` type, mixed → `'text'` type, unsupported types filtered out, all-empty extraction → no-op.
+
 ## Outcome
 
 - All lint checks and typechecks pass
@@ -52,7 +62,6 @@ The `feat/share-to-app` branch adds iOS share extension support via `expo-sharin
   - Handle `isResolving` and `error` states from `useIncomingShare()`
   - Support media/file content types when capture supports attachments
   - Test Android share-to-app
-  - Add unit tests for shared payload handling
 
 ## Session Stats
 

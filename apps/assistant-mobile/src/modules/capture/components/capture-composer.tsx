@@ -11,14 +11,15 @@ import { SpinningView } from '#components/spinning.js';
 import { StyledGlassView, StyledSegmentedControl } from '#components/styled.js';
 
 import type { CaptureType } from '../guest-capture-types.js';
+import { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
+
+export { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
 
 const CaptureComposerContext = createContext<{ isPending: boolean }>({
   isPending: false,
 });
 
-export const captureTextAtom = atom('');
 const trimmedCaptureTextAtom = atom((get) => get(captureTextAtom).trim());
-export const captureTypeAtom = atom<CaptureType>('text');
 
 export type CaptureComposerProps = GlassViewProps & {
   isPending: boolean;

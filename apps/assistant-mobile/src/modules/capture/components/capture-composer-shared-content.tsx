@@ -4,7 +4,7 @@ import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
 import type { CaptureType } from '../guest-capture-types.js';
-import { captureTypeAtom, captureTextAtom } from './capture-composer.tsx';
+import { captureTypeAtom, captureTextAtom } from './capture-composer-atoms.ts';
 
 function extractContent(p: ResolvedSharePayload): string {
   switch (p.contentType) {
