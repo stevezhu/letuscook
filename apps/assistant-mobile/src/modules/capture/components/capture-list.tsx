@@ -25,7 +25,7 @@ type TimeHeader = { type: 'header'; id: string; label: string };
 type CaptureRow = { type: 'item' } & CaptureItemData;
 type ListRow = TimeHeader | CaptureRow;
 
-export type { ListRow as CaptureListRow };
+export type CaptureListRef = FlashListRef<ListRow>;
 
 // 👀 Needs Verification
 export function CaptureList({

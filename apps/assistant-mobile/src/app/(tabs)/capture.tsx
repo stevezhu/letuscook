@@ -1,5 +1,4 @@
 import { convexQuery, useConvexMutation } from '@convex-dev/react-query';
-import type { FlashListRef } from '@shopify/flash-list';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from 'assistant-convex/convex/_generated/api';
 import type { Id } from 'assistant-convex/convex/_generated/dataModel';
@@ -37,7 +36,7 @@ import {
 import {
   CaptureItemData,
   CaptureList,
-  type CaptureListRow,
+  type CaptureListRef,
 } from '#modules/capture/components/capture-list.tsx';
 import { useCaptureSubmit } from '#modules/capture/use-capture-submit.ts';
 import { useGuestCaptureStore } from '#modules/capture/use-guest-capture-store.ts';
@@ -59,7 +58,7 @@ const TEXT_HEIGHT = 101;
 
 // 👀 Needs Verification
 function CaptureScreen() {
-  const listRef = useRef<FlashListRef<CaptureListRow>>(null);
+  const listRef = useRef<CaptureListRef>(null);
   const shouldScrollToEnd = useRef(false);
   const textInputNativeId = useId();
   const [inputHeight, setInputHeight] = useState(TEXT_HEIGHT);
