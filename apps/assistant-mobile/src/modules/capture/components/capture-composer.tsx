@@ -11,14 +11,15 @@ import { SpinningView } from '#components/spinning.js';
 import { StyledGlassView, StyledSegmentedControl } from '#components/styled.js';
 
 import type { CaptureType } from '../guest-capture-types.js';
+import { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
+
+export { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
 
 const CaptureComposerContext = createContext<{ isPending: boolean }>({
   isPending: false,
 });
 
-const textAtom = atom('');
-const trimmedTextAtom = atom((get) => get(textAtom).trim());
-const captureTypeAtom = atom<CaptureType>('text');
+const trimmedCaptureTextAtom = atom((get) => get(captureTextAtom).trim());
 
 export type CaptureComposerProps = GlassViewProps & {
   isPending: boolean;
@@ -52,7 +53,7 @@ export function CaptureComposerTextInput({
   className,
   ...props
 }: CaptureComposerTextInputProps) {
-  const [text, setText] = useAtom(textAtom);
+  const [text, setText] = useAtom(captureTextAtom);
   return (
     <TextInput
       multiline
@@ -81,8 +82,8 @@ export function CaptureComposerControls({
   onSubmit,
 }: CaptureComposerControlsProps) {
   const { isPending } = use(CaptureComposerContext);
-  const setText = useSetAtom(textAtom);
-  const trimmedText = useAtomValue(trimmedTextAtom);
+  const setText = useSetAtom(captureTextAtom);
+  const trimmedText = useAtomValue(trimmedCaptureTextAtom);
   const [captureType, setCaptureType] = useAtom(captureTypeAtom);
 
   const canSend = !isPending && trimmedText.length > 0;

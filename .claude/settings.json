@@ -14,5 +14,8 @@
       "allowWrite": ["~/.proto"]
     }
   },
-  "plansDirectory": "docs/plans"
+  "plansDirectory": "docs/plans",
+  "enabledPlugins": {
+    "safety-net@cc-marketplace": true
+  }
 }
