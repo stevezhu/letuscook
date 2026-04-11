@@ -1,8 +1,9 @@
 import { describe, expect, jest, test, beforeEach } from '@jest/globals';
 import { render, waitFor } from '@testing-library/react-native';
-import type {
-  ResolvedSharePayload,
-  UseIncomingShareResult,
+import {
+  useIncomingShare,
+  type ResolvedSharePayload,
+  type UseIncomingShareResult,
 } from 'expo-sharing';
 import { Provider, createStore } from 'jotai';
 import React from 'react';
@@ -14,12 +15,12 @@ import { CaptureComposerSharedContent } from '../capture-composer-shared-content
 // Mocks
 // ---------------------------------------------------------------------------
 
-const mockClearSharedPayloads = jest.fn();
-const mockUseIncomingShare = jest.fn<() => UseIncomingShareResult>();
-
 jest.mock('expo-sharing', () => ({
-  useIncomingShare: mockUseIncomingShare,
+  useIncomingShare: jest.fn<() => UseIncomingShareResult>(),
 }));
+
+const mockUseIncomingShare = jest.mocked(useIncomingShare);
+const mockClearSharedPayloads = jest.fn();
 
 // ---------------------------------------------------------------------------
 // Helpers
