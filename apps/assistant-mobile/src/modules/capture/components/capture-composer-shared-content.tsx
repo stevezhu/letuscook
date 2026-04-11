@@ -4,7 +4,11 @@ import { useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 
 import type { CaptureType } from '../guest-capture-types.js';
-import { captureTypeAtom, captureTextAtom } from './capture-composer-atoms.ts';
+import { EMPTY_SEGMENTS, reconcileSegments } from '../lib/segments.ts';
+import {
+  captureSegmentsAtom,
+  captureTypeAtom,
+} from './capture-composer-atoms.ts';
 
 function extractContent(p: ResolvedSharePayload): string {
   switch (p.contentType) {
@@ -36,7 +40,7 @@ function detectCaptureType(payloads: ResolvedSharePayload[]): CaptureType {
 export function CaptureComposerSharedContent() {
   // TODO: handle isResolving=true state and error state
   const { resolvedSharedPayloads, clearSharedPayloads } = useIncomingShare();
-  const setCaptureText = useSetAtom(captureTextAtom);
+  const setCaptureSegments = useSetAtom(captureSegmentsAtom);
   const setCaptureType = useSetAtom(captureTypeAtom);
 
   useEffect(() => {
@@ -45,12 +49,17 @@ export function CaptureComposerSharedContent() {
     const contents = resolvedSharedPayloads.map(extractContent).filter(Boolean);
     if (contents.length === 0) return;
 
-    setCaptureText(contents.join('\n'));
+    const joined = contents.join('\n');
+    // Treat OS-shared content as a paste so website URLs surface as inline
+    // pills with no extra wiring.
+    setCaptureSegments(
+      reconcileSegments(EMPTY_SEGMENTS, joined, { isPasteLikely: true }),
+    );
     setCaptureType(detectCaptureType(resolvedSharedPayloads));
     clearSharedPayloads();
   }, [
     resolvedSharedPayloads,
-    setCaptureText,
+    setCaptureSegments,
     setCaptureType,
     clearSharedPayloads,
   ]);

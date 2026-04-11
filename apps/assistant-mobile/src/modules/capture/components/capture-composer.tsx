@@ -2,24 +2,35 @@ import { Button } from '@workspace/rn-reusables/components/button';
 import { Icon } from '@workspace/rn-reusables/components/icon';
 import { cn } from '@workspace/rn-reusables/lib/utils';
 import { GlassViewProps } from 'expo-glass-effect';
-import { atom, Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { Provider, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ArrowUp, Loader2 } from 'lucide-react-native';
-import { createContext, ReactNode, use } from 'react';
-import { TextInput, TextInputProps, View } from 'react-native';
+import { createContext, ReactNode, use, useRef } from 'react';
+import { Text, TextInput, TextInputProps, View } from 'react-native';
 
 import { SpinningView } from '#components/spinning.js';
 import { StyledGlassView, StyledSegmentedControl } from '#components/styled.js';
 
 import type { CaptureType } from '../guest-capture-types.js';
-import { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
+import {
+  EMPTY_SEGMENTS,
+  flattenSegments,
+  reconcileSegments,
+} from '../lib/segments.ts';
+import {
+  captureSegmentsAtom,
+  captureTypeAtom,
+  trimmedCaptureFlatTextAtom,
+} from './capture-composer-atoms.ts';
 
-export { captureTextAtom, captureTypeAtom } from './capture-composer-atoms.ts';
+export {
+  captureSegmentsAtom,
+  captureTypeAtom,
+  captureFlatTextAtom,
+} from './capture-composer-atoms.ts';
 
 const CaptureComposerContext = createContext<{ isPending: boolean }>({
   isPending: false,
 });
-
-const trimmedCaptureTextAtom = atom((get) => get(captureTextAtom).trim());
 
 export type CaptureComposerProps = GlassViewProps & {
   isPending: boolean;
@@ -53,7 +64,20 @@ export function CaptureComposerTextInput({
   className,
   ...props
 }: CaptureComposerTextInputProps) {
-  const [text, setText] = useAtom(captureTextAtom);
+  const [segments, setSegments] = useAtom(captureSegmentsAtom);
+  // Track the previous flat length so we can classify change events as paste
+  // (multi-char net insert) vs. typing (single-char insert). Only paste is
+  // allowed to create pills — typing a URL character-by-character stays plain.
+  const prevFlatLenRef = useRef(flattenSegments(segments).length);
+
+  const handleChangeText = (next: string) => {
+    const delta = next.length - prevFlatLenRef.current;
+    const isPasteLikely = delta > 1;
+    const nextSegments = reconcileSegments(segments, next, { isPasteLikely });
+    setSegments(nextSegments);
+    prevFlatLenRef.current = flattenSegments(nextSegments).length;
+  };
+
   return (
     <TextInput
       multiline
@@ -61,13 +85,21 @@ export function CaptureComposerTextInput({
       // `event.nativeEvent.contentSize.height`
       className={cn('text-base max-h-[221px]', className)}
       placeholder="What's on your mind?"
-      value={text}
-      onChangeText={setText}
-      onContentSizeChange={(event) => {
-        console.debug(event.nativeEvent.contentSize.height);
-      }}
+      onChangeText={handleChangeText}
       {...props}
-    />
+    >
+      {segments.map((seg, i) => {
+        const key = `${seg.type}:${i}:${seg.value}`;
+        return seg.type === 'pill' ? (
+          <Text key={key} className="rounded bg-primary/10 px-1 text-primary">
+            {'\u{1F517} '}
+            {seg.value}
+          </Text>
+        ) : (
+          <Text key={key}>{seg.value}</Text>
+        );
+      })}
+    </TextInput>
   );
 }
 
@@ -82,8 +114,8 @@ export function CaptureComposerControls({
   onSubmit,
 }: CaptureComposerControlsProps) {
   const { isPending } = use(CaptureComposerContext);
-  const setText = useSetAtom(captureTextAtom);
-  const trimmedText = useAtomValue(trimmedCaptureTextAtom);
+  const setSegments = useSetAtom(captureSegmentsAtom);
+  const trimmedText = useAtomValue(trimmedCaptureFlatTextAtom);
   const [captureType, setCaptureType] = useAtom(captureTypeAtom);
 
   const canSend = !isPending && trimmedText.length > 0;
@@ -104,7 +136,7 @@ export function CaptureComposerControls({
 
           // TODO: add error handling
           await onSubmit({ value: trimmedText, captureType });
-          setText('');
+          setSegments(EMPTY_SEGMENTS);
         }}
       >
         {/* TODO: show success/stop icon */}
