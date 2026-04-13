@@ -78,7 +78,13 @@ function RootLayoutContent() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        headerTransparent: true,
+        headerBackButtonDisplayMode: 'minimal',
+      }}
+    >
       <Stack.Screen
         name="review/[captureId]"
         options={{
@@ -87,10 +93,18 @@ function RootLayoutContent() {
         }}
       />
       <Stack.Screen
-        name="knowledge/[nodeId]"
+        name="knowledge/[nodeId]/index"
+        options={{
+          headerShown: true,
+          title: '',
+        }}
+      />
+      <Stack.Screen
+        name="knowledge/[nodeId]/menu"
         options={{
           headerShown: true,
           presentation: 'modal',
+          title: 'Options',
         }}
       />
     </Stack>

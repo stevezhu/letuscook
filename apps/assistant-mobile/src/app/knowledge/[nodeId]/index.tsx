@@ -10,6 +10,7 @@ import {
   useLocalSearchParams,
   useRouter,
 } from 'expo-router';
+import { EllipsisVertical } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -33,17 +34,22 @@ export default function NodeDetailRoute() {
   }
 
   return (
-    <View className="flex-1">
+    <>
       <Stack.Screen
         options={{
-          title: 'Node',
-          presentation: 'modal',
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push(`/knowledge/${nodeId}/menu` as Href)}
+            >
+              <EllipsisVertical size={20} className="text-foreground" />
+            </Pressable>
+          ),
         }}
       />
       <DefaultQueryBoundary onGoBack={() => router.back()}>
         <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
       </DefaultQueryBoundary>
-    </View>
+    </>
   );
 }
 
@@ -96,7 +102,8 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
     >
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="p-4 gap-6"
+        contentContainerClassName="p-4 pt-0 gap-6"
+        contentInsetAdjustmentBehavior="automatic"
       >
         <View className="gap-2">
           <Text className="text-2xl font-bold text-foreground">
