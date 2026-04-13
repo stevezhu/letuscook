@@ -37,7 +37,7 @@ export default function NodeDetailRoute() {
       <Stack.Screen
         options={{
           title: 'Node',
-          presentation: 'modal',
+          headerBackTitle: 'Knowledge',
         }}
       />
       <DefaultQueryBoundary onGoBack={() => router.back()}>

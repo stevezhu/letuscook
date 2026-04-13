@@ -90,7 +90,6 @@ function RootLayoutContent() {
         name="knowledge/[nodeId]"
         options={{
           headerShown: true,
-          presentation: 'modal',
         }}
       />
     </Stack>
