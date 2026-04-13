@@ -6,7 +6,6 @@ import type { Id } from 'assistant-convex/convex/_generated/dataModel';
 import {
   type Href,
   Redirect,
-  Stack,
   useLocalSearchParams,
   useRouter,
 } from 'expo-router';
@@ -19,6 +18,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
@@ -33,17 +33,9 @@ export default function NodeDetailRoute() {
   }
 
   return (
-    <View className="flex-1">
-      <Stack.Screen
-        options={{
-          title: 'Node',
-          headerBackTitle: 'Knowledge',
-        }}
-      />
-      <DefaultQueryBoundary onGoBack={() => router.back()}>
-        <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
-      </DefaultQueryBoundary>
-    </View>
+    <DefaultQueryBoundary onGoBack={() => router.back()}>
+      <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
+    </DefaultQueryBoundary>
   );
 }
 
@@ -96,7 +88,8 @@ function NodeDetailScreen({ nodeId }: { nodeId: Id<'nodes'> }) {
     >
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="p-4 gap-6"
+        contentContainerClassName="p-4 pt-0 gap-6"
+        contentInsetAdjustmentBehavior="automatic"
       >
         <View className="gap-2">
           <Text className="text-2xl font-bold text-foreground">
