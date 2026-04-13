@@ -93,10 +93,18 @@ function RootLayoutContent() {
         }}
       />
       <Stack.Screen
-        name="knowledge/[nodeId]"
+        name="knowledge/[nodeId]/index"
         options={{
           headerShown: true,
           title: '',
+        }}
+      />
+      <Stack.Screen
+        name="knowledge/[nodeId]/menu"
+        options={{
+          headerShown: true,
+          presentation: 'modal',
+          title: 'Options',
         }}
       />
     </Stack>

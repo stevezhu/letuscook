@@ -6,9 +6,11 @@ import type { Id } from 'assistant-convex/convex/_generated/dataModel';
 import {
   type Href,
   Redirect,
+  Stack,
   useLocalSearchParams,
   useRouter,
 } from 'expo-router';
+import { EllipsisVertical } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -18,7 +20,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
 import { useAuth } from '#modules/auth/react/auth-provider.tsx';
@@ -33,9 +34,22 @@ export default function NodeDetailRoute() {
   }
 
   return (
-    <DefaultQueryBoundary onGoBack={() => router.back()}>
-      <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
-    </DefaultQueryBoundary>
+    <>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push(`/knowledge/${nodeId}/menu` as Href)}
+            >
+              <EllipsisVertical size={20} className="text-foreground" />
+            </Pressable>
+          ),
+        }}
+      />
+      <DefaultQueryBoundary onGoBack={() => router.back()}>
+        <NodeDetailScreen nodeId={nodeId as Id<'nodes'>} />
+      </DefaultQueryBoundary>
+    </>
   );
 }
 
