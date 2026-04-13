@@ -96,7 +96,7 @@ function ListRowItem({
       </Text>
       <CaptureListContextMenu
         // this is needed to prevent the item from overflowing to the right
-        className="grow-0"
+        className="shrink"
         onCopy={() => {
           void Clipboard.setStringAsync(item.rawContent);
         }}
