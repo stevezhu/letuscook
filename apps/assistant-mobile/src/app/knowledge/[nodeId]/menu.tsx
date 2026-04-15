@@ -6,8 +6,8 @@ export default function NodeMenuModal() {
   const { nodeId } = useLocalSearchParams<{ nodeId: string }>();
 
   return (
-    <View className="m-safe flex-1 bg-background p-4">
-      <Text className="text-base text-foreground">
+    <View className="bg-background m-safe flex-1 p-4">
+      <Text className="text-foreground text-base">
         Placeholder menu for node: {nodeId}
       </Text>
     </View>

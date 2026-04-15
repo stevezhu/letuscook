@@ -24,7 +24,7 @@ export default function InboxTab() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <View className="bg-muted px-4 py-2">
-      <Text className="text-xs font-semibold text-muted-foreground uppercase">
+      <Text className="text-muted-foreground text-xs font-semibold uppercase">
         {title}
       </Text>
     </View>
@@ -34,10 +34,10 @@ function SectionHeader({ title }: { title: string }) {
 function EmptyState() {
   return (
     <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-center text-base text-muted-foreground">
+      <Text className="text-muted-foreground text-center text-base">
         No items in your inbox
       </Text>
-      <Text className="mt-2 text-center text-sm text-muted-foreground">
+      <Text className="text-muted-foreground mt-2 text-center text-sm">
         Captured items will appear here for review
       </Text>
     </View>
@@ -65,10 +65,10 @@ export function InboxScreen() {
   }
 
   return (
-    <View className="flex-1 bg-background p-safe">
+    <View className="bg-background flex-1 p-safe">
       {!user && (
-        <View className="flex-row items-center justify-between border-b border-border px-4 py-2">
-          <Text className="text-sm text-muted-foreground">
+        <View className="border-border flex-row items-center justify-between border-b px-4 py-2">
+          <Text className="text-muted-foreground text-sm">
             Sign in to sync your captures
           </Text>
           <Button variant="outline" size="sm" onPress={signIn}>
