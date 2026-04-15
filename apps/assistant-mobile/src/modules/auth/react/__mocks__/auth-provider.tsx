@@ -26,12 +26,18 @@ export const useAuth = jest
           ReturnType<UseAuthReturn['signIn']>,
           Parameters<UseAuthReturn['signIn']>
         >()
-        .mockImplementation(async () => ({ success: true })),
+        .mockImplementation(async () => ({
+          id: 'test',
+          email: 'test@test.com',
+          firstName: 'Test',
+          lastName: 'User',
+          profilePictureUrl: 'https://test.com/profile.png',
+        })),
       signOut: jest
         .fn<
           ReturnType<UseAuthReturn['signOut']>,
           Parameters<UseAuthReturn['signOut']>
         >()
-        .mockImplementation(async () => ({ success: true })),
+        .mockImplementation(async () => true),
     };
   });
