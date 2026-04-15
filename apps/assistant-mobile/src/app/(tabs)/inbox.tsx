@@ -5,10 +5,11 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
 import { type Href, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { SectionList, ActivityIndicator, View } from 'react-native';
+import { SectionList, View } from 'react-native';
 
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
 import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 import { InboxItemRow } from '#modules/inbox/components/inbox-item-row.tsx';
 import { useInboxCaptures } from '#modules/inbox/use-inbox-captures.ts';
 
@@ -23,7 +24,7 @@ export default function InboxTab() {
 function SectionHeader({ title }: { title: string }) {
   return (
     <View className="bg-muted px-4 py-2">
-      <Text className="text-xs font-semibold text-muted-foreground uppercase">
+      <Text className="text-muted-foreground text-xs font-semibold uppercase">
         {title}
       </Text>
     </View>
@@ -33,10 +34,10 @@ function SectionHeader({ title }: { title: string }) {
 function EmptyState() {
   return (
     <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-center text-base text-muted-foreground">
+      <Text className="text-muted-foreground text-center text-base">
         No items in your inbox
       </Text>
-      <Text className="mt-2 text-center text-sm text-muted-foreground">
+      <Text className="text-muted-foreground mt-2 text-center text-sm">
         Captured items will appear here for review
       </Text>
     </View>
@@ -44,7 +45,7 @@ function EmptyState() {
 }
 
 export function InboxScreen() {
-  const { user, signIn } = useAuth();
+  const { user, signIn } = useSuspenseAuth();
   const router = useRouter();
   const { sections, items, isLoading } = useInboxCaptures();
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -60,18 +61,14 @@ export function InboxScreen() {
   });
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <DefaultActivityView />;
   }
 
   return (
-    <View className="flex-1 bg-background p-safe">
+    <View className="bg-background flex-1 p-safe">
       {!user && (
-        <View className="flex-row items-center justify-between border-b border-border px-4 py-2">
-          <Text className="text-sm text-muted-foreground">
+        <View className="border-border flex-row items-center justify-between border-b px-4 py-2">
+          <Text className="text-muted-foreground text-sm">
             Sign in to sync your captures
           </Text>
           <Button variant="outline" size="sm" onPress={signIn}>

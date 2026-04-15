@@ -1,6 +1,15 @@
+import { Redirect } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
+
 export default function TabsLayout() {
+  const { user } = useSuspenseAuth();
+  if (!user) {
+    // backup redirect in case `<Stack.Protected />` is not working
+    return <Redirect href="/sign-in" />;
+  }
+
   return (
     <NativeTabs backgroundColor="red" minimizeBehavior="onScrollDown">
       <NativeTabs.Trigger name="index" disableAutomaticContentInsets>

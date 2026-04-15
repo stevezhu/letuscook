@@ -9,7 +9,7 @@ import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
 import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function AccountTab() {
   return (
@@ -20,7 +20,7 @@ export default function AccountTab() {
 }
 
 function AccountScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useSuspenseAuth();
   if (!user) {
     return <Redirect href="/" />;
   }
@@ -35,7 +35,7 @@ function AccountScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-background"
+      className="bg-background flex-1"
       contentContainerClassName="p-6"
     >
       <View className="flex-col gap-8">
@@ -52,10 +52,10 @@ function AccountScreen() {
             </AvatarFallback>
           </Avatar>
           <View className="items-center gap-1">
-            <Text className="text-3xl font-bold text-foreground">
+            <Text className="text-foreground text-3xl font-bold">
               {fullName}
             </Text>
-            <Text className="text-lg text-muted-foreground">{user.email}</Text>
+            <Text className="text-muted-foreground text-lg">{user.email}</Text>
           </View>
         </View>
 
@@ -65,9 +65,9 @@ function AccountScreen() {
             className="border-destructive active:bg-destructive/10"
             onPress={() => signOut()}
           >
-            <Text className="font-semibold text-destructive">Sign Out</Text>
+            <Text className="text-destructive font-semibold">Sign Out</Text>
           </Button>
-          <Text className="text-center text-xs text-muted-foreground">
+          <Text className="text-muted-foreground text-center text-xs">
             Signed in as {user.email}
           </Text>
         </View>
