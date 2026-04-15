@@ -52,6 +52,12 @@ export default defineConfig<OxlintConfig>({
         withinDescribe: 'test',
       },
     ],
+    'vitest-eslint/expect-expect': [
+      'error',
+      {
+        assertFunctionNames: ['expect', 'expectTypeOf'],
+      },
+    ],
     'vitest-eslint/no-focused-tests': 'error',
     'vitest-eslint/no-disabled-tests': 'error',
     'vitest-eslint/no-standalone-expect': [

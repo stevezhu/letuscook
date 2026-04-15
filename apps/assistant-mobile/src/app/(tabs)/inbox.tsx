@@ -5,10 +5,11 @@ import { Text } from '@workspace/rn-reusables/components/text';
 import { api } from 'assistant-convex/convex/_generated/api';
 import { type Href, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { SectionList, ActivityIndicator, View } from 'react-native';
+import { SectionList, View } from 'react-native';
 
+import { DefaultActivityView } from '#components/boundaries/default-activity-view.tsx';
 import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 import { InboxItemRow } from '#modules/inbox/components/inbox-item-row.tsx';
 import { useInboxCaptures } from '#modules/inbox/use-inbox-captures.ts';
 
@@ -44,7 +45,7 @@ function EmptyState() {
 }
 
 export function InboxScreen() {
-  const { user, signIn } = useAuth();
+  const { user, signIn } = useSuspenseAuth();
   const router = useRouter();
   const { sections, items, isLoading } = useInboxCaptures();
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -60,11 +61,7 @@ export function InboxScreen() {
   });
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <DefaultActivityView />;
   }
 
   return (

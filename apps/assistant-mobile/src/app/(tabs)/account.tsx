@@ -9,7 +9,7 @@ import { Redirect } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 
 import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 
 export default function AccountTab() {
   return (
@@ -20,7 +20,7 @@ export default function AccountTab() {
 }
 
 function AccountScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut } = useSuspenseAuth();
   if (!user) {
     return <Redirect href="/" />;
   }

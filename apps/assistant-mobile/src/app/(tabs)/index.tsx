@@ -1,98 +1,88 @@
+import { convexQuery } from '@convex-dev/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { Button } from '@workspace/rn-reusables/components/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@workspace/rn-reusables/components/card';
 import { Text } from '@workspace/rn-reusables/components/text';
-import { ScrollView, View } from 'react-native';
+import { api } from 'assistant-convex/convex/_generated/api';
+import { type Href, useRouter } from 'expo-router';
+import { FlatList, Pressable, View } from 'react-native';
 
-import { DefaultSuspense } from '#components/boundaries/default-suspense.tsx';
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { DefaultQueryBoundary } from '#components/boundaries/default-query-boundary.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 
-export default function HomeTab() {
+export default function KnowledgeTab() {
+  const { user, signIn } = useSuspenseAuth();
+
+  if (!user) {
+    return (
+      <View className="flex-1 bg-background p-safe">
+        <View className="flex-row items-center justify-between border-b border-border px-4 py-2">
+          <Text className="text-sm text-muted-foreground">
+            Sign in to view your knowledge base
+          </Text>
+          <Button variant="outline" size="sm" onPress={signIn}>
+            <Text className="text-sm">Sign in</Text>
+          </Button>
+        </View>
+        <View className="flex-1 items-center justify-center p-8">
+          <Text className="text-center text-base text-muted-foreground">
+            No knowledge items yet
+          </Text>
+          <Text className="mt-2 text-center text-sm text-muted-foreground">
+            Accepted captures will appear here as nodes
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <DefaultSuspense>
-      <HomeScreen />
-    </DefaultSuspense>
+    <DefaultQueryBoundary>
+      <KnowledgeScreen />
+    </DefaultQueryBoundary>
   );
 }
 
-function HomeScreen() {
-  const { user, signIn } = useAuth();
+function KnowledgeScreen() {
+  const router = useRouter();
+  const { data } = useSuspenseQuery(
+    convexQuery(api.nodes.getKnowledgeBasePages, {}),
+  );
+
+  if (data.length === 0) {
+    return (
+      <View className="flex-1 items-center justify-center p-8">
+        <Text className="text-center text-base text-muted-foreground">
+          No knowledge items yet
+        </Text>
+        <Text className="mt-2 text-center text-sm text-muted-foreground">
+          Accepted captures will appear here as nodes
+        </Text>
+      </View>
+    );
+  }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      automaticallyAdjustsScrollIndicatorInsets={true}
-      className="flex-1 bg-background"
-      contentContainerClassName="p-6"
-    >
-      <View className="flex-col gap-8">
-        <View className="flex-col gap-2">
-          <Text className="text-lg font-medium text-muted-foreground">
-            Welcome back,
-          </Text>
-          <Text className="text-4xl font-bold tracking-tight text-foreground">
-            {user?.firstName ?? 'Guest'}
-          </Text>
-        </View>
-
-        {!user && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign In</CardTitle>
-              <CardDescription>
-                Sign in to your account to get started with Assistant.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button onPress={signIn}>
-                <Text>Sign In</Text>
-              </Button>
-            </CardContent>
-          </Card>
+    <View className="flex-1 bg-background p-safe">
+      <FlatList
+        contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustsScrollIndicatorInsets={true}
+        data={data}
+        keyExtractor={(item) => item.node._id}
+        renderItem={({ item }) => (
+          <Pressable
+            className="border-b border-border px-4 py-3"
+            onPress={() => router.push(`/knowledge/${item.node._id}` as Href)}
+          >
+            <Text className="text-base font-medium text-foreground">
+              {item.node.title}
+            </Text>
+            <Text className="mt-1 text-sm text-muted-foreground">
+              {item.edgeCount}{' '}
+              {item.edgeCount === 1 ? 'connection' : 'connections'}
+            </Text>
+          </Pressable>
         )}
-
-        <View className="flex-col gap-4">
-          <Text className="text-xl font-semibold text-foreground">
-            Recent Activity
-          </Text>
-          <Card>
-            <CardContent className="flex-col items-center justify-center gap-2 py-10">
-              <Text className="text-center text-muted-foreground">
-                No recent activity to show.
-              </Text>
-            </CardContent>
-          </Card>
-        </View>
-
-        <View className="flex-col gap-4">
-          <Text className="text-xl font-semibold text-foreground">
-            Quick Actions
-          </Text>
-          <View className="flex-row flex-wrap gap-4">
-            <Card className="min-w-[140px] flex-1">
-              <CardHeader className="gap-2">
-                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
-                  <Text className="font-bold text-primary">+</Text>
-                </View>
-                <CardTitle className="text-base">New Task</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card className="min-w-[140px] flex-1">
-              <CardHeader className="gap-2">
-                <View className="size-10 items-center justify-center rounded-full bg-primary/10">
-                  <Text className="font-bold text-primary">📄</Text>
-                </View>
-                <CardTitle className="text-base">Draft Doc</CardTitle>
-              </CardHeader>
-            </Card>
-          </View>
-        </View>
-      </View>
-    </ScrollView>
+      />
+    </View>
   );
 }

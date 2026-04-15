@@ -3,10 +3,10 @@ import { Button } from '@workspace/rn-reusables/components/button';
 import { Text } from '@workspace/rn-reusables/components/text';
 import { View } from 'react-native';
 
-import { useAuth } from '#modules/auth/react/auth-provider.tsx';
+import { useSuspenseAuth } from '#modules/auth/react/auth-provider.tsx';
 
-export function LoginScreen() {
-  const { signIn } = useAuth();
+export default function LoginScreen() {
+  const { signIn } = useSuspenseAuth();
 
   return (
     <View className="flex-1 items-center justify-center bg-background p-6">
