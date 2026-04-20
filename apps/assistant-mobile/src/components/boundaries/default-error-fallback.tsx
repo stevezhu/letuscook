@@ -15,12 +15,12 @@ export function DefaultErrorFallback({
 }: DefaultErrorFallbackProps) {
   return (
     <View className="flex-1 items-center justify-center gap-4 p-8">
-      <Text className="text-center text-base text-muted-foreground">
+      <Text className="text-muted-foreground text-center text-base">
         Something went wrong
       </Text>
       {message && (
         <Text
-          className="text-center text-sm text-muted-foreground"
+          className="text-muted-foreground text-center text-sm"
           // TODO: handle all lengths of messages
           numberOfLines={10}
         >

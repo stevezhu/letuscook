@@ -1,4 +1,5 @@
 {
   "extends": ["@stzhu/tsconfig/tsconfig.react.json", "./.wxt/tsconfig.json"],
-  "include": ["*.config.ts", "entrypoints/**/*", "src/**/*", ".wxt/**/*"]
+  "include": ["*.config.ts", "entrypoints/**/*", "src/**/*", ".wxt/**/*"],
+  "compilerOptions": { "types": ["node", "react", "react-dom"] }
 }

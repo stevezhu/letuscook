@@ -1,4 +1,7 @@
 {
   "extends": "@stzhu/tsconfig/tsconfig.react.json",
-  "compilerOptions": { "paths": { "@workspace/shadcn/*": ["./src/*"] } }
+  "compilerOptions": {
+    "paths": { "@workspace/shadcn/*": ["./src/*"] },
+    "types": ["node", "react"]
+  }
 }

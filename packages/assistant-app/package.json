@@ -39,6 +39,7 @@
     "@tanstack/eslint-plugin-query": "^5.99.2",
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@tanstack/router-cli": "^1.166.33",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "catalog:",

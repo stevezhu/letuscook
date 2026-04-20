@@ -1,4 +1,5 @@
 {
   "extends": "@stzhu/tsconfig/tsconfig.react.json",
-  "include": ["*.config.ts", "*.d.ts", "src/**/*", ".storybook/**/*"]
+  "include": ["*.config.ts", "*.d.ts", "src/**/*", ".storybook/**/*"],
+  "compilerOptions": { "types": ["node", "react"] }
 }

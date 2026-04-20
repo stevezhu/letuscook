@@ -4,5 +4,8 @@
     "@electron-toolkit/tsconfig/tsconfig.web.json"
   ],
   "include": ["src/renderer/src/**/*", "src/preload/*.d.ts"],
-  "compilerOptions": { "composite": true }
+  "compilerOptions": {
+    "types": ["node", "react", "react-dom"],
+    "composite": true
+  }
 }
