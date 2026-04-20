@@ -3,6 +3,7 @@
   "include": ["metro.config.ts", "rnx-kit.d.ts"],
   "compilerOptions": {
     "strict": false,
+    "strictNullChecks": true,
     "noEmit": false,
     "allowJs": true,
     "verbatimModuleSyntax": true,

@@ -23,10 +23,10 @@
     "@webext-core/messaging": "^2.3.0",
     "@workspace/constants": "workspace:*",
     "@workspace/shadcn": "workspace:*",
-    "lucide-react": "^1.7.0",
+    "lucide-react": "^1.8.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "wxt": "^0.20.20"
+    "wxt": "^0.20.25"
   },
   "devDependencies": {
     "@rolldown/plugin-babel": "^0.2.3",
@@ -40,7 +40,7 @@
     "@wxt-dev/auto-icons": "^1.1.1",
     "@wxt-dev/module-react": "^1.2.2",
     "eslint": "catalog:",
-    "eslint-plugin-oxlint": "^1.58.0",
+    "eslint-plugin-oxlint": "^1.60.0",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

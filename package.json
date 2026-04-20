@@ -22,16 +22,16 @@
     "@pnpm/find-workspace-packages": "^6.0.9",
     "@stzhu/prettier-plugin-tsconfig": "catalog:",
     "@types/node": "catalog:",
-    "@vitest/eslint-plugin": "^1.6.14",
+    "@vitest/eslint-plugin": "^1.6.16",
     "concurrently": "^9.2.1",
     "es-toolkit": "^1.45.1",
-    "oxfmt": ">=0.43.0 < 1.0.0",
-    "oxlint": "^1.58.0",
-    "oxlint-tsgolint": "^0.20.0",
-    "prettier": "^3.8.1",
-    "rulesync": "^7.27.1",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "oxlint-tsgolint": "^0.21.1",
+    "prettier": "^3.8.3",
+    "rulesync": "^8.4.0",
     "syncpack": "^14.3.0",
-    "turbo": "^2.9.4"
+    "turbo": "^2.9.6"
   },
   "engines": {
     "node": ">=25",
