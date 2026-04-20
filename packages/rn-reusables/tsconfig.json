@@ -7,5 +7,8 @@
     "expo-env.d.ts",
     "uniwind-types.d.ts"
   ],
-  "compilerOptions": { "paths": { "@workspace/rn-reusables/*": ["./src/*"] } }
+  "compilerOptions": {
+    "paths": { "@workspace/rn-reusables/*": ["./src/*"] },
+    "types": ["node", "react"]
+  }
 }

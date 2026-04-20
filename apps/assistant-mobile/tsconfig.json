@@ -21,6 +21,7 @@
     "strict": true,
     "allowImportingTsExtensions": true,
     "noUncheckedSideEffectImports": true,
+    "types": ["jest", "react"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,

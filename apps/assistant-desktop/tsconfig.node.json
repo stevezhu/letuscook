@@ -4,5 +4,9 @@
     "@electron-toolkit/tsconfig/tsconfig.node.json"
   ],
   "include": ["*.config.ts", "src/main/**/*", "src/preload/**/*"],
-  "compilerOptions": { "allowImportingTsExtensions": true, "composite": true }
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "types": ["node"],
+    "composite": true
+  }
 }
