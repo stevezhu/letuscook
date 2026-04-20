@@ -23,6 +23,9 @@
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 2
     },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    },
     "react-refresh/only-export-components": {
       "count": 1
     }
@@ -103,6 +106,9 @@
   },
   "src/hooks/use-mobile.ts": {
     "@typescript-eslint/no-confusing-void-expression": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
       "count": 1
     }
   }
