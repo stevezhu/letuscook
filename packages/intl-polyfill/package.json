@@ -5,8 +5,8 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@formatjs/intl-locale": "^5.3.1",
-    "@formatjs/intl-pluralrules": "^6.3.1",
-    "@formatjs/intl-relativetimeformat": "^12.3.1"
+    "@formatjs/intl-locale": "^5.3.2",
+    "@formatjs/intl-pluralrules": "^6.3.2",
+    "@formatjs/intl-relativetimeformat": "^12.3.2"
   }
 }
