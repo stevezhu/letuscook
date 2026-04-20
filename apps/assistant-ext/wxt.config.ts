@@ -15,7 +15,7 @@ export default defineConfig({
     permissions: [],
   }),
   imports: false,
-  modules: ['@wxt-dev/auto-icons', 'wxt-turbo'],
+  modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons', 'wxt-turbo'],
   autoIcons: {
     baseIconPath: 'assets/icon.svg',
   },

@@ -1,8 +1,8 @@
-diff --git a/dist/chunks/lib-q6ns0vZr.js b/dist/chunks/lib-q6ns0vZr.js
-index fe0d0c62c9a4159f17437d44e8d128db4bea2ae4..1538c6b7514a515e2ad30ac91596303c45350c3f 100644
---- a/dist/chunks/lib-q6ns0vZr.js
-+++ b/dist/chunks/lib-q6ns0vZr.js
-@@ -800,7 +800,7 @@ const __filename = import.meta.filename;
+diff --git a/dist/chunks/lib-6EHSwoSb.js b/dist/chunks/lib-6EHSwoSb.js
+index 7d9e52f4efdb6bd2def9c9dc235148e339db1bdf..d6ed085edc8d2f95cd5f3c950cf130693c1907aa 100644
+--- a/dist/chunks/lib-6EHSwoSb.js
++++ b/dist/chunks/lib-6EHSwoSb.js
+@@ -824,7 +824,7 @@ const __filename = import.meta.filename;
  const __dirname = import.meta.dirname;
  const require = __cjs_mod__.createRequire(import.meta.url);
  `;
