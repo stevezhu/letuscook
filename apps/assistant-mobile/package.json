@@ -117,7 +117,7 @@
     "socket.io-client": "^4.8.3",
     "storybook": "catalog:",
     "tailwindcss": "catalog:",
-    "test-renderer": "^0.14.0",
+    "test-renderer": "^0.16.0",
     "ts-jest": "^29.4.9",
     "ts-jest-resolver": "^2.0.1",
     "ts-node": "^10.9.2",
