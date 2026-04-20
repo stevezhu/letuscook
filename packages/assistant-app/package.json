@@ -40,7 +40,7 @@
     "@tanstack/eslint-plugin-router": "^1.161.6",
     "@tanstack/router-cli": "^1.166.25",
     "@types/react": "catalog:",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "eslint": "catalog:",
     "eslint-plugin-oxlint": "^1.58.0",
     "storybook": "catalog:",

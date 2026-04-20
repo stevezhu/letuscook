@@ -23,13 +23,14 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@rolldown/plugin-babel": "^0.2.3",
     "@stzhu/eslint-config": "catalog:",
     "@stzhu/tsconfig": "catalog:",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
     "assistant-server": "workspace:*",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "catalog:",
