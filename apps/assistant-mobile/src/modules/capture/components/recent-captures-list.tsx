@@ -37,12 +37,12 @@ function CaptureItemRow({ item }: { item: CaptureItem }) {
   return (
     <View className="px-4 py-3">
       <View className="flex-row items-center justify-between">
-        <View className="rounded-full bg-muted px-2 py-0.5">
-          <Text className="text-xs text-muted-foreground capitalize">
+        <View className="bg-muted rounded-full px-2 py-0.5">
+          <Text className="text-muted-foreground text-xs capitalize">
             {item.captureType}
           </Text>
         </View>
-        <Text className="text-xs text-muted-foreground">
+        <Text className="text-muted-foreground text-xs">
           {formatRelativeTime(item.capturedAt)}
         </Text>
       </View>
@@ -54,7 +54,7 @@ function CaptureItemRow({ item }: { item: CaptureItem }) {
 function EmptyState() {
   return (
     <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-center text-sm text-muted-foreground">
+      <Text className="text-muted-foreground text-center text-sm">
         Your captures will appear here
       </Text>
     </View>
@@ -119,7 +119,7 @@ function CaptureList({ items }: { items: CaptureItem[] }) {
       contentContainerClassName="flex-grow justify-end"
       keyboardDismissMode="interactive"
       keyboardShouldPersistTaps="handled"
-      ItemSeparatorComponent={() => <View className="mx-4 h-px bg-border" />}
+      ItemSeparatorComponent={() => <View className="bg-border mx-4 h-px" />}
     />
   );
 }
