@@ -8,7 +8,10 @@ import {
 import { Provider, createStore } from 'jotai';
 import React from 'react';
 
-import { captureTextAtom, captureTypeAtom } from '../capture-composer-atoms.ts';
+import {
+  captureFlatTextAtom,
+  captureTypeAtom,
+} from '../capture-composer-atoms.ts';
 import { CaptureComposerSharedContent } from '../capture-composer-shared-content.tsx';
 
 // ---------------------------------------------------------------------------
@@ -83,7 +86,7 @@ describe('CaptureComposerSharedContent', () => {
   test('does nothing when there are no shared payloads', async () => {
     const store = await renderWithStore();
 
-    expect(store.get(captureTextAtom)).toBe('');
+    expect(store.get(captureFlatTextAtom)).toBe('');
     expect(store.get(captureTypeAtom)).toBe('text');
     expect(mockClearSharedPayloads).not.toHaveBeenCalled();
   });
@@ -96,7 +99,7 @@ describe('CaptureComposerSharedContent', () => {
     const store = await renderWithStore();
 
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('Hello world');
+      expect(store.get(captureFlatTextAtom)).toBe('Hello world');
     });
     expect(store.get(captureTypeAtom)).toBe('text');
     expect(mockClearSharedPayloads).toHaveBeenCalledTimes(1);
@@ -113,7 +116,7 @@ describe('CaptureComposerSharedContent', () => {
     const store = await renderWithStore();
 
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('https://example.com');
+      expect(store.get(captureFlatTextAtom)).toBe('https://example.com');
     });
     expect(store.get(captureTypeAtom)).toBe('link');
     expect(mockClearSharedPayloads).toHaveBeenCalledTimes(1);
@@ -128,7 +131,7 @@ describe('CaptureComposerSharedContent', () => {
     const store = await renderWithStore();
 
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('Line 1\nLine 2');
+      expect(store.get(captureFlatTextAtom)).toBe('Line 1\nLine 2');
     });
     expect(store.get(captureTypeAtom)).toBe('text');
   });
@@ -148,7 +151,9 @@ describe('CaptureComposerSharedContent', () => {
     const store = await renderWithStore();
 
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('https://a.com\nhttps://b.com');
+      expect(store.get(captureFlatTextAtom)).toBe(
+        'https://a.com\nhttps://b.com',
+      );
     });
     expect(store.get(captureTypeAtom)).toBe('link');
   });
@@ -165,7 +170,7 @@ describe('CaptureComposerSharedContent', () => {
     const store = await renderWithStore();
 
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('https://a.com\nsome note');
+      expect(store.get(captureFlatTextAtom)).toBe('https://a.com\nsome note');
     });
     expect(store.get(captureTypeAtom)).toBe('text');
   });
@@ -183,7 +188,7 @@ describe('CaptureComposerSharedContent', () => {
 
     // image returns '' which is filtered out by Boolean filter
     await waitFor(() => {
-      expect(store.get(captureTextAtom)).toBe('caption');
+      expect(store.get(captureFlatTextAtom)).toBe('caption');
     });
     expect(mockClearSharedPayloads).toHaveBeenCalledTimes(1);
   });
@@ -202,7 +207,7 @@ describe('CaptureComposerSharedContent', () => {
 
     const store = await renderWithStore();
 
-    expect(store.get(captureTextAtom)).toBe('');
+    expect(store.get(captureFlatTextAtom)).toBe('');
     expect(store.get(captureTypeAtom)).toBe('text');
     expect(mockClearSharedPayloads).not.toHaveBeenCalled();
   });
